@@ -1,0 +1,187 @@
+﻿<!-- #region Security TAB -->
+<!--Panel 7-->
+
+
+<script type="text/javascript">
+
+    function SaveSecurityData() {
+        if (!validateRequiredInput('#security_checklist')) {
+            return false;
+        }
+        if (PM_Data.checkListSecurity == null) {
+            PM_Data.checkListSecurity = new Object();
+        }
+
+        PM_Data.checkListSecurity.Guard_Name = $('#txt_guard_name').val();
+        PM_Data.checkListSecurity.Guard_Type = $('#dd_guard_type').val();
+        PM_Data.checkListSecurity.Guard_CNIC = $('#txt_guard_cnic').val();
+        PM_Data.checkListSecurity.Guard_Phone = $('#txt_guard_contact').val();
+        PM_Data.checkListSecurity.Guard_Supervisor_Name = $('#txt_guard_supervisor_name').val();
+        PM_Data.checkListSecurity.Guard_Supervisor_Phone = $('#txt_guard_supervisor_contact').val();
+        PM_Data.checkListSecurity.Company = $('#txt_guard_company').val();
+        PM_Data.checkListSecurity.Working_FireExtinguishers_Count = $('#txt_no_of_fire_extinguisher_ok').val();
+        PM_Data.checkListSecurity.NotWorking_FireExtinguishers_Count = $('#txt_no_of_fire_extinguisher_not_ok').val();
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/PreventiveMaintenance/SaveSecurityChecklistData", PM_Data, OnSuccessSaveSecurity, "POST", false)
+    }
+
+    function OnSuccessSaveSecurity(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+           // GetPMData();
+        }
+        else {
+            alertify.alert("Alert", "Failed.");
+        }
+    }
+
+
+</script>
+
+<div class="tab-pane fade in show active" id="panel7" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco" id="security_checklist">
+        <!--#region Guard Name -->
+        @*------------GuardName---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Name</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_name" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+            @*</div>*@
+            <!--#endregion-->
+            <!-- #region Guard Type -->
+            @*------------Guard Type---------------*@
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Type</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_guard_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OWNER</option>
+                        <option>COMPANY</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Guard CNIC -->
+        @*------------GuardCNIC---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard CNIC</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_cnic" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+            @*</div>*@
+            <!--#endregion-->
+            <!--#region Guard Contact# -->
+            @*------------GuardContact#---------------*@
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Contact#</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_contact" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;" placeholder="03xxxxxxxxx" min="0" maxlength="11" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Guard Supervisor Name -->
+        @*------------GuardSupervisor Name---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Supervisor Name</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_supervisor_name" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+            @*</div>*@
+            <!--#endregion-->
+            <!--#region Guard Supervisor contact -->
+            @*------------GuardSUpervisorcontact---------------*@
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Supervisor Contact#</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_supervisor_contact" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;" placeholder="03xxxxxxxxx" min="0" maxlength="11" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        
+        <!--#region Fire Extinguisher -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> No. of Fire Extinguishers(OK state)<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_no_of_fire_extinguisher_ok" type="number" class="form-control requiredinput">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> No. of Fire Extinguishers(NOT OK state)<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_no_of_fire_extinguisher_not_ok" type="number" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        <!--#region Company -->
+        @*------------Company---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Company</label><span class="asterick"> *</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_company" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+
+        <!--#endregion-->
+        <button id="save_security" name="save_security" onclick="SaveSecurityData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+<!--/.Panel 7-->
+<!-- #endregion -->

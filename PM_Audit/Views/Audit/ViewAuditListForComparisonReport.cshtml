@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "ViewPMDetailsListforAudit";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+<section class="container">
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>SiteName</th>
+                <th>PM Time</th>
+                @*<th>Status</th>*@
+                <th>Types</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+        var siteCode = '';
+        var pmType = '';
+        siteCode = '@ViewBag.Site_Code';
+        pmType = '@ViewBag.PM_Type';
+        $(document).ready(function() {
+            GetPMData();
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function(settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                    { "data": "SiteCode", "orderable": true },
+                    { "data": "Created_Date", "orderable": true },
+                    //{ "data": "Status", "orderable": true },
+                    { "data": "Type", "orderable": true },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function(data, type, row) {
+                            debugger;
+                            if (row.PM_Status != "Closed") {
+                                return '<button onclick="proceedToAudit(\'' +
+                                    row.SiteCode +
+                                    '\',\'' +
+                                    row.Type +
+                                    '\',\'' +
+                                    row.ID +
+                                    '\')" class="btn btn-primary mybutton">Proceed</button>';
+                            } else {
+                                return '';
+                            }
+                        }
+                    }
+                ],
+
+            });
+        });
+
+        function proceedToAudit(SiteCode, Type, ID) {
+            debugger;
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            
+                form.setAttribute("action", '/Audit/ViewComparison');
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", SiteCode.toUpperCase());
+            form.appendChild(hiddenFieldSiteCode);
+
+            var hiddenFieldPmType = document.createElement("input");
+            hiddenFieldPmType.setAttribute("type", "hidden");
+            hiddenFieldPmType.setAttribute("name", 'PM_Type');
+            hiddenFieldPmType.setAttribute("value", Type);
+            form.appendChild(hiddenFieldPmType);
+
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'PM_ID');
+            hiddenFieldPmID.setAttribute("value", ID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = siteCode;
+            obj.PM_Type = pmType;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',
+                "api/Audit/GetAuditListForComparison",
+                obj,
+                OnSuccessGetPMData);
+        }
+
+        function OnSuccessGetPMData(results) {
+            debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results,
+                function(i, item) {
+                    debugger;
+                    tbl_PMGrid.row.add(results[i]);
+                });
+            tbl_PMGrid.draw();
+        }
+    </script>
+}

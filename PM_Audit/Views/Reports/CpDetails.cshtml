@@ -1,0 +1,515 @@
+﻿
+@{
+    ViewBag.Title = "CpDetails";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+
+    var tbl_ReportsGrid_checklist;
+
+    $(document).ready(function () {
+
+        GetSiteFilters();
+
+        $("#txt_from_date_checklist").datepicker();
+        $("#txt_to_date_checklist").datepicker();
+        $(".date-pick").datepicker('setDate', new Date());
+
+        tbl_ReportsGrid_checklist = $('#reportsgridview_checklist').DataTable({
+            responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": false,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+
+                { "data": "ID", "orderable": true },
+                { "data": "SiteCode", "orderable": true },
+                { "data": "FK_PM_ID", "orderable": true },
+                { "data": "Transformer_Type", "orderable": true },
+                { "data": "Transformer_Rating", "orderable": true },
+                { "data": "Meter_Reading", "orderable": true },
+                { "data": "Meter_Status", "orderable": true },
+                { "data": "Voltage_Red_To_Neutral", "orderable": true },
+                { "data": "Voltage_Yellow_To_Neutral", "orderable": true },
+                { "data": "Voltage_Blue_To_Neutral", "orderable": true },
+                { "data": "All_Phases", "orderable": true },
+                { "data": "Grounding_Status", "orderable": true },
+                { "data": "Power_Theft", "orderable": true },
+                { "data": "Cable_Meter_To_Breaker_Type", "orderable": true },
+                { "data": "Cable_Meter_To_Breaker_Length", "orderable": true },
+                { "data": "Cable_Transformer_To_Meter_Type", "orderable": true },
+                { "data": "Cable_Transformer_To_Meter_Length", "orderable": true },
+                { "data": "Cable_Meter_To_Breaker_Joints", "orderable": true },
+                { "data": "Cable_Transformer_To_Meter_Joints", "orderable": true },
+                { "data": "Cable_Transformer_To_Core_Types", "orderable": true },
+                { "data": "IsApproved", "orderable": true },
+                { "data": "IsActive", "orderable": true },
+                { "data": "Created_Date", "orderable": true },
+                { "data": "Created_By", "orderable": true },
+                { "data": "Peak_Reading", "orderable": true },
+                { "data": "Off_Peak_Reading", "orderable": true },
+                { "data": "Yellow_Phase_Load", "orderable": true },
+                { "data": "Red_Phase_Load", "orderable": true },
+                { "data": "Blue_Phase_Load", "orderable": true },
+                { "data": "Neutral_Load", "orderable": true },
+                { "data": "Total_MDI", "orderable": true },
+              
+                { "data": "PM_Type", "orderable": true },
+               
+                { "data": "PM_Closed_Status", "orderable": true },
+              
+                { "data": "PM_RBU", "orderable": true },
+                { "data": "PM_MBU", "orderable": true },
+               
+                { "data": "PM_Unsuccessfull_Reason", "orderable": true },
+             
+                { "data": "PM_Approval_Date", "orderable": true },
+                { "data": "PM_Approved_By", "orderable": true },
+                { "data": "PM_Approval_Remarks", "orderable": true },
+               
+                { "data": "PM_Vendor_ClosedStatus", "orderable": true },
+                { "data": "PM_Vendor_Comments", "orderable": true }
+
+
+                   //{
+                   //    "targets": -1,
+                   //    "data": null,
+                   //    render: function (data, type, row) {
+                   //        return '<button onclick="getPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary">View</button>';
+                   //    }
+
+                   //},
+                   // {
+                   //     "targets": -1,
+                   //     "data": null,
+                   //     render: function (data, type, row) {
+                   //         return '<button onclick="ExportPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary">Export</button>';
+                   //     }
+
+                   // }
+
+
+            ],
+
+        });
+    });
+
+    function getPM(sitecode, type, PM_ID) {
+        debugger;
+        $('#formDiv').html('');
+        var form = document.createElement("form");
+        form.setAttribute("method", 'POST');
+        if (type == 'Telco') {
+            form.setAttribute("action", '/Reports/ViewTelcoPMDetails');
+        }
+        else {
+            form.setAttribute("action", '/Reports/ViewNoNTelcoPMDetails');
+        }
+        form.setAttribute("target", '_blank');
+
+        var hiddenFieldSiteCode = document.createElement("input");
+        hiddenFieldSiteCode.setAttribute("type", "hidden");
+        hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+        hiddenFieldSiteCode.setAttribute("value", sitecode);
+        form.appendChild(hiddenFieldSiteCode);
+
+        var hiddenFieldPmType = document.createElement("input");
+        hiddenFieldPmType.setAttribute("type", "hidden");
+        hiddenFieldPmType.setAttribute("name", 'PM_Type');
+        hiddenFieldPmType.setAttribute("value", type);
+        form.appendChild(hiddenFieldPmType);
+        var hiddenFieldPmID = document.createElement("input");
+        hiddenFieldPmID.setAttribute("type", "hidden");
+        hiddenFieldPmID.setAttribute("name", 'PM_ID');
+        hiddenFieldPmID.setAttribute("value", PM_ID);
+        form.appendChild(hiddenFieldPmID);
+
+
+        document.getElementById('formDiv').appendChild(form);
+        form.submit();
+    }
+    function ExportPM(sitecode, type, PM_ID) {
+            debugger;
+            var obj = new Object();
+            obj.SiteCode = sitecode;
+            obj.Type = type;
+            obj.PM_ID = PM_ID;
+            debugger;
+            ApiCallService.AjaxNative('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/ExportSinglePMCheckListDetails", obj, handleFileData, 'POST', true, null, null, 'native', 'blob');
+        }
+        function handleFileData(blob) {
+            debugger;
+            if (blob != null) {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "PMReport" + new Date() + ".xlsx";
+                link.click();
+                return;
+            }
+            // Use the file data
+        }
+
+    function GetCPData() {
+        debugger;
+        var obj = new Object();
+
+        obj.RBU = $("#dd_rbu_checklist").val()
+        obj.Start_Date = $("#txt_from_date_checklist").val()
+        obj.End_Date = $("#txt_to_date_checklist").val()
+        obj.SiteCode = $("#dd_site_code_checklist").val()
+        obj.Status = $("#dd_status_checklist").val()
+        obj.Closed_Status = $("#dd_closed_status_checklist").val()
+        obj.MBU = $("#dd_mbu_checklist").val()
+        obj.Region = $("#dd_region_checklist").val()
+        obj.OSV = $("#dd_osv_checklist").val()
+        obj.Approval_Remarks = $("#dd_approve_status").val()
+        obj.Auditor_Rejection_Status = $("#dd_rejection_status_auditor").val()
+        obj.ReOpened = $("#dd_reopened").val()
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetCpReport", obj, OnSuccessGetPMData)
+    }
+    function OnSuccessGetPMData(results) {
+        debugger;
+        tbl_ReportsGrid_checklist.clear().draw();
+        $.each(results, function (i, item) {
+            debugger;
+            tbl_ReportsGrid_checklist.row.add(results[i]);
+        });
+        tbl_ReportsGrid_checklist.draw();
+    }
+    function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code_checklist').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRBU) {
+                $('#dd_rbu_checklist').select2({
+                    data: data.ListRBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListMBU) {
+                $('#dd_mbu_checklist').select2({
+                    data: data.ListMBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRegion) {
+                $('#dd_region_checklist').select2({
+                    data: data.ListRegion,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListOSV) {
+                $('#dd_osv_checklist').select2({
+                    data: data.ListOSV,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            $('#dd_status_checklist').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_closed_status_checklist').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_approve_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_rejection_status_auditor').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_reopened').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+        }
+    }
+
+</script>
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code_checklist">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Status</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_status_checklist">
+                                <option></option>
+                                <option>Open</option>
+                                <option>Closed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date_checklist" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date_checklist" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu_checklist">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu_checklist">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region_checklist">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> OSV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_osv_checklist">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Closed Status</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_closed_status_checklist">
+                                <option></option>
+                                <option>Success</option>
+                                <option>Failed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Approve Status</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_approve_status">
+                                <option></option>
+                                <option>Approved</option>
+                                <option>Rejected</option>
+                                <option>Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Auditor Status</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rejection_status_auditor">
+                                <option></option>
+                                <option>Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>ReOpened</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_reopened">
+                                <option></option>
+                                <option>True</option>
+                                <option>False</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                        <button id="get_details_checklist" onclick="GetCPData()" name="get_details_checklist" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                    @*<div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                            <button id="btn_export_checklist " onclick="ExportData()" name="btn_export_checklist " class="btn btn-primary mybutton">Export</button>
+
+                        </div>*@
+                </div>
+            </div>
+
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview_checklist" class="display">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>SiteCode</th>
+                                <th>FK_PM_ID</th>
+                                <th>Transformer_Type</th>
+                                <th>Transformer_Rating</th>
+                                <th>Meter_Reading</th>
+                                <th>Meter_Status</th>
+                                <th>Voltage_Red_To_Neutral</th>
+                                <th>Voltage_Yellow_To_Neutral</th>
+                                <th>Voltage_Blue_To_Neutral</th>
+                                <th>All_Phases</th>
+                                <th>Grounding_Status</th>
+                                <th>Power_Theft</th>
+                                <th>Cable_Meter_To_Breaker_Type</th>
+                                <th>Cable_Meter_To_Breaker_Length</th>
+                                <th>Cable_Transformer_To_Meter_Type</th>
+                                <th>Cable_Transformer_To_Meter_Length</th>
+                                <th>Cable_Meter_To_Breaker_Joints</th>
+                                <th>Cable_Transformer_To_Meter_Joints</th>
+                                <th>Cable_Transformer_To_Core_Types</th>
+                                <th>IsApproved</th>
+                                <th>IsActive</th>
+                                <th>Created_Date</th>
+                                <th>Created_By</th>
+                                <th>Peak_Reading</th>
+                                <th>Off_Peak_Reading</th>
+                                <th>Yellow_Phase_Load</th>
+                                <th>Red_Phase_Load</th>
+                                <th>Blue_Phase_Load</th>
+                                <th>Neutral_Load</th>
+                                <th>Total_MDI</th>
+
+                                <th>PM_Type</th>
+
+                                <th>PM_Closed_Status</th>
+
+                                <th>PM_RBU</th>
+                                <th>PM_MBU</th>
+
+                                <th>PM_Unsuccessfull_Reason</th>
+
+                                <th>PM_Approval_Date</th>
+                                <th>PM_Approved_By</th>
+                                <th>PM_Approval_Remarks</th>
+
+                                <th>PM_Vendor_ClosedStatus</th>
+                                <th>PM_Vendor_Comments</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /#page-content-wrapper -->
+</div>
+<div id="formDiv"></div>

@@ -1,0 +1,224 @@
+﻿
+<script>
+    function SaveBSSData() {
+
+        Inventory_Data.Number_Of_Antennas = $('#txt_Number_Of_Antennas').val();
+        Inventory_Data.Serving_Technology = $('#dd_Serving_Technology').val();
+        Inventory_Data.Antenna_Brand = $('#txt_Antenna_Brand').val();
+        Inventory_Data.Antenna_Type = $('#dd_Antenna_Type').val();
+        Inventory_Data.Antenna_High = $('#txt_Antenna_High').val();
+        Inventory_Data.Antenna_ports = $('#dd_Antenna_ports').val();
+        Inventory_Data.Antenna_Electrical_tilt_900 = $('#txt_Antenna_Electrical_tilt_900').val();
+        Inventory_Data.Antenna_Electrical_tilt_1800 = $('#txt_Antenna_Electrical_tilt_1800').val();
+        Inventory_Data.Mechanical_Assembly = $('#dd_Mechanical_Assembly').val();
+        Inventory_Data.Azimuth = $('#txt_Azimuth').val();
+        Inventory_Data.RET_Status = $('#dd_RET_Status').val();
+        Inventory_Data.Number_of_DBC = $('#txt_Number_of_DBC').val();
+        Inventory_Data.Number_of_Fibers = $('#txt_Number_of_Fibers').val();
+        Inventory_Data.UpdateSection = "BSS";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveTelcoInventoryDetails", Inventory_Data, OnSuccessSaveBSS, "POST", false)
+    }
+
+    function OnSuccessSaveBSS(res) {
+       
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+            //GetInventoryData();
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+</script>
+
+
+<div class="tab-pane fade in" id="panel31" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> No. Of Antennas</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Number_Of_Antennas" type="text" class="form-control ">
+                </div>
+            </div>
+          
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Serving Technology</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_Serving_Technology">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>2G</option>
+                        <option>3G</option>
+                        <option>4G</option>
+                        <option>2G+3G</option>
+                        <option>2G+4G</option>
+                        <option>3G+4G</option>
+                        <option>2G+3G+4G</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+       
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna Brand</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Antenna_Brand" type="text" class="form-control ">
+                </div>
+            </div>
+           
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_Antenna_Type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>SINGLE BAND</option>
+                        <option>DUAL BAND</option>
+                        <option>TRI BAND</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna High</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Antenna_High" type="text" class="form-control ">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna ports</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_Antenna_ports">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>2</option>
+                        <option>4</option>
+                        <option>6</option>
+                        <option>8</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna Electrical tilt 900</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Antenna_Electrical_tilt_900" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Antenna Electrical tilt 1800</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Antenna_Electrical_tilt_1800" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Mechanical Assembly</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+               
+                    <div class="form-group">
+                        <select class="form-control mydropdown requiredinput" id="dd_Mechanical_Assembly">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>INSTALLED</option>
+                            <option>NOT INSTALLED</option>
+                        </select>
+                    </div>
+                </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Azimuth</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Azimuth" type="text" class="form-control ">
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> RET Status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_RET_Status">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Number of DBC</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Number_of_DBC" type="text" class="form-control ">
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Number of Fibers</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_Number_of_Fibers" type="text" class="form-control ">
+                </div>
+            </div>
+           
+        </div>
+      
+        <button id="save_bss_inventory" name="save_bss_inventory" onclick="SaveBSSData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+

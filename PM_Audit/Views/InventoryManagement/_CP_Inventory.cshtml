@@ -1,0 +1,220 @@
+﻿<!-- #region Commercial Power TAB -->
+<!--Panel 22-->
+<script>
+    function SaveCPData_Inventory() {
+        debugger;
+        Inventory_Data.CP_Meter_Installed = $('#dd_is_cp_meter_installed_inventory').val();
+        Inventory_Data.Transformer_Available = $('#dd_is_transformer_available_inventory').val();
+        Inventory_Data.Transformer_Type = $('#txt_transformer_type_inventory option:selected').val();
+        Inventory_Data.Wapda_Transformer_Rating = $('#txt_transformer_rating_kva_inventory option:selected').val();
+        Inventory_Data.Fueling_Required = $('#dd_is_fueling_required_inventory').val();
+        Inventory_Data.Fueling_Sensor_Installed = $('#dd_is_fueling_sensor_installed_inventory').val();
+        Inventory_Data.Smart_Energy_Meter_Installed = $('#dd_is_smart_energy_meter_installed_inventory').val();
+        Inventory_Data.AC_Power_SPD_Installed = $('#dd_is_ac_power_spd_installed_inventory').val();
+        Inventory_Data.UpdateSection = "CP";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveCPDataInventory, "POST", false)
+    }
+
+    function OnSuccessSaveCPDataInventory(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+          //  GetInventoryData();
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+    $(document).ready(function () {
+        //$('#dd_is_cp_meter_installed_inventory').on('change', function () {
+        //    var CpVal = $(this).val();
+        //    if (CpVal != "YES") {
+        //        $('#dd_is_transformer_available_inventory').attr('disabled', 'disabled');
+        //        $('#dd_is_transformer_available_inventory').val('');
+
+        //        $('#txt_transformer_type_inventory').attr('disabled', 'disabled');
+        //        $('#txt_transformer_type_inventory').val('');
+
+        //        $('#txt_transformer_rating_kva_inventory').attr('disabled', 'disabled');
+        //        $('#txt_transformer_rating_kva_inventory').val('');
+
+        //    }
+        //    else {
+        //        $('#dd_is_transformer_available_inventory').removeAttr('disabled');
+        //        $('#dd_is_transformer_available_inventory').val('');
+
+        //        $('#txt_transformer_type_inventory').removeAttr('disabled');
+        //        $('#txt_transformer_type_inventory').val('');
+
+        //        $('#txt_transformer_rating_kva_inventory').removeAttr('disabled');
+        //        $('#txt_transformer_rating_kva_inventory').val('');
+        //    }
+        //})
+
+    });
+</script>
+
+<div class="tab-pane fade in" id="panel22" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region CPMeter Installed and Transformer Available -->
+        
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Is CP Meter Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_cp_meter_installed_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Is Transformer Available</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_transformer_available_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Transformer Type and Rating KVA -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Transformer Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+               @*<div class="form-group myinput">
+                    <input id="txt_transformer_type_inventory" type="text" class="form-control ">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="txt_transformer_type_inventory">
+                        <option value="NA" id="select_option_transformer_type_inventory" disabled selected hidden>Select ..</option>
+                        <option>COMMUNITY</option>
+                        <option>INDEPENDENT</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Wapda Transformer Rating KVA</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+               @*<div class="form-group myinput">
+                    <input id="txt_transformer_rating_kva_inventory" type="number" class="form-control ">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="txt_transformer_rating_kva_inventory">
+                        <option value="0" id="select_option_transformer_rating_kva_inventory" disabled selected hidden>Select ..</option>
+                        <option>0</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
+                        <option>25</option>
+                        <option>30</option>
+                        <option>35</option>
+                        <option>40</option>
+                        <option>45</option>
+                        <option>50</option>
+                        <option>55</option>
+                        <option>60</option>
+                        <option>100</option>
+                        <option>150</option>
+                        <option>200</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Is Fueling Required -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Is Fueling Required</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_fueling_required_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Is Fueling Sensor Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_fueling_sensor_installed_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Is Smart Energy Meter Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_smart_energy_meter_installed_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Is AC Power SPD Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_is_ac_power_spd_installed_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <button id="save_cp_inventory" name="save_cp_inventory" onclick="SaveCPData_Inventory()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 22-->
+<!-- #endregion -->

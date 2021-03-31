@@ -1,0 +1,436 @@
+﻿<!-- #region BTS TAB -->
+<!--Panel 1-->
+
+<script type="text/javascript">
+  
+    /* VSWR BTS Cabinet*/
+    $(document).ready(function () {
+
+        $('#cell_name_bts_cabinet').on('change', function () {
+            var cellId = '';
+
+            var cellName = $(this).val();
+            if (cellName.indexOf('_') != -1) {
+                cellId = cellName.split('_')[0];
+            }
+            else {
+                cellId = cellName;
+
+            }
+            $('#cell_id_bts_cabinet').val(cellId);
+        });
+
+
+        var $modal_vswr_bts_cabinet = $('#editor-modal-vswr-bts-cabinet'),
+     $editor_vswr_bts_cabinet = $('#editor-vswr-bts-cabinet'),
+     $editorTitle_vswr_bts_cabinet = $('#editor-title-vswr-bts-cabinet'),
+     ft_vswr_bts_cabinet = FooTable.init('#vswr_bts_cabinet', {
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add VSWR',
+             addRow: function () {
+                 $modal_vswr_bts_cabinet.removeData('row');
+                 $editor_vswr_bts_cabinet[0].reset();
+                 $editorTitle_vswr_bts_cabinet.text('Add a new row');
+                 $modal_vswr_bts_cabinet.modal('show');
+             },
+             editRow: function (row) {
+                 var values = row.val();
+                 $editor_vswr_bts_cabinet.find('#cell_id_bts_cabinet').val(values.cell_id_bts_cabinet);
+                 $editor_vswr_bts_cabinet.find('#cell_name_bts_cabinet').val(values.cell_name_bts_cabinet);
+                 $editor_vswr_bts_cabinet.find('#cell_value_bts_cabinet').val(values.cell_value_bts_cabinet);
+
+                 $modal_vswr_bts_cabinet.data('row', row);
+                 $editorTitle_vswr_bts_cabinet.text('Edit row #' + values.id);
+                 $modal_vswr_bts_cabinet.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         "rows": btsVSWRList,
+     }),
+     uid = 10;
+
+        $editor_vswr_bts_cabinet.on('submit', function (e) {
+            //if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+           // if (!validateRequiredInput('#editor-modal-vswr-bts-cabinet')) {
+           //     return false;
+           // }
+            var row = $modal_vswr_bts_cabinet.data('row'),
+                values = {
+                    cell_id_bts_cabinet: $editor_vswr_bts_cabinet.find('#cell_id_bts_cabinet').val(),
+                    cell_name_bts_cabinet: $editor_vswr_bts_cabinet.find('#cell_name_bts_cabinet').val(),
+                    cell_value_bts_cabinet: $editor_vswr_bts_cabinet.find('#cell_value_bts_cabinet').val()
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_vswr_bts_cabinet.rows.add(values);
+            }
+            $modal_vswr_bts_cabinet.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+
+    });
+
+
+    /* Board Cards BTS Cabinet*/
+    $(document).ready(function () {
+        var $modal_board_cards_bts_cabinet = $('#editor-modal-board-cards-bts-cabinet'),
+        $editor_board_cards_bts_cabinet = $('#editor-board-cards-bts-cabinet'),
+        $editorTitle_board_cards_bts_cabinet = $('#editor-title-board-cards-bts-cabinet'),
+        ft_board_cards_bts_cabinet = FooTable.init('#board_cards_bts_cabinet', {
+            editing: {
+                enabled: true,
+                alwaysShow: true,
+                addText: 'Add Board Cards',
+                addRow: function () {
+                    $modal_board_cards_bts_cabinet.removeData('row');
+                    $editor_board_cards_bts_cabinet[0].reset();
+                    $editorTitle_board_cards_bts_cabinet.text('Add a new row');
+                    $modal_board_cards_bts_cabinet.modal('show');
+                },
+                editRow: function (row) {
+                    var values = row.val();
+                    $editor_board_cards_bts_cabinet.find('#board_name').val(values.board_name);
+                    $editor_board_cards_bts_cabinet.find('#board_status').val(values.board_status);
+                    $editor_board_cards_bts_cabinet.find('#board_quantity').val(values.board_quantity);
+
+                    $modal_board_cards_bts_cabinet.data('row', row);
+                    $editorTitle_board_cards_bts_cabinet.text('Edit row #' + values.id);
+                    $modal_board_cards_bts_cabinet.modal('show');
+                },
+                deleteRow: function (row) {
+                    if (confirm('Are you sure you want to delete the row?')) {
+                        row.delete();
+                    }
+                }
+            },
+            "rows": btsBoardCardsList
+        }),
+        uid = 10;
+
+        $editor_board_cards_bts_cabinet.on('submit', function (e) {
+           // if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+           // if (!validateRequiredInput('#editor-modal-board-cards-bts-cabinet')) {
+             //   return false;
+          //  }
+            var row = $modal_board_cards_bts_cabinet.data('row'),
+                   values = {
+                       board_name: $editor_board_cards_bts_cabinet.find('#board_name').val(),
+                       board_status: $editor_board_cards_bts_cabinet.find('#board_status').val(),
+                       board_quantity: $editor_board_cards_bts_cabinet.find('#board_quantity').val()
+                   };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_board_cards_bts_cabinet.rows.add(values);
+            }
+            $modal_board_cards_bts_cabinet.modal('hide');
+        });
+       $('.footable-editing').hide();
+
+
+    });
+
+
+    function SaveBtsCabinetDataAudit() {
+
+        PM_Data.checkListBtsCabinet.Backup = $('#dd_backup_taken').val();
+        PM_Data.checkListBtsCabinet.Cleaning = $('#dd_cleaning_status').val();
+        PM_Data.checkListBtsCabinet.Grounding = $('#dd_grounding_status').val();
+        PM_Data.checkListBtsCabinet.SiteType = $('#dd_site_type').val();
+        var tempListVswrBTS = [];
+        var vswrBTSObj = FooTable.get("#vswr_bts_cabinet");
+        $.each(vswrBTSObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.Cell_ID = values.cell_id_bts_cabinet;
+            obj.Cell_Name = values.cell_name_bts_cabinet;
+            obj.VSWR_Value = values.cell_value_bts_cabinet;
+            tempListVswrBTS.push(obj);
+        });
+        var tempListBoardCards = [];
+        var BoardCardsObj = FooTable.get("#board_cards_bts_cabinet");
+        $.each(BoardCardsObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.BoardName = values.board_name;
+            obj.BoardStatus = values.board_status;
+            obj.Quantity = values.board_quantity;
+            tempListBoardCards.push(obj);
+        });
+        //if (!validateRequiredInput('#checklist_bts')) {
+        //    return false;
+        //}
+        //if (tempListVswrBTS.length == 0) {
+        //    alertify.alert("Alert","Please enter VSWR values.");
+        //    return;
+        //}
+        //if (tempListBoardCards.length == 0) {
+        //    alertify.alert("Alert","Please enter board card details.");
+        //    return;
+        //}
+        PM_Data.checkListBtsCabinet.ListBoardCards = tempListBoardCards;
+        PM_Data.checkListBtsCabinet.ListVSWR = tempListVswrBTS;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/SavePMBtsCabinetChecklistDataGeneralAudit", PM_Data, OnSuccessSaveBtsCabinet, "POST", false)
+    }
+
+    function OnSuccessSaveBtsCabinet(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+</script>
+
+
+<div class="tab-pane fade in show active " id="panel1" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_bts">
+
+        <!-- #region SiteType -->
+        @*------------Site Type---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Select Site Type</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_site_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>2G Only</option>
+                        <option>3G Only</option>
+                        <option>4G Only</option>
+                        <option>2G + 3G</option>
+                        <option>2G + 4G</option>
+                        <option>3G + 4G</option>
+                        <option>2G + 3G + 4G</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region Grounding-->
+        @*------------Grounding Status---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Grounding Status</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group mydropdown">
+                    <select class="form-control " id="dd_grounding_status">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Cleaning-->
+        @*------------Cleaning Status---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Cleaning Status</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_cleaning_status">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Backup-->
+        @*------------Backup Taken---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Backup Taken</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_backup_taken">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region VSWR-->
+        @*------------VSWR Values---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> VSWR Values</label>
+                </div>
+            </div>
+            <div class="col-sm-6 nopadding margin_left">
+                <div class="form-group">
+                    <div class="example">
+                        <table id="vswr_bts_cabinet" class="table">
+                            <thead>
+                                <tr>
+                                    <th data-name="cell_id_bts_cabinet">Cell ID</th>
+                                    <th data-name="cell_name_bts_cabinet">Cell Name</th>
+                                    <th data-name="cell_value_bts_cabinet">Cell Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!--#endregion-->
+
+        <!--#region BoardCards-->
+        @*------------Board Cards---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Board Cards</label>
+                </div>
+            </div>
+            <div class="col-sm-6 nopadding margin_left">
+                <div class="form-group">
+                    <div class="example">
+                        <table id="board_cards_bts_cabinet" class="table">
+                            <thead>
+                                <tr>
+                                    <th data-name="board_name">Board Name</th>
+                                    <th data-name="board_status">Board Status</th>
+                                    <th data-name="board_quantity">Board Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                     
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--#endregion-->
+
+        <div class="form-group">
+            <div class="">
+                <button id="save_bts_cabinet" name="save_bts_cabinet" onclick="SaveBtsCabinetDataAudit()" class="btn btn-primary mybutton">Save</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="editor-modal-vswr-bts-cabinet" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content form-horizontal" id="editor-vswr-bts-cabinet">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="editor-title-vswr-bts-cabinet" style="display:inline-block !important">Add Row</h4>
+                </div>
+                <div class="modal-body">
+                    @*<input type="number" id="cell_id" name="cell_id" class="hidden" />*@
+                    <div class="form-group">
+                        <label for="Cell_ID" class="col-sm-3 control-label">Cell ID</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control myinput requiredinput" id="cell_id_bts_cabinet" name="cell_id_bts_cabinet" placeholder="Cell ID" disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Cell_Name" class="col-sm-3 control-label">Cell Name</label>
+                        <div class="col-sm-9">
+                            <select type="text" class="form-control myinput requiredinput" id="cell_name_bts_cabinet" name="cell_name_bts_cabinet" placeholder="Cell Name"></select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label for="value" class="col-sm-3 control-label">Value</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control myinput requiredinput" id="cell_value_bts_cabinet" name="cell_value_bts_cabinet" placeholder="Value">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editor-modal-board-cards-bts-cabinet" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content form-horizontal" id="editor-board-cards-bts-cabinet">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="editor-title-board-cards-bts-cabinet">Add Row</h4>
+                </div>
+                <div class="modal-body">
+                    @*<input type="number" id="cell_id" name="cell_id" class="hidden" />*@
+                    <div class="form-group">
+                        <label for="board_name" class="col-sm-3 control-label">Board Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control myinput requiredinput" id="board_name" name="board_name" placeholder="Board Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="board_status" class="col-sm-3 control-label">Board Status</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control myinput requiredinput" id="board_status" name="board_status" placeholder="Board Status">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="board_quantity" class="col-sm-3 control-label">Board Quantity</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control myinput requiredinput" id="board_quantity" name="board_quantity" placeholder="Board Quantity">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!--/.Panel 1-->
+<!-- #endregion -->

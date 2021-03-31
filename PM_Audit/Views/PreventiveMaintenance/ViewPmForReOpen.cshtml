@@ -1,0 +1,504 @@
+﻿@{
+    ViewBag.Title = "View PM";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>SiteName</th>
+                @*<th>BSCName</th>
+                    <th>EquipmentVendor</th>
+                    <th>OutsourceVendor</th>
+                    <th>NOCPerson</th>
+                    <th>RemotePerson</th>*@
+                <th>StartTime</th>
+                <th>EndTime</th>
+                @*<th>Comments</th>*@
+                <th>Status</th>
+                @*<th>AdditionalInfo</th>
+                    <th>ScheduleStartTime</th>
+                    <th>BeforeAlarms</th>
+                    <th>AfterAlarms</th>
+                    <th>Region</th>
+                    <th>AttachmentPath</th>
+                    <th>Questions</th>
+                    <th>WOID</th>
+                    <th>IsGensetToggled</th>
+                    <th>IsIntruderToggled</th>
+                    <th>LowVoltageReported</th>
+                    <th>ACsWorking</th>
+                    <th>PowerMeterReading</th>
+                    <th>PowerMeterReadingStatus</th>
+                    <th>PowerMeterSerial</th>*@
+                <th>PMTypes</th>
+                <th>CloseStatus</th>
+                <th>ApproveStatus</th>
+           @*<th></th>*@
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var siteCodeForPM = "";
+        var PMType = "";
+        var PM_ID = "";
+        var tbl_PMGrid;
+        $(document).ready(function () {
+            GetPMDataforReOpen();
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                "order":[[1,"desc"]],
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+                      { "data": "Opened_Date", "orderable": true },
+                      { "data": "Closed_Date", "orderable": true },
+                      { "data": "PM_Status", "orderable": true },
+                      { "data": "Type", "orderable": true },
+                      { "data": "Closed_Status", "orderable": true },
+                      { "data": "Approval_Remarks", "orderable": true },
+                    //{
+                        //"targets": -1,
+                        //"data": null,
+                        //render: function (data, type, row) {
+                        //    if (row.PM_Status == "Open" && row.ReOpened == false) {
+                        //        return '<button onclick="VerifyLocationAndGetPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary mybutton">Proceed</button>';
+                        //    }
+                        //    else {
+                        //        return '';
+                        //    }
+                        //}
+                   // },
+                     {
+                         "targets": -1,
+                         "data": null,
+                         render: function (data, type, row) {
+                             debugger;
+                             var start = new Date(data.Approval_Date),
+                             end = new Date();
+                             diff = Math.ceil(Math.abs(start - end) / (1000 * 60 * 60 * 24));
+
+                             if (row.Approval_Remarks == "REJECTED" && diff < 7 && row.ReOpened == false) {
+                                 return '<button onclick="VerifyLocationAndReOpenRejectedPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')"class="btn btn-primary mybutton">Re-Open</button>';
+                             }
+                             else {
+                                 return '';
+                             }
+                         }
+                     },
+                      {
+                          "targets": -1,
+                          "data": null,
+                          render: function (data, type, row) {
+
+                              if (row.PM_Status == "Open" && row.ReOpened == true) {
+                                  return '<button onclick="VerifyLocationAndReopenPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary mybutton">Proceed Re-Open</button>';
+                              }
+                              else {
+                                 return '';
+                              }
+                          }
+                      }
+                ],
+
+            });
+            $('#pmgridview tbody').on('click', '.closePm', function () {
+                // debugger;
+                var data = tbl_PMGrid.row($(this).parents('tr')).data();
+                if (data.PM_Status == "Closed") {
+                    return false;
+                }
+                $('#formDiv').html('');
+                var form = document.createElement("form");
+                form.setAttribute("method", 'POST');
+                if (data.Type == "Telco") {
+                    form.setAttribute("action", '/PreventiveMaintenance/ClosePM');
+                }
+                else {
+                    form.setAttribute("action", '/PreventiveMaintenance/ClosePM_NonTelco');
+                }
+
+                var hiddenFieldSiteCode = document.createElement("input");
+                hiddenFieldSiteCode.setAttribute("type", "hidden");
+                hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+                hiddenFieldSiteCode.setAttribute("value", data.SiteCode);
+                form.appendChild(hiddenFieldSiteCode);
+
+                var hiddenFieldPmType = document.createElement("input");
+                hiddenFieldPmType.setAttribute("type", "hidden");
+                hiddenFieldPmType.setAttribute("name", 'PM_Type');
+                hiddenFieldPmType.setAttribute("value", data.Type);
+                form.appendChild(hiddenFieldPmType);
+
+                var hiddenFieldPmID = document.createElement("input");
+                hiddenFieldPmID.setAttribute("type", "hidden");
+                hiddenFieldPmID.setAttribute("name", 'PM_ID');
+                hiddenFieldPmID.setAttribute("value", data.ID);
+                form.appendChild(hiddenFieldPmID);
+
+
+
+                document.getElementById('formDiv').appendChild(form);
+                form.submit();
+
+            });
+        });
+
+        //Get PM Region
+        function getPM() {
+            // debugger;
+            //var data = tbl_PMGrid.row($(this).parents('tr')).data();
+            //if (data.PM_Status == "Closed") {
+            //    return false;
+            //}
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            if (PMType == "Telco") {
+                form.setAttribute("action", '/PreventiveMaintenance/ClosePM');
+            }
+            else {
+                form.setAttribute("action", '/PreventiveMaintenance/ClosePM_NonTelco');
+            }
+
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", siteCodeForPM);
+            form.appendChild(hiddenFieldSiteCode);
+
+            var hiddenFieldPmType = document.createElement("input");
+            hiddenFieldPmType.setAttribute("type", "hidden");
+            hiddenFieldPmType.setAttribute("name", 'PM_Type');
+            hiddenFieldPmType.setAttribute("value", PMType);
+            form.appendChild(hiddenFieldPmType);
+
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'PM_ID');
+            hiddenFieldPmID.setAttribute("value", PM_ID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+
+        function GetPMDataforReOpen() {
+              debugger;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getPMDataforReOpen", "", OnSuccessGetPMDataforReOpen)
+        }
+        function OnSuccessGetPMDataforReOpen(results) {
+            // debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results, function (i, item) {
+                tbl_PMGrid.row.add(results[i]);
+            });
+            tbl_PMGrid.draw();
+        }
+
+        //// LAtt Long Check
+
+        var Latt = 0;
+        var Long = 0;
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+
+        function VerifyLocationAndGetPM(sitecode, type, PmID) {
+            siteCodeForPM = sitecode;
+            PMType = type;
+            PM_ID = PmID;
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            if (siteCodeForPM) {
+                var data = new Object();
+                data.SiteCode = siteCodeForPM;
+                data.Latt = Latt;
+                data.Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/IsSiteLocationValid", data, OnSuccessGetCoordinates)
+            }
+        }
+        function showError(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    showPosition(position);
+                    return;
+                }
+                else {
+                    error = "User denied the request for Geolocation."
+                }
+            }
+            else if (err.code == 2) {
+                error = "Location information is unavailable."
+            }
+            else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            }
+            else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+        function OnSuccessGetCoordinates(res) {
+            if (res == "valid") {
+                getPM();
+            }
+            else {
+                alertify.alert('Failed', 'Invalid location.');
+            }
+
+        }
+        /// LAtt Long Check
+
+        function VerifyLocationAndReopenPM(sitecode, type, PmID) {
+            siteCodeForPM = sitecode;
+            PMType = type;
+            PM_ID = PmID;
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            if (siteCodeForPM) {
+                var data = new Object();
+                data.SiteCode = siteCodeForPM;
+                data.Latt = Latt;
+                data.Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/IsSiteLocationValid", data, OnSuccessGetCoordinates)
+            }
+        }
+        function showError(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    showPosition(position);
+                    return;
+                }
+                else {
+                    error = "User denied the request for Geolocation."
+                }
+            }
+            else if (err.code == 2) {
+                error = "Location information is unavailable."
+            }
+            else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            }
+            else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+        function OnSuccessGetCoordinates(res) {
+            if (res == "valid") {
+                ReOpenPM();
+            }
+            else {
+                alertify.alert('Failed', 'Invalid location.');
+            }
+
+        }
+        /// LAtt Long Check
+        
+
+        function ReOpenPM() {
+            debugger;
+            //$('#pmgridview tbody').on('click', function () {
+              //  var data = tbl_PMGrid.row($(this).parents('tr')).data();
+                //if (data.PM_Status == "Closed") {
+                //    return false;
+                //}
+                $('#formDiv').html('');
+                var form = document.createElement("form");
+                form.setAttribute("method", 'POST');
+                if (PMType == "Telco") {
+                    form.setAttribute("action", '/PreventiveMaintenance/ReOpenPM');
+                }
+                else {
+                    form.setAttribute("action", '/PreventiveMaintenance/ReOpenPM_NonTelco');
+                }
+
+
+                var hiddenFieldSiteCode = document.createElement("input");
+                hiddenFieldSiteCode.setAttribute("type", "hidden");
+                hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+                hiddenFieldSiteCode.setAttribute("value", siteCodeForPM);
+                form.appendChild(hiddenFieldSiteCode);
+
+                var hiddenFieldPmType = document.createElement("input");
+                hiddenFieldPmType.setAttribute("type", "hidden");
+                hiddenFieldPmType.setAttribute("name", 'PM_Type');
+                hiddenFieldPmType.setAttribute("value", PMType);
+                form.appendChild(hiddenFieldPmType);
+
+                var hiddenFieldPmID = document.createElement("input");
+                hiddenFieldPmID.setAttribute("type", "hidden");
+                hiddenFieldPmID.setAttribute("name", 'PM_ID');
+                hiddenFieldPmID.setAttribute("value", PM_ID);
+                form.appendChild(hiddenFieldPmID);
+
+
+                document.getElementById('formDiv').appendChild(form);
+                form.submit();
+
+            }
+        //);
+        //}
+
+        /// LAtt Long Check
+
+        function VerifyLocationAndReOpenRejectedPM(sitecode, type, PmID) {
+            debugger;
+            siteCodeForPM = sitecode;
+            PMType = type;
+            PM_ID = PmID;
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPositionForReOpen, showErrorForReOpen, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+        function showPositionForReOpen(position) {
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            if (siteCodeForPM) {
+                var data = new Object();
+                data.SiteCode = siteCodeForPM;
+                data.Latt = Latt;
+                data.Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/IsSiteLocationValid", data, OnSuccessLocationResult)
+            }
+        }
+        function showErrorForReOpen(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    // showPosition(position);
+                    showPositionForReOpen(position);
+                    return;
+                }
+                else {
+                    error = "User denied the request for Geolocation."
+                }
+            }
+            else if (err.code == 2) {
+                error = "Location information is unavailable."
+            }
+            else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            }
+            else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+        function OnSuccessLocationResult(res) {
+            debugger;
+            if (res == "valid") {
+                ReOpenRejectedPM(siteCodeForPM, PMType,PM_ID);
+            }
+            else {
+                alertify.alert('Failed', 'Invalid location.');
+            }
+
+        }
+        /// LAtt Long Check
+
+
+        function ReOpenRejectedPM(sitecode, type, PmID) {
+            debugger;
+            var data = new Object();
+            data.siteCode = sitecode;
+            data.PM_Type = type;
+            data.PM_ID = PmID;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/ReOpenPM", data, OnSuccessReOpen)
+
+        }
+        function OnSuccessReOpen(res) {
+            debugger;
+            if (res == "Success") {
+                location.reload();
+            }
+            else {
+                alertify.alert('Failed', res);
+            }
+
+        }
+
+    </script>
+}

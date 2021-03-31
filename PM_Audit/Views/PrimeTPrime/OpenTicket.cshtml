@@ -1,0 +1,430 @@
+﻿
+@{
+    ViewBag.Title = "Open Ticket";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        var ttStartTime;
+    $(document).ready(function () {
+        GetSiteFilters();
+        $(".selector").flatpickr({
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            onChange: function () {
+                //console.log("Event triggered");
+                debugger;
+                var selectedDate = $("#tt_issue_start_time").val();
+                //var toUTC = new Date(selectedDate).toUTCString();
+                ttStartTime = new Date(selectedDate).toISOString();
+            }
+        }
+        );
+        //var value = $('input[name=optradio]:checked').val();
+        //console.log(value);
+        $('input:checkbox').on('click', function (e) {
+            var $box = $(this);
+            if ($box.is(":checked")) {
+                var group = "input:checkbox[name='" + $box.attr("name") + "']";
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+                $(group).removeClass("requiredinput");
+            }
+            else {
+                e.preventDefault();
+            }
+            var value = $box.val();
+
+            if (value == "Wapda Faults") {
+                $("#category_row").show();
+                $("#reason_row").hide();
+                $("#dd_category").addClass("requiredinput");
+                $("#text_reason").removeClass("requiredinput");
+                $("#text_reason").removeClass("invalid");
+                debugger;
+                var catValue = $("#dd_category").val();
+                console.log(catValue);
+                if (catValue == "Major") {
+                    $("#major_issue_row").show();
+                    $("#minor_issue_row").hide();
+                    $("#dd_category_major").addClass("requiredinput");
+                    $("#dd_category_minor").removeClass("requiredinput");
+                    $("#dd_category_minor").removeClass("invalid");
+                }
+                else if (catValue == "Minor") {
+                    $("#minor_issue_row").show();
+                    $("#major_issue_row").hide();
+                    $("#dd_category_major").removeClass("requiredinput");
+                    $("#dd_category_major").removeClass("invalid");
+                    $("#dd_category_minor").addClass("requiredinput");
+                }
+                else {
+                    $("#dd_category_major").addClass("requiredinput");
+                    $("#dd_category_minor").addClass("requiredinput");
+                }
+                //$("#major_issue_row").hide();
+                //$("#minor_issue_row").hide();
+                debugger;
+                var dropDown = document.getElementById("category_row");
+                dropDown.selectedIndex = 0;
+                //$("#category_row").selectedIndex = 0;
+            }
+            else {
+                $("#reason_row").show();
+                $("#category_row").hide();
+                $("#major_issue_row").hide();
+                $("#minor_issue_row").hide();
+                var dropDown = document.getElementById("category_row");
+                dropDown.selectedIndex = 0;
+                $("#text_reason").addClass("requiredinput");
+                $("#dd_category").removeClass("requiredinput");
+                $("#dd_category").removeClass("invalid");
+                $("#dd_category_major").removeClass("requiredinput");
+                $("#dd_category_minor").removeClass("requiredinput");
+                $("#dd_category_major").removeClass("invalid");
+                $("#dd_category_minor").removeClass("invalid");
+
+            }
+
+        })
+        //$('input[name=optradio]').change(function () {
+
+        //    var value = $('input[name=optradio]:checked').val();
+        //    if (value == "Wapda Faults") {
+        //        $("#category_row").show();
+        //        $("#reason_row").hide();
+        //        $("#dd_category").addClass("requiredinput");
+        //        $("#text_reason").removeClass("requiredinput");
+        //        $("#text_reason").removeClass("invalid");
+        //        debugger;
+        //        var catValue = $("#dd_category").val();
+        //        console.log(catValue);
+        //        if (catValue == "Major") {
+        //            $("#major_issue_row").show();
+        //            $("#minor_issue_row").hide();
+        //            $("#dd_category_major").addClass("requiredinput");
+        //            $("#dd_category_minor").removeClass("requiredinput");
+        //            $("#dd_category_minor").removeClass("invalid");
+        //        }
+        //        else if (catValue == "Minor") {
+        //            $("#minor_issue_row").show();
+        //            $("#major_issue_row").hide();
+        //            $("#dd_category_major").removeClass("requiredinput");
+        //            $("#dd_category_major").removeClass("invalid");
+        //            $("#dd_category_minor").addClass("requiredinput");
+        //        }
+        //        else {
+        //            $("#dd_category_major").addClass("requiredinput");
+        //            $("#dd_category_minor").addClass("requiredinput");
+        //        }
+        //        //$("#major_issue_row").hide();
+        //        //$("#minor_issue_row").hide();
+        //        debugger;
+        //        var dropDown = document.getElementById("category_row");
+        //        dropDown.selectedIndex = 0;
+        //        //$("#category_row").selectedIndex = 0;
+        //    }
+        //    else {
+        //        $("#reason_row").show();
+        //        $("#category_row").hide();
+        //        $("#major_issue_row").hide();
+        //        $("#minor_issue_row").hide();
+        //        var dropDown = document.getElementById("category_row");
+        //        dropDown.selectedIndex = 0;
+        //        $("#text_reason").addClass("requiredinput");
+        //        $("#dd_category").removeClass("requiredinput");
+        //        $("#dd_category").removeClass("invalid");
+        //        $("#dd_category_major").removeClass("requiredinput");
+        //        $("#dd_category_minor").removeClass("requiredinput");
+        //        $("#dd_category_major").removeClass("invalid");
+        //        $("#dd_category_minor").removeClass("invalid");
+
+        //    }
+        //});
+        $("#dd_category").change(function () {
+            var value = $("#dd_category").val();
+            if (value == "Minor") {
+                $("#major_issue_row").hide();
+                $("#minor_issue_row").show();
+                $("#dd_category_major").removeClass("requiredinput");
+                $("#dd_category_major").removeClass("invalid");
+                $("#dd_category_minor").addClass("requiredinput");
+            }
+            else {
+                $("#major_issue_row").show();
+                $("#minor_issue_row").hide();
+                $("#dd_category_major").addClass("requiredinput");
+                $("#dd_category_minor").removeClass("requiredinput");
+                $("#dd_category_minor").removeClass("invalid");
+            }
+        });
+        date = moment().format("YYYY-MM-DD HH:mm");
+        $("#tt_issue_start_time").val(date);
+        ttStartTime = new Date($("#tt_issue_start_time").val()).toISOString();
+    });
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+        function SaveTicket() {
+            if (!validateRequiredInput('#tt_open_div')) {
+                return false;
+            }
+            debugger;
+            ticketStatus = $("#dd_tt_status").val();
+            siteCode = $("#dd_site_code").val();
+            siteStatus = $("#dd_site_status").val();
+            mainIssueType = $('input[name=optradio]:checked').val();
+            issuestarttime = ttStartTime;
+            category = "";
+            subIssue = "";
+            reason = "";
+            if (mainIssueType == "Wapda Faults") {
+                category = $("#dd_category").val();
+                if (category == "Major") {
+                    subIssue = $("#dd_category_major").val();
+                }
+                else {
+                    subIssue = $("#dd_category_minor").val();
+                }
+            }
+            else {
+                reason = $("#text_reason").val();
+            }
+            var obj = { sitecode: siteCode, sitestatus: siteStatus, issue: mainIssueType, category: category, wapdafaults: subIssue, reason: reason, ttstatus: ticketStatus, issuestarttime: issuestarttime };
+            console.log(obj);
+            $.ajax({
+                url: "/PrimeTPrime/SaveTicket",
+                method: "POST",
+                data: obj,
+                success: OnSuccessSaveTicket
+            })
+            @*ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SavePmPlanningParameters", obj, OnSuccessSavePmPlanningParameter, "POST", false)
+            console.log(obj);*@
+        }
+        function OnSuccessSaveTicket(res) {
+            debugger;
+            if (res.response != "success") {
+                var obj = { ExceptionMessage: 'Maximo Error', StackTrace: res.response }
+                console.log(obj);
+                //ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/SaveException", obj, OnSuccessSaveException, "POST", false)
+                alertify.alert("Alert", "Failed.");
+            }
+            else {
+                //alertify.alert("Success", "Pending PM has been Approved Successfully.");
+                alertify.alert('Success', 'Ticket has been Opened Successfully', function () { alertify.success('Ok'); location.href = '@Url.Action("Index","PrimeTPrime")'; });
+
+            }
+        }
+
+        function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+        }
+        }
+        function OnSuccessSaveException(result){
+
+        }
+    </script>
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<div class="container">
+    <div class="card" id="tt_open_div">
+        @*<div class="card-header box-header">
+                <h3 style="color:white">Prime T-Prime Ticket</h3>
+            </div>*@
+        <div class="card-body box-body">
+            <div class="row">
+                <div class="col-md-2 col-sm-6">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>TT Status</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        @*<input type="text" readonly="readonly" class="form-control requiredinput" id="txt_tt_status">*@
+                        <select id="dd_tt_status" class="form-control mydropdown requiredinput" disabled="disabled">
+                            <option>Select ..</option>
+                            <option selected>Open</option>
+                            <option>Close</option>
+                            <option>Mark for closure</option>
+                            <option>Reopen</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Site Code<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select class="form-control mydropdown requiredinput" id="dd_site_code">
+                            <option value="" disabled selected hidden>Select ..</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Site Status<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_site_status" class="form-control mydropdown requiredinput">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>Prime</option>
+                            <option>T-Prime</option>
+                            <option>Standby</option>
+                            <option>CP Only</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="radio-inline radio-inline-tt tt_checkbox_label"><input type="checkbox" name="optradio" value="Wapda Faults" style="display:inline" class="tt_checkbox requiredinput">Wapda Faults</label>
+                        <label class="radio-inline radio-inline-tt tt_checkbox_label"><input type="checkbox" name="optradio" value="Others" style="display:inline" class="tt_checkbox requiredinput">Others</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="reason_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Reason<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <textarea rows="5" cols="55" id="text_reason"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="category_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Category<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category" class="form-control mydropdown requiredinput">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>Major</option>
+                            <option>Minor</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="major_issue_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Major Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category_major" class="form-control mydropdown requiredinput">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>HT Line (11 KVA) Fault</option>
+                            <option>HT Pole (11 KVA) Pole Tilted/Damaged/Relocation</option>
+                            <option>HT Jumper Faulty/Broken</option>
+                            <option>Transformer Fault</option>
+                            <option>Transformer Stolen</option>
+                            <option>Transformer Relocation/Shifting</option>
+                            <option>HT Bush Fault</option>
+                            <option>E-Meter Faulty</option>
+                            <option>E-Meter Burnt</option>
+                            <option>E-Meter Stolen</option>
+                            <option>MDI Box Open</option>
+                            <option>D-Fuse Broken/Short</option>
+                            <option>Power Cable Burnt/Damaged</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="minor_issue_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Minor Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category_minor" class="form-control mydropdown requiredinput">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>D-Fuse Burnt</option>
+                            <option>D-Link Burnt</option>
+                            <option>LT Bush Fault</option>
+                            <option>Neutral Missing from E-Meter</option>
+                            <option>Neutral Missing from Transformer</option>
+                            <option>Phase Missing from LT Cable/TF</option>
+                            <option>Phase Missing from E-Meter</option>
+                            <option>Transformer Earthing Issue</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tt_start_time_row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>TT Start Time<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input data-format="MM/dd/yyyy HH:mm:ss PP" type="text" id="tt_issue_start_time" class="selector form-control" />
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mybutton btmbuttom" onclick="SaveTicket()" style="float:right">Save</button>
+        </div>
+    </div>
+</div>
+

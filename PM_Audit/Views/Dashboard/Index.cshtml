@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+<div class="container">
+    <section class="content">
+        @if (ViewBag.Permissions.Contains("perm_preventive_maintenance_main"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("index","PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-cog"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Preventive Maintenance</span>
+                        </div>
+                    </a>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+        }
+
+        @if (ViewBag.Permissions.Contains("perm_alarm_management_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("index","AlarmManagement")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-bell"></i></span>
+
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Alarm Management</span>
+                        </div>
+                    </a> <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+        }
+        @*</div>*@
+
+        @*<div class="row form-group row-centered">*@
+        <!-- /.col -->
+        @if (ViewBag.Permissions.Contains("perm_monthly_schedule_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("index","ScheduleManagement")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-calendar-o"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Monthly Schedule</span>
+                            @*<span class="info-box-number">13,648</span>*@
+                        </div>
+                        <!-- /.info-box-content -->
+                    </a>
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+        <!-- /.col -->
+        <!-- /.row -->
+        <!-- =========================================================== -->
+        @*<div class="row">*@
+        @if (ViewBag.Permissions.Contains("perm_reports_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("index","Reports")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-pencil-square-o"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Extract Reports</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </a>
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+        @*</div>*@
+
+        <!-- /.col -->
+        @*<div class="row form-group row-centered">*@
+        @if (ViewBag.Permissions.Contains("perm_audit_management_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("index","Audit")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-calculator"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Audit Management</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </a>
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+        <!-- /.col -->
+        @if (ViewBag.Permissions.Contains("perm_inventory_management_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("Index","InventoryManagement")" class="no-hover">
+                        <span class="info-box-icon "><i class="fa fa-tags"></i></span>
+
+                        <div class="info-box-content ">
+
+                            <span class="info-box-text text_wrap">Inventory Management</span>
+
+                        </div>
+                    </a>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+        @if (ViewBag.Permissions.Contains("perm_prime_tprime_main"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("Index","PrimeTPrime")" class="no-hover">
+                        <span class="info-box-icon "><i class="fa fa-tags"></i></span>
+
+                        <div class="info-box-content ">
+
+                            <span class="info-box-text text_wrap">Prime TPrime</span>
+
+                        </div>
+                    </a>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+        <!-- /.col -->
+        <script type="text/javascript">
+            //if ("authToken" in localStorage) {
+            //}
+            //else {
+            //  var URL = 'http://localhost:14529/token';
+            var URL = '@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]';
+            URL = URL + 'token';
+            debugger;
+            var obj = new Object();
+            obj.username = "@ViewBag.username";
+            obj.password = "@ViewBag.password";
+            obj.grant_type = "password";
+            if (obj.username != "" && obj.password) {
+                jQuery.ajax({
+                    type: "POST",
+                    url: URL,
+                    data: obj,
+                    async: false,
+                    cache: false,
+                    timeout: 100,
+                    dataType: "JSON",
+                    contentType: "application/x-www-form-urlencoded",
+                    success: function (response) {
+                        debugger;
+                        localStorage.removeItem('authToken');
+                        localStorage.clear();
+                        localStorage.setItem('authToken', response.access_token);
+                    }
+                });
+            }
+            else {
+
+            }
+            //   }
+
+        </script>
+    </section>
+</div>
+
+
+

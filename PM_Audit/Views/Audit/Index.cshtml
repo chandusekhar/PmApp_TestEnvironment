@@ -1,0 +1,295 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+
+        var siteID = $("#txt_siteID").val();
+        var siteType = $("#dd_site_type").val();
+        var AuditType = '';
+
+        function validateRequiredInput(selector) {
+            debugger;
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').each(function() {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                } else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                alertify.alert('Alert', 'Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+
+
+        function OpenSitePMDetails() {
+            debugger;
+            if (!validateRequiredInput('#validate_modal')) {
+                alertify.alert('Alert', 'Please Fill mandatory fields!');
+                return false;
+            }
+
+            if (AuditType === "General") {
+                var obj = new Object();
+                obj.SiteCode = $("#txt_siteID").val();
+                obj.AuditType = $("#dd_site_type").val();
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',
+                    "api/Audit/OpenGeneralAudit",
+                    obj,
+                    OnSuccessOpenGeneralAudit);
+            }
+            if (AuditType === "PM") {
+                $('#formDiv').html('');
+                var form = document.createElement("form");
+                form.setAttribute("method", 'POST');
+                form.setAttribute("action", '/Audit/ViewPmDetailsListForAudit');
+                var hiddenFieldSiteCode = document.createElement("input");
+                hiddenFieldSiteCode.setAttribute("type", "hidden");
+                hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+                hiddenFieldSiteCode.setAttribute("value", $("#txt_siteID").val().toUpperCase());
+                form.appendChild(hiddenFieldSiteCode);
+                var hiddenFieldPmType = document.createElement("input");
+                hiddenFieldPmType.setAttribute("type", "hidden");
+                hiddenFieldPmType.setAttribute("name", 'PM_Type');
+                hiddenFieldPmType.setAttribute("value", $("#dd_site_type").val());
+                form.appendChild(hiddenFieldPmType);
+                document.getElementById('formDiv').appendChild(form);
+                form.submit();
+
+            }
+
+
+        }
+
+        function OnSuccessOpenGeneralAudit(res) {
+            debugger;
+            if (res.indexOf("Success") != -1) {
+
+                var Audit_ID = res.split('-')[1];
+                var Site_Code = $("#txt_siteID").val().toUpperCase();
+                var Audit_Type = $("#dd_site_type").val();
+
+                $('#formDiv').html('');
+                var form = document.createElement("form");
+                form.setAttribute("method", 'POST');
+                if (Audit_Type == "Telco") {
+                    form.setAttribute("action", '/Audit/GeneralAuditTelco');
+                } else {
+                    form.setAttribute("action", '/Audit/GeneralAuditNonTelco');
+                }
+
+                var hiddenFieldSiteCode = document.createElement("input");
+                hiddenFieldSiteCode.setAttribute("type", "hidden");
+                hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+                hiddenFieldSiteCode.setAttribute("value", Site_Code);
+                form.appendChild(hiddenFieldSiteCode);
+
+                var hiddenFieldPmType = document.createElement("input");
+                hiddenFieldPmType.setAttribute("type", "hidden");
+                hiddenFieldPmType.setAttribute("name", 'Audit_ID');
+                hiddenFieldPmType.setAttribute("value", Audit_ID);
+                form.appendChild(hiddenFieldPmType);
+                document.getElementById('formDiv').appendChild(form);
+                form.submit();
+
+            } else {
+                alertify.alert('Failed', 'Something went wrong. Please try again.');
+            }
+        }
+        //// LAtt Long Check
+
+        var Latt = 0;
+        var Long = 0;
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+        function VerifyLocationAndOpenSitePMDetails() {
+            if (!validateRequiredInput('#validate_modal')) {
+                alertify.alert('Alert', 'Please Fill mandatory fields!');
+                return false;
+            }
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            var siteID = $("#txt_siteID").val();
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            if (siteID) {
+                var data = new Object();
+                data.SiteCode = siteID;
+                data.Latt = Latt;
+                data.Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',
+                    "api/UtilityController/IsSiteLocationValid",
+                    data,
+                    OnSuccessGetCoordinates)
+            }
+        }
+
+        function showError(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    showPosition(position);
+                    return;
+                } else {
+                    error = "User denied the request for Geolocation."
+                }
+            } else if (err.code == 2) {
+                error = "Location information is unavailable."
+            } else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            } else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+        function OnSuccessGetCoordinates(res) {
+            if (res == "valid") {
+                OpenSitePMDetails();
+            } else {
+                alertify.alert('Failed', 'Invalid location.');
+            }
+
+        }
+
+
+        /// LAtt Long Check
+
+
+        function performGeneralAudit() {
+            AuditType = 'General';
+            $('#btn_audit').text('Open Audit');
+        }
+
+        function performPMAudit() {
+            AuditType = 'PM';
+            $('#btn_audit').text('View Site PM Details');
+        }
+
+
+    </script>
+
+}
+
+<div class="container">
+
+    <section class="content">
+
+
+        <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+            <div class="info-box narrow-2 bg_tile_colour">
+                <a href="#" class="no-hover" onclick="performPMAudit()"  data-toggle="modal" data-target="#modal-default">
+                    <span class="info-box-icon"><i class="fa fa-tags"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text text_wrap">Perform PM Audit</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+            <div class="info-box narrow-2 bg_tile_colour">
+                <a href="#" class="no-hover" onclick="performGeneralAudit()" data-toggle="modal" data-target="#modal-default">
+                    <span class="info-box-icon"><i class="fa fa-tags"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text text_wrap">Perform General Audit</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+            <div class="info-box narrow-2 bg_tile_colour">
+                <a href="@Url.Action("Audit_Reports", "Audit")" class="no-hover">
+                    <span class="info-box-icon"><i class="fa fa-book"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text text_wrap">Audit Reports</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="hidden" id="formDiv"></div>
+    </section>
+</div>
+
+
+<div class="modal fade SiteOpenModal" id="modal-default">
+    <div class="modal-dialog left-initial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Site ID</h4>
+            </div>
+            <div class="modal-body" id="validate_modal">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-5 col-sm-6 col-xs-7 col-left-margin top-margin-dialog">
+                                <input id="txt_siteID" type="text" class="form-control input-lg requiredinput" placeholder="Enter Site ID">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 col-sm-6 col-xs-7 col-left-margin top-margin-dialog">
+                                <div class="form-group">
+                                    <select class="form-control mydropdown dropdown_style requiredinput" id="dd_site_type">
+                                        <option value="" disabled selected hidden>Select Site Type</option>
+                                        <option>Telco</option>
+                                        <option>NON-Telco</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn_audit" onclick="VerifyLocationAndOpenSitePMDetails()" class="btn btn-primary">View Site PM Details</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
+

@@ -1,0 +1,383 @@
+﻿
+@{
+    ViewBag.Title = "Prime TPrime Report";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+    var tbl_ReportsGrid;
+    $(document).ready(function () {
+        GetSiteFilters();
+
+        $("#txt_from_date").datepicker();
+        $("#txt_to_date").datepicker();
+
+        $(".date-pick").datepicker('setDate', new Date());
+
+
+        tbl_ReportsGrid = $('#reportsgridview').DataTable({
+            "order": [[1, "desc"]],
+            responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": true,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  { "data": "sitecode", "orderable": true },
+                //{ "data": "issuestarttime", "orderable": true },
+                {
+                    "data": null, render: function (data, type, row) {
+                        var formattedDate = moment(row.issuestarttime).format("YYYY-MM-DD HH:mm");
+                        if (formattedDate == "Invalid date") {
+                            return "";
+                        }
+                        else {
+                        return formattedDate;
+                        }
+                    },
+                    "orderable": true
+                },
+                {
+                    "data": null, render: function (data, type, row) {
+                        var formattedDate = moment(row.issueclosetime).format("YYYY-MM-DD HH:mm");
+                        if (formattedDate == "Invalid date") {
+                            return "";
+                        }
+                        else {
+                            return formattedDate;
+                        }
+                    },
+                    "orderable": true,
+                },
+                //{ "data": "issueclosetime", "orderable": true },
+                { "data": "sitestatus", "orderable": true },
+                { "data": "ttstatus", "orderable": true },
+                { "data": "rbu", "orderable": true },
+                { "data": "commregion", "orderable": true },
+                { "data": "mbu", "orderable": true },
+                { "data": "createdby", "orderable": true },
+                { "data": "approver", "orderable": true },
+                { "data": "assignedto", "orderable": true },
+                { "data": "approvalstatus", "orderable": true },
+                { "data": "aging", "orderable": true },
+                { "data": "issue", "orderable": true },
+                { "data": "category", "orderable": true },
+                { "data": "wapdafaults", "orderable": true },
+
+
+                { "data": "reason", "orderable": true },
+                { "data": "actiontaken", "orderable": true },
+                { "data": "rejectioncomments", "orderable": true },
+
+            ],
+
+        });
+    });
+
+    function GetTickets() {
+        debugger;
+        var obj = new Object();
+
+        obj.rbu = $("#dd_rbu").val();
+        obj.issueStartTimeFrom = $("#txt_from_date").val();
+        obj.issueStartTimeTo = $("#txt_to_date").val();
+        obj.sitecode = $("#dd_site_code").val();
+        obj.ttstatus = $("#dd_status").val();
+        obj.mbu = $("#dd_mbu").val();
+        obj.commregion = $("#dd_region").val();
+        obj.approvalstatus = $("#dd_approve_status").val();
+
+        var formattedDateIssueStartFrom = moment(obj.issueStartTimeFrom).format("YYYY-MM-DD");
+        var formattedDateIssueCloseTo = moment(obj.issueStartTimeTo).format("YYYY-MM-DD");
+        obj.issueStartTimeFrom = formattedDateIssueStartFrom;
+        obj.issueStartTimeTo = formattedDateIssueCloseTo;
+        //console.log(isoDate);
+        $.ajax({
+            url: "/PrimeTPrime/GetReportData",
+            method: "POST",
+            data: obj,
+            success: OnSuccessGetTicketsData
+        });
+        @*ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetPmReport", obj, OnSuccessGetPMData)*@
+    }
+    function OnSuccessGetTicketsData(results) {
+        if (results.success == true) {
+            debugger;
+            tbl_ReportsGrid.clear().draw();
+            $.each(results.Data, function (i, item) {
+                debugger;
+                tbl_ReportsGrid.row.add(results.Data[i]);
+            });
+            tbl_ReportsGrid.draw();
+        }
+        else {
+            var obj = { ExceptionMessage: 'Maximo Error', StackTrace: results.data }
+            console.log(obj);
+                //ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/SaveException", obj, OnSuccessSaveException, "POST", false)
+                alertify.alert("Alert", "Failed to fetch tickets");
+        }
+
+    }
+    function OnSuccessSaveException(result) {
+
+    }
+    function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRBU) {
+                $('#dd_rbu').select2({
+                    data: data.ListRBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListMBU) {
+                $('#dd_mbu').select2({
+                    data: data.ListMBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRegion) {
+                $('#dd_region').select2({
+                    data: data.ListRegion,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListOSV) {
+                $('#dd_osv').select2({
+                    data: data.ListOSV,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            $('#dd_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_closed_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_approve_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_rejection_status_auditor').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_reopened').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+        }
+    }
+</script>
+
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>TT Status</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_status">
+                                <option></option>
+                                <option>Open</option>
+                                <option>Close</option>
+                                <option>Reopen</option>
+                                <option>Mark for closure</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="col-md-1 col-sm-3 col-xs-6">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> OSV</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-3 col-xs-6">
+                            <div class="form-group">
+                                <select class="form-control mydropdown" id="dd_osv">
+                                    <option value="" disabled selected hidden>Select ..</option>
+                                </select>
+                            </div>
+                        </div>*@
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Approve Status</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_approve_status">
+                                <option></option>
+                                <option>Approved</option>
+                                <option>Rejected</option>
+                                <option>Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                        <button id="get_details" onclick="GetTickets()" name="get_details" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                    @*<div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                            <button id="btn_export " onclick="ExportData()" name="btn_export " class="btn btn-primary mybutton">Export</button>
+
+                        </div>*@
+                </div>
+            </div>
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview" class="display">
+                        <thead>
+                            <tr>
+                                <th>Site Code</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Site Status</th>
+                                <th>TT Status</th>
+                                <th>RBU</th>
+                                <th>Commercial Region</th>
+                                <th>MBU</th>
+                                <th>Opened By</th>
+                                <th>Approved By</th>
+                                <th>Resolved By</th>
+                                <th>Approve Status</th>
+                                <th>Aging</th>
+                                <th>Issue Type</th>
+                                <th>Category</th>
+                                <th>Issue Detail</th>
+
+                                <th>Others Reason</th>
+                                <th>Action Taken</th>
+                                <th>Rejection Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- /#page-content-wrapper -->
+    </div>
+</div>
+<!-- /#wrapper -->

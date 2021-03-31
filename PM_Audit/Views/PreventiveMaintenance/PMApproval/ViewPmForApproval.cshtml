@@ -1,0 +1,254 @@
+﻿@{
+    ViewBag.Title = "Approve PM";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    <div class="admin_box">
+        <div class="row">
+            <div class="col-md-1 col-sm-3 col-xs-6">
+                <div class="form-inline  mylabelstyle">
+                    <label> From </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6">
+                <div class="myinput">
+                    <input id="txt_from_date_approval" type="text" class="form-control date-pick">
+                </div>
+            </div>
+            <div class="col-md-1 col-sm-3 col-xs-6">
+                <div class="form-inline  mylabelstyle">
+                    <label> To </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6">
+                <div class="myinput">
+                    <input id="txt_to_date_approval" type="text" class="form-control date-pick">
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                <button id="get_details" onclick="GetPMData()" name="get_details" class="btn btn-primary">Get Details</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>SiteName</th>
+
+                <th>StartTime</th>
+                <th>EndTime</th>
+                <th>Status</th>
+                <th>PMTypes</th>
+                <th>CloseStatus</th>
+                <th>Comments</th>
+                <th style="min-width: 100px;"></th>
+              @*  <th style="min-width: 100px;"></th>*@
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="modal fade" id="CommentsModal">
+        <div class="modal-dialog left-initial">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Comments For Unsuccessful Closure</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-10 col-sm-10 col-xs-10 col-left-margin top-margin-dialog">
+                                    <textarea class="col-xs-12 col-md-12 text-area-closePM" id="TxtArea_Reason" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    @*<button type="button" class="btn btn-primary">Close</button>*@
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var tbl_PMGrid;
+        $(document).ready(function () {
+            $("#txt_from_date_approval").val('');
+            $("#txt_to_date_approval").val('');
+            GetPMData();
+            $("#txt_from_date_approval").datepicker();
+            $("#txt_to_date_approval").datepicker();
+
+          //  $(".date-pick").datepicker('setDate', new Date());
+
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                "order": [[1, "desc"]],
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+
+                      { "data": "Opened_Date", "orderable": true },
+                      { "data": "Closed_Date", "orderable": true },
+                      { "data": "PM_Status", "orderable": true },
+                      { "data": "Type", "orderable": true },
+                      { "data": "Closed_Status", "orderable": true },
+                      {
+                          "targets": -1,
+                          "data": null,
+                          render: function (data, type, row) {
+                              debugger;
+                              //   if (row.PM_Status != "Closed") {
+                              return '<button style="min-width:10px;font-size:11px;margin-top:0px" onclick="getComments(\'' + row.Comments + '\')" class="btn btn-primary mybutton">View Comments</button>';
+                              // }
+                              //  else {
+                              //     return '';
+                              // }
+                          }
+                      },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            debugger;
+                            //   if (row.PM_Status != "Closed") {
+                            return '<button style="min-width:10px;font-size:11px;margin-top:0px" onclick="getPM(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary mybutton viewPm">View PM</button>';
+                            // }
+                            //  else {
+                            //     return '';
+                            // }
+                        }
+                    }
+                    //,
+                    //{
+                    //    "targets": -1,
+                    //    "data": null,
+                    //    render: function (data, type, row) {
+                    //        debugger;
+                    //        if (row.Closed_Status == "Failed") {
+                    //            return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="MarkPMSuccessFul(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary mybutton viewPm">Mark Successful</button>';
+                    //        }
+                    //        else {
+                    //            return '';
+                    //        }
+                    //    }
+                    //}
+
+
+                ],
+
+            });
+        });
+
+        function getPM(sitecode, type,PM_ID) {
+            debugger;
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            if (type == 'Telco') {
+                form.setAttribute("action", '/PreventiveMaintenance/ViewTelcoPmForApproval');
+            }
+            else {
+                form.setAttribute("action", '/PreventiveMaintenance/ViewNonTelcoPmForApproval');
+            }
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", sitecode);
+            form.appendChild(hiddenFieldSiteCode);
+
+            var hiddenFieldPmType = document.createElement("input");
+            hiddenFieldPmType.setAttribute("type", "hidden");
+            hiddenFieldPmType.setAttribute("name", 'PM_Type');
+            hiddenFieldPmType.setAttribute("value", type);
+            form.appendChild(hiddenFieldPmType);
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'PM_ID');
+            hiddenFieldPmID.setAttribute("value", PM_ID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+
+
+        function MarkPMSuccessFul(sitecode, type, PM_ID) {
+            debugger;
+            var obj = new Object();
+            obj.PM_ID = PM_ID;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/MarkPMSuccessful", obj, OnSuccessMarkPMSuccessful)
+
+        }
+        function OnSuccessMarkPMSuccessful(results) {
+            debugger;
+            if (results == "Success") {
+                GetPMData();
+            }
+        }
+
+
+        function getComments(comment) {
+            debugger;
+            $('#CommentsModal').modal('show');
+            if (comment == "null") {
+                $('#TxtArea_Reason').val('');
+            }
+            else {
+                $('#TxtArea_Reason').val(comment);
+            }
+        }
+
+
+
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.DateFrom = '';
+            obj.DateTO = '';
+            obj.DateFrom = $("#txt_from_date_approval").val();
+            obj.DateTO = $("#txt_to_date_approval").val();
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getListPmForApproval",obj, OnSuccessGetPMData)
+
+
+        }
+        function OnSuccessGetPMData(results) {
+            debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_PMGrid.row.add(results[i]);
+            });
+            tbl_PMGrid.draw();
+        }
+    </script>
+}

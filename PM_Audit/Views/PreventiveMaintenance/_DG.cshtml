@@ -1,0 +1,723 @@
+﻿<!-- #region DG TAB -->
+<!--Panel 9-->
+<script type="text/javascript">
+
+
+
+
+    /* DG Table*/
+    $(document).ready(function () {
+        var $modal_dg = $('#editor-modal-dg'),
+     $editor_dg = $('#editor-dg'),
+     $editorTitle_dg = $('#editor-title-dg'),
+     ft_dg = FooTable.init('#dg', {
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add More DG',
+             addRow: function () {
+                 $modal_dg.removeData('row');
+                 $editor_dg[0].reset();
+                 $editorTitle_dg.text('Add new Diesel Genset');
+                 $modal_dg.modal('show');
+             },
+             editRow: function (row) {
+                 var values = row.val();
+                 $editor_dg.find('#txt_type_dg').val(values.dg_type);
+                 $editor_dg.find('#txt_rating_dg').val(values.rating_dg);
+                 //$editor_dg.find('#dd_grounding_status_dg').val(values.grounding_status_dg);
+                 //$editor_dg.find('#dd_major_overhauling_required_dg').val(values.major_over_hauling_dg);
+                 $editor_dg.find('#txt_hour_meter_reading_dg').val(values.hmr_dg);
+                 $editor_dg.find('#txt_last_pm_date_dg').val(values.last_pm_date_dg);
+                 //$editor_dg.find('#dd_pad_cleaning_dg').val(values.pad_cleaning_dg);
+                 //$editor_dg.find('#dd_radiator_dg').val(values.radiator_dg);
+                 $editor_dg.find('#txt_oil_dg').val(values.oil_dg);
+                 //$editor_dg.find('#dd_oil_filter_changed_dg').val(values.oil_filter_changed_dg);
+                 //$editor_dg.find('#dd_fuel_filter_changed_dg').val(values.fuel_filter_changed_dg);
+                 //$editor_dg.find('#dd_air_filter_changed_dg').val(values.air_filter_changed_dg);
+                 //$editor_dg.find('#dd_coolant_used_dg').val(values.coolant_used_dg);
+                 $editor_dg.find('#dd_battery_status_dg').val(values.battery_status_dg);
+                 $editor_dg.find('#dd_static_charger_dg').val(values.static_charger_dg);
+                 $editor_dg.find('#dd_auto_mode_dg').val(values.dg_auto_mode);
+                 $editor_dg.find('#dd_surge_protection_device_dg').val(values.dg_spd);
+                 $editor_dg.find('#dd_under_over_voltage_dg').val(values.dg_uvt);
+                 $editor_dg.find('#dd_ac_distribution_board_dg').val(values.dg_db);
+                 $editor_dg.find('#txt_load_red_value_dg').val(values.load_red_value_dg);
+                 $editor_dg.find('#txt_load_yellow_value_dg').val(values.load_yellow_value_dg);
+                 $editor_dg.find('#txt_load_blue_value_dg').val(values.load_blue_value_dg);
+                 //$editor_dg.find('#dd_high_temperature_dg').val(values.high_temperature_dg);
+                 //$editor_dg.find('#dd_oil_pressure_dg').val(values.oil_pressure_dg);
+
+                 $modal_dg.data('row', row);
+                 $editorTitle_dg.text('Edit Diesel Genset');
+                 $modal_dg.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         'rows': DG_List
+     })
+        uid = 10;
+
+        $editor_dg.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            if (!validateRequiredInput('#dg_div')) {
+                return false;
+            }
+            var row = $modal_dg.data('row'),
+                values = {
+                    dg_type: $editor_dg.find('#txt_type_dg').val(),
+                    rating_dg: $editor_dg.find('#txt_rating_dg').val(),
+                    grounding_status_dg: $editor_dg.find('#dd_grounding_status_dg').val(),
+                    major_over_hauling_dg: $editor_dg.find('#dd_major_overhauling_required_dg').val(),
+                    hmr_dg: $editor_dg.find('#txt_hour_meter_reading_dg').val(),
+                    last_pm_date_dg: $editor_dg.find('#txt_last_pm_date_dg').val(),
+                    pad_cleaning_dg: $editor_dg.find('#dd_pad_cleaning_dg').val(),
+                    radiator_dg: $editor_dg.find('#dd_radiator_dg').val(),
+                    oil_dg: $editor_dg.find('#txt_oil_dg').val(),
+                    oil_filter_changed_dg: $editor_dg.find('#dd_oil_filter_changed_dg').val(),
+                    fuel_filter_changed_dg: $editor_dg.find('#dd_fuel_filter_changed_dg').val(),
+                    air_filter_changed_dg: $editor_dg.find('#dd_air_filter_changed_dg').val(),
+                    coolant_used_dg: $editor_dg.find('#dd_coolant_used_dg').val(),
+                    battery_status_dg: $editor_dg.find('#dd_battery_status_dg').val(),
+                    static_charger_dg: $editor_dg.find('#dd_static_charger_dg').val(),
+                    dg_auto_mode: $editor_dg.find('#dd_auto_mode_dg').val(),
+                    dg_spd: $editor_dg.find('#dd_surge_protection_device_dg').val(),
+                    dg_uvt: $editor_dg.find('#dd_under_over_voltage_dg').val(),
+                    dg_db: $editor_dg.find('#dd_ac_distribution_board_dg').val(),
+                    load_red_value_dg: $editor_dg.find('#txt_load_red_value_dg').val(),
+                    load_yellow_value_dg: $editor_dg.find('#txt_load_yellow_value_dg').val(),
+                    load_blue_value_dg: $editor_dg.find('#txt_load_blue_value_dg').val(),
+                    high_temperature_dg: $editor_dg.find('#dd_high_temperature_dg').val(),
+                    oil_pressure_dg: $editor_dg.find('#dd_oil_pressure_dg').val()
+
+
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_dg.rows.add(values);
+            }
+            $modal_dg.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+        $("#dg_denial").on("change", function () {
+            var data = $("#dg_denial option:selected").text();
+            if (data == "YES") {
+                $("#dg").find("button").hide();
+            }
+            else {
+                $("#dg").find("button").show();
+                $(".footable-show").hide();
+                $(".footable-hide").hide();
+            }
+        });
+
+
+        $("#dg_panel").on("click", function () {
+            debugger;
+            var data = $("#dg_denial option:selected").text();
+            if (data == "YES") {
+                $("#dg").find("button").hide();
+            }
+            else {
+                $("#dg").find("button").show();
+                $(".footable-show").hide();
+                $(".footable-hide").hide();
+            }
+        });
+
+    });
+
+
+    function SaveDGData() {
+
+
+        var tempListDG = [];
+        var DGObj = FooTable.get("#dg");
+        $.each(DGObj.rows.all, function (i, row) {
+
+            var values = row.val();
+            var obj = new Object();
+            obj.DG_Type = values.dg_type;
+            obj.Rating = values.rating_dg;
+            obj.Grounding_Status = values.grounding_status_dg;
+            obj.Major_Overhauling_Required = values.major_over_hauling_dg;
+            obj.Hour_Meter_Reading = values.hmr_dg;
+            obj.Last_PM_Date = values.last_pm_date_dg;
+            obj.DG_Pad_Cleaning = values.pad_cleaning_dg;
+            obj.DG_Radiator = values.radiator_dg;
+            obj.DG_Oil = values.oil_dg;
+            obj.Oil_Filter_Changed = values.oil_filter_changed_dg;
+            obj.DG_Fuel_Filter_Changed = values.fuel_filter_changed_dg;
+            obj.DG_Air_Filter_Changed = values.air_filter_changed_dg;
+            obj.DG_Coolant_Used = values.coolant_used_dg;
+            obj.DG_Battery_Status = values.battery_status_dg;
+            obj.DG_Static_Charger = values.static_charger_dg;
+            obj.ATSPanel_DG_Auto_Mode = values.dg_auto_mode;
+            obj.ATSPanel_Surge_Protection_Device = values.dg_spd;
+            obj.ATSPanel_DG_Auto_ModeUVT = values.dg_uvt;
+            obj.ATSPanel_AC_Distribution_Board = values.dg_db;
+            obj.Load_AMP_Red_Value = values.load_red_value_dg;
+            obj.Load_AMP_Yellow_Value = values.load_yellow_value_dg;
+            obj.Load_AMP_Blue_Value = values.load_blue_value_dg;
+            obj.Safeties_High_Temperature = values.high_temperature_dg;
+            obj.Safeties_Oil_Pressure = values.oil_pressure_dg;
+            tempListDG.push(obj);
+        });
+        //if (PM_Data.checkListDGs == null) {
+        //    PM_Data.checkListDGs = [];
+        //}
+        debugger;
+        var dg_denial = $('#dg_denial').val();
+        if (dg_denial != 'YES') {
+            if (tempListDG.length == 0) {
+                alertify.alert("Alert","Please add DGs.");
+                return;
+            }
+            else {
+                PM_Data.checkListDGs = tempListDG;
+            }
+        }
+        else {
+            PM_Data.checkListDGs = [];
+        }
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SaveDGsChecklistData", PM_Data, OnSuccessSaveDG, "POST", false)
+    }
+
+    function OnSuccessSaveDG(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+           // GetPMData();
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+</script>
+
+
+
+
+<div class="tab-pane fade in" id="panel9" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG Denial<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dg_denial">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <table id="dg" class="table">
+            <thead>
+                <tr>
+                    <th data-name="dg_type">DG Type</th>
+                    <th data-name="rating_dg">Rating (KVA)</th>
+                    <th data-name="grounding_status_dg">Grounding Status</th>
+                    <th data-name="major_over_hauling_dg" data-breakpoints="all">Major overhauling required</th>
+                    <th data-name="hmr_dg" data-breakpoints="all">Hour Meter Reading(HMR)</th>
+                    <th data-name="last_pm_date_dg" data-breakpoints="xs sm">Last PM Date</th>
+                    <th data-name="pad_cleaning_dg" data-breakpoints="xs sm">DG Pad Cleaning</th>
+                    <th data-name="radiator_dg" data-breakpoints="xs sm">DG Radiator</th>
+                    <th data-name="oil_dg" data-breakpoints="xs sm">DG Oil</th>
+                    <th data-name="oil_filter_changed_dg" data-breakpoints="all">Oil Filter Changed</th>
+                    <th data-name="fuel_filter_changed_dg" data-breakpoints="all">DG Fuel Filter Changed</th>
+                    <th data-name="air_filter_changed_dg" data-breakpoints="all">DG Air Filter Changed</th>
+                    <th data-name="coolant_used_dg" data-breakpoints="all">DG Coolant Used</th>
+                    <th data-name="battery_status_dg" data-breakpoints="all">DG Battery Status</th>
+                    <th data-name="static_charger_dg" data-breakpoints="all">DG Static charger</th>
+                    <th data-name="dg_auto_mode" data-breakpoints="all">ATS Panel - DG Auto Mode</th>
+                    <th data-name="dg_spd" data-breakpoints="all">ATS Panel - Surge Protection Device (SPD)</th>
+                    <th data-name="dg_uvt" data-breakpoints="all">ATS Panel - DG Auto ModeUnder Over Voltage (UVT)</th>
+                    <th data-name="dg_db" data-breakpoints="all">ATS Panel - AC Distribution Board (DB)</th>
+                    <th data-name="load_red_value_dg" data-breakpoints="all">Load(AMP) Red Value</th>
+                    <th data-name="load_yellow_value_dg" data-breakpoints="all">Load(AMP) Yellow Value</th>
+                    <th data-name="load_blue_value_dg" data-breakpoints="all">Load(AMP) Blue Value</th>
+                    <th data-name="high_temperature_dg" data-breakpoints="all">Safeties - High Temperature</th>
+                    <th data-name="oil_pressure_dg" data-breakpoints="all">Safeties - Oil Pressure</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="modal fade" id="editor-modal-dg" role="dialog">
+            <div class="modal-dialog dialog-dg-width fixed-dialog" role="document">
+                <form class="modal-content form-horizontal" id="editor-dg">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="editor-title-dg">Add New Diesel Genset</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <!-- #region DG Count -->
+                        @*------------DG Count---------------*@
+                        @*<div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline form-group mylabelstyle">
+                                        <label>DG Count</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="text" id="txt_count_dg" class="form-control ">
+                                    </div>
+                                </div>
+                            </div>*@
+                        <!--#endregion-->
+                        <!-- #region DG Type and Rating -->
+                        @*------------DG Type---------------*@
+                        <div id="dg_div">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>DG Type<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    @*<div class="myinput_modal">
+                                        <input type="text" id="txt_type_dg" class="form-control requiredinput">
+                                    </div>*@
+                                    <select class="form-control mydropdown_modal requiredinput" id="txt_type_dg">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>JOHN DEERE (JD)</option>
+                                        <option>CUMMINS</option>
+                                        <option>DENYO</option>
+                                        <option>YANMAR</option>
+                                        <option>FG WILLSON</option>
+                                        <option>DC DG</option>
+                                        <option>PETBOW</option>
+                                        <option>METS</option>
+                                        <option>MILAT</option>
+                                        <option>OLYMPION</option>
+                                        <option>IMPAC</option>
+                                        <option>NEQ</option>
+                                        <option>GHADDAR</option>
+                                        <option>WP</option>
+                                        <option>LISTER PETTER</option>
+                                        <option>DJ KUA</option>
+                                        <option>NEQ(JD)</option>
+                                        <option>NEWAGE</option>
+                                        <option>JET</option>
+                                        <option>ALLIED</option>
+                                        <option>PERKINS GJ</option>
+                                        <option>PERKINS HH</option>
+                                        <option>PERKINS HL</option>
+                                        <option>PERKINS GK</option>
+                                        <option>PERKINS HP</option>
+                                        <option>PERKINS GN</option>
+                                        <option>PERKINS CM</option>
+                                        <option>PERKINS DJ</option>
+                                        <option>OTHER</option>
+                                        <option>NA</option>
+                                    </select>
+                                </div>
+
+                                @*------------Rating(KVA)---------------*@
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Rating(KVA)<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    @*<div class="myinput_modal">
+                                        <input type="number" step="any" id="txt_rating_dg" class="form-control requiredinput">
+                                    </div>*@
+                                    <select class="form-control mydropdown_modal requiredinput" id="txt_rating_dg">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>9</option>
+                                        <option>13</option>
+                                        <option>17</option>
+                                        <option>20</option>
+                                        <option>27</option>
+                                        <option>30</option>
+                                        <option>31</option>
+                                        <option>33</option>
+                                        <option>63</option>
+                                        <option>7.5</option>
+                                        <option>35</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Grounding and Major Overhauling -->
+                            @*------------Grounding Status---------------*@
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Grounding Status<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_grounding_status_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Major Overhauling required<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_major_overhauling_required_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Hour Meter Reading and Last PM Date -->
+                            @*------------Hour Meter Reading(HMR)---------------*@
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Hour Meter Reading (HMR)<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="number" step="any" id="txt_hour_meter_reading_dg" class="form-control requiredinput">
+                                    </div>
+                                </div>
+
+                                @*------------Last PM Date---------------*@
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Last PM Date<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="text" id="txt_last_pm_date_dg" class="form-control" disabled="disabled">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Pad Cleaning and Radiator -->
+                            @*------------Pad Cleaning---------------*@
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>DG Pad Cleaning <span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_pad_cleaning_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> DG Radiator<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_radiator_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region DG Oil and DG Oil Filter Changed -->
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> DG Oil<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="text" id="txt_oil_dg" class="form-control requiredinput">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Oil Filter Changed<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class=" ">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_oil_filter_changed_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Fuel Filter Changed and Air Filter Changed -->
+
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>DG Fuel Filter Changed<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_fuel_filter_changed_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> DG Air Filter Changed<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_air_filter_changed_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Coolant USed and Batter Status -->
+
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>DG Coolant Used<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_coolant_used_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>YES</option>
+                                            <option>NO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> DG Battery Status<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class=" ">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_battery_status_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>WEAK</option>
+                                            <option>DEAD</option>
+                                            <option>NOT AVAILABLE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Static Charger and DG Auto Mode -->
+
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>DG Static Charger<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_static_charger_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>WEAK</option>
+                                            <option>DEAD</option>
+                                            <option>NOT AVAILABLE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> ATS Panel - DG Auto Mode<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_auto_mode_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Surge Protection Device and Under Over Voltage -->
+
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>ATS Panel - Surge Protection Device (SPD)<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_surge_protection_device_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                            <option>NOT AVAILABLE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> ATS Panel - DG Auto ModeUnder Over Voltage<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class=" ">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_under_over_voltage_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>BY PASSED</option>
+                                            <option>NOT AVAILABLE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region AC Distribution Board and Load(AMP) Red -->
+
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>ATS Panel - AC Distribution Board (DB)<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_ac_distribution_board_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Load(AMP) Red Value<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="number" step="any" id="txt_load_red_value_dg" class="form-control requiredinput">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region Load (AMP) Yellow and Blue value -->
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Load(AMP) Yellow value<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="number" step="any" id="txt_load_yellow_value_dg" class="form-control requiredinput">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Load(AMP) Blue value<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="myinput_modal">
+                                        <input type="number" step="any" id="txt_load_blue_value_dg" class="form-control requiredinput">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                            <!-- #region High Temperature and Oil Presuure -->
+                            @*------------Pad Cleaning---------------*@
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label>Safeties - High Temperature <span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_high_temperature_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="form-inline mylabelstyle_modal">
+                                        <label> Safeties - Oil Pressure<span class="asterick"> *</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 ">
+                                    <div class="">
+                                        <select class="form-control mydropdown_modal requiredinput" id="dd_oil_pressure_dg">
+                                            <option value="" disabled selected hidden>Select ..</option>
+                                            <option>OK</option>
+                                            <option>NOT OK</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--#endregion-->
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button id="save_dg" name="save_dg" onclick="SaveDGData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+<!--/.Panel 9-->
+<!-- #endregion -->

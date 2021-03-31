@@ -1,0 +1,78 @@
+﻿<!-- #region BTS TAB -->
+<!--Panel 25-->
+<script type="text/javascript">
+
+   
+    @*function SaveACInventoryData() {
+        if (!validateRequiredInput('#div_inventory_ac')) {
+            return false;
+        }
+        else {
+            Inventory_Data.NoOfACsNotWorking = $('#txt_no_of_not_working_ac_inventory').val();
+            Inventory_Data.NoOfACsWorking = $('#txt_no_of_working_ac_inventory').val();
+            Inventory_Data.GeneralAcComments = $('#txt_general_comments_inventory').val();
+            Inventory_Data.UpdateSection = "AC";
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveACInventoryData, "POST", false)
+        }
+    }
+    function OnSuccessSaveACInventoryData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }*@
+   
+</script>
+<div class="tab-pane fade in" id="panel25" role="tabpanel">
+    <div id="div_inventory_ac" class="container tab_body tab-margin tab_inventory">
+
+        <!--#region Status of AC-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Number of Working AC<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput_modal">
+                    <input id="txt_no_of_working_ac_inventory" type="number" class="form-control requiredinput " disabled="disabled">
+                </div>
+            </div>
+            </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle ">
+                    <label>Number of Not Working AC<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput_modal">
+                    <input id="txt_no_of_not_working_ac_inventory" type="number" class="form-control requiredinput" disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region General Comments -->
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> General Comments for ACs</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <textarea id="txt_general_comments_inventory" type="text" class="form-control" disabled="disabled"></textarea>
+            </div>
+        </div>
+        <!--#endregion-->
+
+        @*<button id="save_ac_inventory" name="save_ac_inventory" onclick="SaveACInventoryData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 25-->
+<!-- #endregion -->

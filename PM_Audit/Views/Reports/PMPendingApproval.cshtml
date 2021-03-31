@@ -1,0 +1,301 @@
+﻿
+@{
+    ViewBag.Title = "PMPendingApproval";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+    var tbl_ReportsGrid;
+    $(document).ready(function () {
+        GetSiteFilters();
+
+        $("#txt_from_date").datepicker();
+        $("#txt_to_date").datepicker();
+
+        $(".date-pick").datepicker('setDate', new Date());
+
+
+        tbl_ReportsGrid = $('#reportsgridview').DataTable({
+            responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": true,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  { "data": "SiteCode", "orderable": true },
+                  { "data": "StartDate", "orderable": true },
+                  { "data": "EndDate", "orderable": true },
+                  { "data": "RBU", "orderable": true },
+                  { "data": "CommercialRegion", "orderable": true },
+                  { "data": "MBU", "orderable": true },
+                  { "data": "OSV", "orderable": true },
+                   { "data": "Type", "orderable": true },
+                  { "data": "Status", "orderable": true },
+                  { "data": "Closed_Status", "orderable": true }
+
+            ],
+
+        });
+    });
+
+    function GetPMPendingApprovalData() {
+        debugger;
+        var obj = new Object();
+
+        obj.RBU = $("#dd_rbu").val()
+        //obj.Start_Date = $("#txt_from_date").val()
+        //obj.End_Date = $("#txt_to_date").val()
+        obj.SiteCode = $("#dd_site_code").val()
+        obj.Status = $("#dd_status").val()
+        obj.Closed_Status = $("#dd_closed_status").val()
+        obj.MBU = $("#dd_mbu").val()
+        obj.Region = $("#dd_region").val()
+        obj.OSV = $("#dd_osv").val()
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetPmPendingApproval", obj, OnSuccessGetPMPendingApprovalData)
+    }
+    function OnSuccessGetPMPendingApprovalData(results) {
+        debugger;
+        tbl_ReportsGrid.clear().draw();
+        $.each(results, function (i, item) {
+            debugger;
+            tbl_ReportsGrid.row.add(results[i]);
+        });
+        tbl_ReportsGrid.draw();
+    }
+    function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRBU) {
+                $('#dd_rbu').select2({
+                    data: data.ListRBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListMBU) {
+                $('#dd_mbu').select2({
+                    data: data.ListMBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRegion) {
+                $('#dd_region').select2({
+                    data: data.ListRegion,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListOSV) {
+                $('#dd_osv').select2({
+                    data: data.ListOSV,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            $('#dd_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_closed_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+        }
+    }
+</script>
+
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Status</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_status">
+                                <option></option>
+                                <option>Open</option>
+                                <option>Closed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @*<div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>*@
+                @*</div>
+                <div class="row">*@
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> OSV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_osv">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                @*</div>
+                <div class="row">*@
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Closed Status</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_closed_status">
+                                <option></option>
+                                <option>Success</option>
+                                <option>Failed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                        <button id="get_details" onclick="GetPMPendingApprovalData()" name="get_details" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                    @*<div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                            <button id="btn_export " onclick="ExportData()" name="btn_export " class="btn btn-primary mybutton">Export</button>
+
+                        </div>*@
+                </div>
+            </div>
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview" class="display">
+                        <thead>
+                            <tr>
+                                <th>Site Code</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>RBU</th>
+                                <th>Commercial Region</th>
+                                <th>MBU</th>
+                                <th>OSV</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Closed Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- /#page-content-wrapper -->
+    </div>
+</div>
+<!-- /#wrapper -->
+
+

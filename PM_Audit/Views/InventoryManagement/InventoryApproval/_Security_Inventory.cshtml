@@ -1,0 +1,83 @@
+﻿<!-- #region Security TAB -->
+<!--Panel 28-->
+<script>
+    @*function SaveSecurityInventoryData() {
+
+        Inventory_Data.Guard_Type = $('#dd_guard_type_inventory').val();
+        Inventory_Data.Guard_Contact = $('#txt_guard_contact_inventory').val();
+        Inventory_Data.Guard_Supervisor_Contact = $('#txt_guard_supervisor_contact_inventory').val();
+        Inventory_Data.UpdateSection = "SECURITY";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveSecurityInventoryData, "POST", false)
+    }
+
+    function OnSuccessSaveSecurityInventoryData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }*@
+
+</script>
+<div class="tab-pane fade in" id="panel28" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region Guard Type -->
+      
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_guard_type_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OWNER</option>
+                        <option>COMPANY</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Guard Contact -->
+      
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Contact#</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_contact_inventory" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;" placeholder="03xxxxxxxxx" min="0" class="form-control " disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Guard Supervisor Contact -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Guard Supervisor Contact#</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_guard_supervisor_contact_inventory" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;" placeholder="03xxxxxxxxx" min="0" class="form-control " disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        
+        
+        @*<button id="save_security_inventory" name="save_security_inventory" onclick="SaveSecurityInventoryData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 28-->
+<!-- #endregion -->

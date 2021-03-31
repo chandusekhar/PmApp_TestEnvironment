@@ -1,0 +1,617 @@
+﻿<!-- #region Rectifier TAB -->
+<!--Panel 13-->
+<script type="text/javascript">
+
+
+
+
+    /* rectifier Table*/
+    function resetHybridFunctionalityFields() {
+        $('#dd_not_hybrid_reason_rectifier').val('');
+        $('#txt_reason_for_others_rectifier').val('');
+        $('#dd_hybrid_functionality_status_rectifier').val('');
+        $('#dd_not_hybrid_reason_rectifier').attr('disabled','disabled');
+        $('#txt_reason_for_others_rectifier').attr('disabled', 'disabled');
+        $('#dd_hybrid_functionality_status_rectifier').attr('disabled', 'disabled');
+    }
+
+    function resetHybridFunctionalityReasonFields() {
+        $('#dd_not_hybrid_reason_rectifier').val('');
+        $('#txt_reason_for_others_rectifier').val('');
+        $('#dd_not_hybrid_reason_rectifier').attr('disabled','disabled');
+        $('#txt_reason_for_others_rectifier').attr('disabled', 'disabled');
+    }
+
+    $(document).ready(function () {
+        resetHybridFunctionalityFields();
+        $('#dd_hybrid_functionality_rectifier').on('change', function () {
+            debugger;
+            var hybridFunctionality = $('#dd_hybrid_functionality_rectifier').val();
+            if (hybridFunctionality == "NO") {
+                resetHybridFunctionalityFields();
+            } else {
+                resetHybridFunctionalityReasonFields();
+                $('#dd_hybrid_functionality_status_rectifier').val('');
+                $('#dd_hybrid_functionality_status_rectifier').removeAttr('disabled');
+            }
+
+        });
+
+        $('#dd_hybrid_functionality_status_rectifier').on('change', function () {
+            debugger;
+            var hybridFunctionalityStatus = $('#dd_hybrid_functionality_status_rectifier').val();
+            if (hybridFunctionalityStatus == "ACTIVE") {
+                resetHybridFunctionalityReasonFields();
+            } else {
+                $('#dd_not_hybrid_reason_rectifier').val('');
+
+                $('#dd_not_hybrid_reason_rectifier').removeAttr('disabled');
+            }
+
+        });
+
+        //function setOtherHybridFunctionalityFields() {
+        $('#dd_not_hybrid_reason_rectifier').on('change',
+            function() {
+                debugger;
+                var hybridFunctionalityReason = $('#dd_not_hybrid_reason_rectifier').val();
+                if (hybridFunctionalityReason == "OTHERS") {
+                    $('#txt_reason_for_others_rectifier').removeAttr('disabled');
+                    $('#txt_reason_for_others_rectifier').val('');
+                } else {
+                    $('#txt_reason_for_others_rectifier').attr('disabled', 'disabled');
+                    $('#txt_reason_for_others_rectifier').val('');
+
+                }
+            });
+        var $modal_rectifier = $('#editor-modal-rectifier'),
+        $editor_rectifier = $('#editor-rectifier'),
+        $editorTitle_rectifier = $('#editor-title-rectifier'),
+        ft_rectifier = FooTable.init('#rectifier', {
+            'on': {
+                'postinit.ft.table': function (e, ft) {
+                    $('.footable-add').hide();
+                    $('.footable-delete').hide();
+
+                }
+            },
+            editing: {
+                enabled: true,
+                alwaysShow: true,
+                addText: 'Add More Rectifier',
+                addRow: function () {
+                    resetHybridFunctionalityFields();
+                    $modal_rectifier.removeData('row');
+                    $editor_rectifier[0].reset();
+                    $editorTitle_rectifier.text('Add new Rectifier');
+                    $modal_rectifier.modal('show');
+                },
+                editRow: function (row) {
+                    var values = row.val();
+                    //$editor_rectifier.find('#txt_count_rectifier').val(values.txt_count_rectifier);
+                    $editor_rectifier.find('#txt_brand_rectifier').val(values.brand_rectifier);
+                    $editor_rectifier.find('#txt_capacity_rectifier').val(values.capacity_rectifier);
+                    $editor_rectifier.find('#txt_capacity_of_modules_rectifier').val(values.capacity_of_modules_rectifier);
+                    $editor_rectifier.find('#txt_no_of_ok_modules_rectifier').val(values.no_of_ok_modules_rectifier);
+                    $editor_rectifier.find('#txt_no_of_faulty_modules_rectifier').val(values.no_of_faulty_modules_rectifier);
+                    $editor_rectifier.find('#txt_batteries_brand_rectifier').val(values.batteries_brand_rectifier);
+                    $editor_rectifier.find('#txt_installed_banks_rectifier').val(values.installed_banks_rectifier);
+                    $editor_rectifier.find('#txt_backup_time_rectifier').val(values.backup_time_rectifier);
+                    $editor_rectifier.find('#dd_dc_ac_rectifier').val(values.dc_ac_rectifier);
+                    $editor_rectifier.find('#dd_display_card_status_rectifier').val(values.display_card_status_rectifier);
+                    $editor_rectifier.find('#dd_control_card_status_rectifier').val(values.control_card_status_rectifier);
+                    $editor_rectifier.find('#dd_compressor_rectifier').val(values.compressor_rectifier);
+                    $editor_rectifier.find('#dd_mcu_rectifier').val(values.mcu_rectifier);
+                    $editor_rectifier.find('#txt_no_of_compressor_fan_ok').val(values.no_of_compressor_fan_ok);
+                    $editor_rectifier.find('#txt_no_of_compressor_fan_not_ok').val(values.no_of_compressor_fan_not_ok);
+                    $editor_rectifier.find('#txt_no_of_mcu_fan_ok').val(values.no_of_mcu_fan_ok);
+                    $editor_rectifier.find('#txt_no_of_mcu_fan_not_ok').val(values.no_of_mcu_fan_not_ok);
+                    $editor_rectifier.find('#dd_power_card_status_rectifier').val(values.power_card_status_rectifier);
+                    resetHybridFunctionalityFields();
+                    $editor_rectifier.find('#dd_hybrid_functionality_rectifier').val(values.Hybrid_Functionality);
+                    $editor_rectifier.find('#dd_hybrid_functionality_rectifier').trigger('change');
+                    $editor_rectifier.find('#dd_hybrid_functionality_status_rectifier').val(values.hybrid_functionality_status_rectifier);
+                    $editor_rectifier.find('#dd_hybrid_functionality_status_rectifier').trigger('change');
+                    $editor_rectifier.find('#dd_not_hybrid_reason_rectifier').val(values.Not_Hybrid_Reason);
+                    $editor_rectifier.find('#dd_not_hybrid_reason_rectifier').trigger('change');
+                    $editor_rectifier.find('#txt_reason_for_others_rectifier').val(values.Not_Hybrid_Reason_Other);
+                    
+
+
+                    $modal_rectifier.data('row', row);
+                    $editorTitle_rectifier.text('Edit Rectifier');
+                    $modal_rectifier.modal('show');
+                },
+                deleteRow: function (row) {
+                    if (confirm('Are you sure you want to delete the row?')) {
+                        row.delete();
+                    }
+                }
+            },
+            'rows': Rectifiers_List
+        })
+        uid = 10;
+
+        $editor_rectifier.on('submit', function (e) {
+            //if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            //if (!validateRequiredInput('#editor-modal-rectifier')) {
+            //    return false;
+            //}
+            var row = $modal_rectifier.data('row'),
+                values = {
+                    //count_rectifier: $editor_rectifier.find('#txt_count_rectifier').val(),
+                    brand_rectifier: $editor_rectifier.find('#txt_brand_rectifier').val(),
+                    capacity_rectifier: $editor_rectifier.find('#txt_capacity_rectifier').val(),
+                    capacity_of_modules_rectifier: $editor_rectifier.find('#txt_capacity_of_modules_rectifier').val(),
+                    no_of_ok_modules_rectifier: $editor_rectifier.find('#txt_no_of_ok_modules_rectifier').val(),
+                    no_of_faulty_modules_rectifier: $editor_rectifier.find('#txt_no_of_faulty_modules_rectifier').val(),
+                    batteries_brand_rectifier: $editor_rectifier.find('#txt_batteries_brand_rectifier').val(),
+                    installed_banks_rectifier: $editor_rectifier.find('#txt_installed_banks_rectifier').val(),
+                    backup_time_rectifier: $editor_rectifier.find('#txt_backup_time_rectifier').val(),
+                    dc_ac_rectifier: $editor_rectifier.find('#dd_dc_ac_rectifier').val(),
+                    display_card_status_rectifier: $editor_rectifier.find('#dd_display_card_status_rectifier').val(),
+                    control_card_status_rectifier: $editor_rectifier.find('#dd_control_card_status_rectifier').val(),
+                    compressor_rectifier: $editor_rectifier.find('#dd_compressor_rectifier').val(),
+                    mcu_rectifier: $editor_rectifier.find('#dd_mcu_rectifier').val(),
+                    no_of_compressor_fan_ok: $editor_rectifier.find('#txt_no_of_compressor_fan_ok').val(),
+                    no_of_compressor_fan_not_ok: $editor_rectifier.find('#txt_no_of_compressor_fan_not_ok').val(),
+                    no_of_mcu_fan_ok: $editor_rectifier.find('#txt_no_of_mcu_fan_ok').val(),
+                    no_of_mcu_fan_not_ok: $editor_rectifier.find('#txt_no_of_mcu_fan_not_ok').val(),
+                    power_card_status_rectifier: $editor_rectifier.find('#dd_power_card_status_rectifier').val(),
+                    hybrid_functionality_rectifier: $editor_rectifier.find('#dd_hybrid_functionality_rectifier').val(),
+                    not_hybrid_reason_rectifier: $editor_rectifier.find('#dd_not_hybrid_reason_rectifier').val(),
+                    reason_for_others_rectifier: $editor_rectifier.find('#txt_reason_for_others_rectifier').val(),
+                    hybrid_functionality_status_rectifier: $editor_rectifier.find('#dd_hybrid_functionality_status_rectifier').val()
+
+
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_rectifier.rows.add(values);
+            }
+            $modal_rectifier.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+
+    });
+
+    function SaveRectifierDataAudit() {
+        var tempListRectifier = [];
+        var RectifierObj = FooTable.get("#rectifier");
+        $.each(RectifierObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.Brand_Of_Rectifier = values.brand_rectifier;
+            obj.Capacity = values.capacity_rectifier;
+            obj.SMR_Modules_Capicity = values.capacity_of_modules_rectifier;
+            obj.SMR_WorkingModules_Count = values.no_of_ok_modules_rectifier;
+            obj.SMR_FaultyModules_Count = values.no_of_faulty_modules_rectifier;
+            obj.Rectifier_Batteries_Brand = values.batteries_brand_rectifier;
+            obj.Installed_Banks = values.installed_banks_rectifier;
+            obj.Backup_Time = values.backup_time_rectifier;
+            obj.DC_Air_Condition = values.dc_ac_rectifier;
+            obj.Display_Card_Status = values.display_card_status_rectifier;
+            obj.Control_Card_Status = values.control_card_status_rectifier;
+            obj.Power_Card_Status = values.power_card_status_rectifier;
+            obj.Compressor = values.compressor_rectifier;
+            obj.Main_Controller_Unit = values.mcu_rectifier;
+            obj.Working_Compressor_Fan_Count = values.no_of_compressor_fan_ok;
+            obj.NotWorking_Compressor_Fan_Count = values.no_of_compressor_fan_not_ok;
+            obj.Working_MCU_Fan_Count = values.no_of_mcu_fan_ok;
+            obj.NotWorking_MCU_Fan_Count = values.no_of_mcu_fan_not_ok;
+            obj.Hybrid_Functionality = values.hybrid_functionality_rectifier;
+            obj.Not_Hybrid_Reason = values.not_hybrid_reason_rectifier;
+            obj.Not_Hybrid_Reason_Other = values.reason_for_others_rectifier;
+            obj.Hybrid_Functionality_Status = values.hybrid_functionality_status_rectifier;
+            tempListRectifier.push(obj);
+        });
+
+        if (PM_Data.checkListRectifiers == null) {
+            PM_Data.checkListRectifiers = [];
+        }
+        //if (tempListRectifier.length == 0) {
+        //    alertify.alert("Alert","Please enter rectifier data.");
+        //    return;
+        //}
+
+        PM_Data.checkListRectifiers = tempListRectifier;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/SaveRectifierssChecklistDataGeneralAudit", PM_Data, OnSuccessRectifierDG, "POST", false)
+    }
+
+    function OnSuccessRectifierDG(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel13" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco">
+
+        <table id="rectifier" class="table">
+            <thead>
+                <tr>
+                    @*<th data-name="count_rectifier">Count</th>*@
+                    <th data-name="brand_rectifier">Brand of Rectifier</th>
+                    <th data-name="capacity_rectifier">Capacity</th>
+                    <th data-name="capacity_of_modules_rectifier" data-breakpoints="all">SMR Capacity of Modules</th>
+                    <th data-name="no_of_ok_modules_rectifier" data-breakpoints="all">SMR No. of OK Modules</th>
+                    <th data-name="no_of_faulty_modules_rectifier" data-breakpoints="all">SMR No. of Faulty Modules</th>
+                    <th data-name="batteries_brand_rectifier" data-breakpoints="all">Rectifier Batteries Brand</th>
+                    <th data-name="installed_banks_rectifier" data-breakpoints="xs sm">Installed Banks</th>
+                    <th data-name="backup_time_rectifier" data-breakpoints="xs sm">Backup Time(Mins)</th>
+                    <th data-name="dc_ac_rectifier" data-breakpoints="xs sm">DC Air Condition</th>
+                    <th data-name="display_card_status_rectifier" data-breakpoints="all">Display Card Status</th>
+                    <th data-name="control_card_status_rectifier" data-breakpoints="all">Control Card Status</th>
+                    <th data-name="compressor_rectifier" data-breakpoints="xs sm">Compressor</th>
+                    <th data-name="mcu_rectifier" data-breakpoints="all">Main Controller Unit(MCU)</th>
+                    <th data-name="no_of_compressor_fan_ok" data-breakpoints="all">Number of Compressor Fan(OK state)</th>
+                    <th data-name="no_of_compressor_fan_not_ok" data-breakpoints="all">Number of Compressor Fan(NOT OK state)</th>
+                    <th data-name="no_of_mcu_fan_ok" data-breakpoints="all">Number of MCU Fan(OK state)</th>
+                    <th data-name="no_of_mcu_fan_not_ok" data-breakpoints="all">Number of MCU Fan(NOT OK state)</th>
+                    <th data-name="power_card_status_rectifier" data-breakpoints="all">Power Card Status</th>
+                    <th data-name="hybrid_functionality_rectifier" data-breakpoints="all">Hybrid Functionality</th>
+                    <th data-name="not_hybrid_reason_rectifier" data-breakpoints="all">Reson for not Hybrid</th>
+                    <th data-name="reason_for_others_rectifier" data-breakpoints="all">Other reason</th>
+                    <th data-name="hybrid_functionality_status_rectifier" data-breakpoints="all">Hybrid Functionality Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+
+        <div class="modal fade" id="editor-modal-rectifier" role="dialog">
+            <div class="modal-dialog dialog-dg-width fixed-dialog" role="document">
+                <form class="modal-content form-horizontal" id="editor-rectifier">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="editor-title-rectifier">Add New Rectifier</h4>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <!--#region Brand and Power card status -->
+
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label>Brand of Rectifier</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_brand_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label>Power Card Status </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_power_card_status_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!--#endregion-->
+                        <!--#region Capacity and SMR Capacity-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Capacity</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_capacity_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> SMR Capacity of Modules</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_capacity_of_modules_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--#endregion-->
+                        <!--#region OK Modules and Faulty Modules-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> SMR No. of OK Modules</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_ok_modules_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> SMR No. of Faulty Modules</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_faulty_modules_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--#endregion-->
+                        <!--#region Batteries Brand and Installed Banks-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Rectifier Batteries Brand</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_batteries_brand_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Installed Banks</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_installed_banks_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--#endregion-->
+                        <!--#region Backup Time and DC Air Condition-->
+                        <div class="row">
+
+
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Backup Time(Mins)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_backup_time_rectifier" type="text" class="form-control ">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> DC Air Condition</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_dc_ac_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--#endregion-->
+                        <!-- #region Display Card Status and Control Card Status -->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label>Display Card Status </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_display_card_status_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Control Card Status</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_control_card_status_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!--#endregion-->
+                        <!--#region Compressor and Fan Status-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Compressor</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_compressor_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Main Controller Unit(MCU)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal " id="dd_mcu_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>OK</option>
+                                        <option>NOT OK</option>
+                                        <option>NOT AVAILABLE</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--#endregion-->
+                        <!--#region MCU and Fan Status-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal ">
+                                    <label>Number of Compressor Fan(OK state)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_compressor_fan_ok" type="text" class="form-control ">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal ">
+                                    <label>Number of Compressor Fan(NOT OK state)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_compressor_fan_not_ok" type="text" class="form-control ">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal ">
+                                    <label> Number of MCU Fan(OK state)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_mcu_fan_ok" type="text" class="form-control ">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-inline  mylabelstyle_modal ">
+                                    <label>Number of MCU Fan(NOT OK state)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="myinput_modal">
+                                    <input id="txt_no_of_mcu_fan_not_ok" type="text" class="form-control ">
+                                </div>
+                            </div>
+                        </div>
+                        <!--#endregion-->
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Hybrid Functionality Supported<span class="asterick"> *</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal requiredinput" id="dd_hybrid_functionality_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>YES</option>
+                                        <option>NO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Hybrid Functionality Status <span class="asterick"> *</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal requiredinput" id="dd_hybrid_functionality_status_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>ACTIVE</option>
+                                        <option>IN ACTIVE</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="form-inline  mylabelstyle_modal">
+                                    <label> Reason for Not Hybrid <span class="asterick"> *</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="">
+                                    <select class="form-control mydropdown_modal requiredinput" id="dd_not_hybrid_reason_rectifier">
+                                        <option value="" disabled selected hidden>Select ..</option>
+                                        <option>BYPASSED</option>
+                                        <option>NOT INTEGRATED</option>
+                                        <option>NOT CONFIGURED</option>
+                                        <option>OTHERS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="form-inline  mylabelstyle_modal ">
+                                    <label> Reason for Others<span class="asterick"> *</span></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="myinput_modal">
+                                    <textarea id="txt_reason_for_others_rectifier" type="text" class="form-control requiredinput"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button id="save_rectifier" name="save_rectifier" onclick="SaveRectifierDataAudit()" class="btn btn-primary mybutton">Save</button>
+
+    </div>
+</div>
+
+<!--/.Panel 13-->
+<!-- #endregion -->

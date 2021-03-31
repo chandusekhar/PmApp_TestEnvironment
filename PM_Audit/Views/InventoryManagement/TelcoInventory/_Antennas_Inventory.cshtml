@@ -1,0 +1,412 @@
+﻿<!-- #region Antennas TAB -->
+<!--Panel 2-->
+
+<script type="text/javascript">
+
+    // var ANTENNASVSWRCOUNT = 0;
+
+    function SaveAntenna() {
+        var AntenaList = [];
+        if (!validateRequiredInput('#checklist_antenna')) {
+            return false;
+        }
+        $('.field_more_antennas').each(function () {
+            debugger;
+            var obj = new Object();
+            var innerList = [];
+            obj.ListVSWR = [];
+            var InnerWraper = $(this).find('.field_wrapper_antennas');
+            obj.AntennaType = $(this).find("select[id^='dd_Antenna_Type'] option:selected").val();
+            obj.AntennaBrand = $(this).find("select[id^='txt_Antenna_Brand'] option:selected").val();
+            obj.AntennaPorts = $(this).find("select[id^='dd_Antenna_ports'] option:selected").val();
+            obj.Azimuth = $(this).find("input[id^='txt_azimuth_antenna']").val();
+            obj.Count = $(this).find("input[id^='txt_count_antenna']").val();
+            obj.InstallationHeight = $(this).find("input[id^='txt_installation_height_antenna']").val();
+
+            InnerWraper.each(function () {
+                var InnerObj = new Object();
+                InnerObj.Cell_ID = $(this).find("input[name^='antennas_cell_id']").val();
+                InnerObj.Cell_Name = $(this).find("input[name^='antennas_cell_name']").val();
+                InnerObj.VSWR_Value = $(this).find("input[name^='antennas_value']").val();
+                innerList.push(InnerObj);
+            });
+            obj.ListVSWR = innerList;
+            AntenaList.push(obj);
+
+
+        });
+        Inventory_Data.inventoryListAntennas = AntenaList;
+        Inventory_Data.Electrical_tilt_2g = $('#txt_2g_electrical_tilt').val() == "" ? "N/A" : $('#txt_2g_electrical_tilt').val();
+        Inventory_Data.Electrical_tilt_3g = $('#txt_3g_electrical_tilt').val() == "" ? "N/A" : $('#txt_3g_electrical_tilt').val();
+        Inventory_Data.Electrical_tilt_4g = $('#txt_4g_electrical_tilt').val() == "" ? "N/A" : $('#txt_4g_electrical_tilt').val();
+
+        Inventory_Data.Mechanical_tilt = $('#txt_mechanical_tilt').val();
+        Inventory_Data.Mechanical_Assembly = $('#dd_Mechanical_Assembly').val();
+        Inventory_Data.Ret_Installed = $('#dd_ret_installed').val();
+        Inventory_Data.UpdateSection = "Antennas";
+
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveTelcoInventoryDetails", Inventory_Data, OnSuccessSaveAntenna, "POST", false)
+    }
+
+    function OnSuccessSaveAntenna(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+           // GetInventoryData();
+        }
+        else {
+            alertify.alert("Alert", "Failed.");
+        }
+    }
+
+    @*------------Antennas VSWR Values---------------*@
+
+    $(document).ready(function () {
+        var addButton_antennas = $('.add_button_antennas'); //Add button selector
+
+        //Once add button is clicked
+        //$(addButton_rru).click(function (e) {
+
+        //Once remove button is clicked
+        $('.container').on('click', '.remove_button_antennas', function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var tempArr_antennas = $(this).attr('id').split('_');
+            var subindex_antennas = tempArr_antennas[tempArr_antennas.length - 1]
+            var mainindex_antennas = tempArr_antennas[tempArr_antennas.length - 2]
+            AntennasCountArray[mainindex_antennas] = AntennasCountArray[mainindex_antennas] - 1;
+            $(this).closest('div.row').remove(); //Remove field html
+            ;
+        });
+    });
+    @*------------Antennas Add More---------------*@
+    $(document).ready(function () {
+
+
+        $('#add_more_antenna').click(function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var mainAddMoreIndex = AntennasCountArray.length;
+            var wrapper_antennas_addMore = $('#field_more_antennas_' + (mainAddMoreIndex - 1)); //Input field wrapper
+            //var fieldHTMLAddMoreantennas = '<div class="field_more_antennas" id="field_more_antennas_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><!-- #region AntennaBrand --><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"><label>Antenna Brand<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"><input id="txt_Antenna_Brand_' + mainAddMoreIndex + '" type="text" class="form-control  requiredinput"></div></div></div><!-- #region Antenna Type-->@*------------Antenna Type ---------------*@ <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Antenna Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control  requiredinput mydropdown" id="dd_Antenna_Type_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>SINGLE BAND</option><option>DUAL BAND</option><option>TRI BAND</option></select></div></div></div><!--#endregion--><!-- #region Antenna ports-->@*------------ Antenna ports---------------*@ <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Antenna ports<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control  requiredinput mydropdown" id="dd_Antenna_ports_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>2</option><option>4</option><option>6</option><option>8</option></select></div></div></div><!--#endregion--><!--#region Azimuth-->@*------------Azimuth---------------*@ <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Azimuth<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"><input type="number" step="any" id="txt_azimuth_antenna_' + mainAddMoreIndex + '" class="form-control  requiredinput "></div></div></div><!--#endregion--><!--#region Count-->@*------------Count---------------*@ <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Count<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"><input type="number" step="any" id="txt_count_antenna_' + mainAddMoreIndex + '" class="form-control  requiredinput "></div></div></div><!--#endregion--><!--#region Installation Height(meters)-->@*------------Installation Height---------------*@ <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"><input type="number" step="any" id="txt_installation_height_antenna_' + mainAddMoreIndex + '" class="form-control  requiredinput "></div></div></div><!--#endregion--><button id="remove_more_antennas_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_antennas" >Remove</button></div>';
+            var fieldHTMLAddMoreantennas = '<div class="field_more_antennas" id="field_more_antennas_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label>Antenna Brand</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown" id="txt_Antenna_Brand_' + mainAddMoreIndex + '"><option value="NA" id="select_option_Antenna_Brand_' + mainAddMoreIndex + '" disabled selected hidden>Select ..</option><option>ARGUS</option><option>RFS</option><option>KATHREIN</option><option>ANDREW</option><option>AGISSON</option><option>NA</option> </select></div></div></div> @*------------Antenna Type ---------------*@<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Antenna Type</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown" id="dd_Antenna_Type_' + mainAddMoreIndex + '"><option value="NA" id="select_option_Antenna_Type_' + mainAddMoreIndex + '" disabled selected hidden>Select ..</option><option>SINGLE BAND</option><option>DUAL BAND</option><option>TRI BAND</option><option>QUAD BAND</option><option>2100 MHz</option><option>NA</option> </select></div></div></div> @*------------ Antenna ports---------------*@<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Antenna ports</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown" id="dd_Antenna_ports_' + mainAddMoreIndex + '"><option value="0" id="select_option_Antenna_ports_' + mainAddMoreIndex + '" disabled selected hidden>Select ..</option><option>0</option><option>2</option><option>4</option><option>6</option><option>8</option> </select></div></div></div> @*------------Azimuth---------------*@<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Azimuth</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"> <input type="number" step="any" id="txt_azimuth_antenna_' + mainAddMoreIndex + '" class="form-control"></div></div></div> @*------------Count---------------*@<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Count</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"> <input type="number" step="any" id="txt_count_antenna_' + mainAddMoreIndex + '" class="form-control"></div></div></div> @*------------Installation Height---------------*@<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Installation Height(meters)</label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group myinput"> <input type="number" step="any" id="txt_installation_height_antenna_' + mainAddMoreIndex + '" class="form-control"></div></div></div> <button id="remove_more_antennas_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_antennas">Remove</button></div>';
+            AntennasCountArray.push(0);
+            $(wrapper_antennas_addMore).after(fieldHTMLAddMoreantennas); //Add field html
+            $('.remove_more_antennas').hide();
+            $('.remove_more_antennas:last').show();
+
+        });
+        //Once remove button is clicked
+        $('.container').on('click', '.remove_more_antennas', function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            var mainIndex_antennas = $(this).attr('id').split('_').pop();
+            AntennasCountArray.splice(mainIndex_antennas, 1);
+            $(this).closest('div.field_more_antennas').remove(); //Remove field html
+            $('.remove_more_antennas').hide();
+            $('.remove_more_antennas:last').show();
+        });
+    });
+
+    $(document).ready(function () {
+        //enable disable on radio buttons click
+
+        $('#value_2g').click(function () {
+            $('#txt_2g_electrical_tilt').removeAttr("disabled");
+            $('#txt_2g_electrical_tilt').val('');
+        });
+
+        $('#not_available_2g').click(function () {
+            $('#txt_2g_electrical_tilt').attr("disabled", "disabled");
+            $('#txt_2g_electrical_tilt').val('');
+        });
+
+        $('#value_3g').click(function () {
+            $('#txt_3g_electrical_tilt').removeAttr("disabled");
+            $('#txt_3g_electrical_tilt').val('');
+        });
+
+        $('#not_available_3g').click(function () {
+            $('#txt_3g_electrical_tilt').attr("disabled", "disabled");
+            $('#txt_3g_electrical_tilt').val('');
+        });
+        $('#value_4g').click(function () {
+            $('#txt_4g_electrical_tilt').removeAttr("disabled");
+            $('#txt_4g_electrical_tilt').val('');
+        });
+
+        $('#not_available_4g').click(function () {
+            $('#txt_4g_electrical_tilt').attr("disabled", "disabled");
+            $('#txt_4g_electrical_tilt').val('');
+        });
+    });
+
+
+</script>
+
+
+<div class="tab-pane fade" id="panel35" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_antenna">
+        @*<h2 class="myheading">Quantity of Antennas</h2>*@
+
+        <div id="field_antennas">
+            <div class="field_more_antennas" id="field_more_antennas_0">
+                <!-- #region AntennaBrand -->
+                @*------------Antenna Brand---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4 ">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Antenna Brand</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        @*<div class="form-group myinput">
+                            <input id="txt_Antenna_Brand_0" type="text" class="form-control  requiredinput">
+                        </div>*@
+                        <div class="form-group">
+                            <select class="form-control  mydropdown" id="txt_Antenna_Brand_0">
+                                <option value="NA" id="select_option_Antenna_Brand_0" disabled selected hidden>Select ..</option>
+                                <option>ARGUS</option>
+                                <option>RFS</option>
+                                <option>KATHREIN</option>
+                                <option>ANDREW</option>
+                                <option>AGISSON</option>
+                                <option>NA</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!-- #region Antenna Type-->
+                @*------------Antenna Type ---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Antenna Type</label>
+                        </div>
+                    </div>  
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_Antenna_Type_0">
+                                <option value="NA" id="select_option_Antenna_Type_0" disabled selected hidden>Select ..</option>
+                                <option>SINGLE BAND</option>
+                                <option>DUAL BAND</option>
+                                <option>TRI BAND</option>
+                                <option>QUAD BAND</option>
+                                <option>2100 MHz</option>
+                                <option>NA</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!-- #region  Antenna ports-->
+                @*------------ Antenna ports---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Antenna ports</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_Antenna_ports_0">
+                                <option value="0" id="select_option_Antenna_ports_0" disabled selected hidden>Select ..</option>
+                                <option>0</option>
+                                <option>2</option>
+                                <option>4</option>
+                                <option>6</option>
+                                <option>8</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!--#region Azimuth-->
+                @*------------Azimuth---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Azimuth</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group myinput">
+                            <input type="number" step="any" min="0" id="txt_azimuth_antenna_0" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!--#region Count-->
+                @*------------Count---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Count</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group myinput">
+                            <input type="number" step="any" min="0" id="txt_count_antenna_0" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!--#region Installation Height-->
+                @*------------Installation Height---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Installation Height(meters)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group myinput">
+                            <input type="number" step="any" min="0" id="txt_installation_height_antenna_0" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!--#region VSWR-->
+                @*------------VSWR Values---------------*@
+                @*<div class="row">
+                        <div class="col-md-2 col-sm-4 col-xs-4">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> VSWR Values<span class="asterick"> *</span></label>
+                            </div>
+                        </div>
+                        <div class="field_wrapper_antennas" id="field_wrapper_antennas_0_0">
+                            <div class="col-sm-2 nopadding">
+                                <div class="form-group">
+                                    <input type="text" class="form-control  requiredinput" name="antennas_cell_id_0_0" placeholder="Cell ID" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 nopadding">
+                                <div class="form-group">
+                                    <input type="text" class="form-control  requiredinput" name="antennas_cell_name_0_0" placeholder="Cell Name" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2 nopadding">
+                                <div class="form-group">
+                                    <input type="text" class="form-control  requiredinput" name="antennas_value_0_0" placeholder="Value" />
+
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="javascript:void(0);" class="add_button_antennas" title="Add field" id="add_button_antennas_0"><i class="fa fa-plus"></i></a>
+                            </div>
+
+                        </div>
+                    </div>*@
+
+                <!--#endregion-->
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <button id="add_more_antenna" name="add_more_antenna" class="btn btn-primary mybutton">Add More</button>
+            </div>
+        </div>
+
+
+        <h2 class="myheading">Electrical Tilts</h2>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline mylabelstyle">
+                    <label>2G</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="myinput mylabelstyle">
+                    <input type="radio" name="2g_r1" value="N/A" id="not_available_2g" checked="checked" class="radioBtn">N/A<br>
+                    <input type="radio" name="2g_r1" value="value" id="value_2g" class="radioBtn">Value <input type="number" step="any" min="0" name="2g_value" id="txt_2g_electrical_tilt" disabled="disabled" class="form-control myinput" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline mylabelstyle">
+                    <label>3G</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="myinput mylabelstyle">
+                    <input type="radio" name="3g_r2" value="N/A" id="not_available_3g" checked="checked" class="radioBtn">N/A<br>
+                    <input type="radio" name="3g_r2" value="value" id="value_3g" class="radioBtn">Value <input type="number" step="any" min="0" id="txt_3g_electrical_tilt" name="3g_value" disabled="disabled" class="form-control myinput" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline mylabelstyle">
+                    <label>4G</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group myinput mylabelstyle">
+                    <input type="radio" name="4g_r3" value="N/A" id="not_available_4g" checked="checked" class="radioBtn">N/A<br>
+                    <input type="radio" name="4g_r3" value="value" id="value_4g" class="radioBtn">Value <input type="number" step="any" min="0" id="txt_4g_electrical_tilt" name="4g_value" disabled="disabled" class="form-control myinput" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Mechanical Tilt</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group myinput">
+                    <input type="number" step="any" min="0" id="txt_mechanical_tilt" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> RET Installed</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_ret_installed">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Mechanical Assembly</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_Mechanical_Assembly">
+                        <option>INSTALLED</option>
+                        <option selected>NOT INSTALLED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+
+                <button id="save_antennas" onclick="SaveAntenna()" name="save_antennas" class="btn btn-primary mybutton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/.Panel 2-->
+<!--#endregion-->

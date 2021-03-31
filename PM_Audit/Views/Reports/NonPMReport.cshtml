@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "NonPMReport";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+    var tbl_ReportsGrid;
+    $(document).ready(function () {
+      
+
+        tbl_ReportsGrid = $('#nonpm_reportsgridview').DataTable({
+            responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": true,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  { "data": "SITECODE", "orderable": true },
+                  { "data": "REGION", "orderable": true },
+                  { "data": "SITETYPE", "orderable": true },
+                  { "data": "COMMREGION", "orderable": true },
+                  { "data": "MANCITY", "orderable": true },
+                  { "data": "RBU", "orderable": true },
+                  { "data": "BSCNAME", "orderable": true }
+
+            ],
+
+        });
+        GetPMData();
+    });
+
+    function GetPMData() {
+        debugger;
+        
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetNonPmSitesForThreeMonths","", OnSuccessGetNonPMData,"GET")
+    }
+    function OnSuccessGetNonPMData(results) {
+        debugger;
+        tbl_ReportsGrid.clear().draw();
+        $.each(results, function (i, item) {
+            debugger;
+            tbl_ReportsGrid.row.add(results[i]);
+        });
+        tbl_ReportsGrid.draw();
+    }
+   
+</script>
+
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+                <div class="row">
+                    <table id="nonpm_reportsgridview" class="display">
+                        <thead>
+                            <tr>
+                                <th>Site Code</th>
+                                <th>Region</th>
+                                <th>Site Type</th>
+                                <th>Commercial Region</th>
+                                <th>MBU</th>
+                                <th>RBU</th>
+                                <th>BSC Name</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- /#page-content-wrapper -->
+    </div>
+</div>
+<!-- /#wrapper -->

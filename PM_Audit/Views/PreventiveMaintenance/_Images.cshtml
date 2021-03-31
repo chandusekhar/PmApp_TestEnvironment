@@ -1,0 +1,238 @@
+﻿<!-- #region Images TAB -->
+<!--Panel 7-->
+
+<script>
+    function SaveImages() {
+        if (!validateRequiredInput('#checklist_images')) {
+            return false;
+        }
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SaveImages", PM_Data, OnSuccessSaveImages, "POST", false)
+    }
+
+    function OnSuccessSaveImages(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert", "Failed.");
+        }
+    }
+    function Upload(id) {
+        debugger;
+        var Site_Code = PM_Data.SiteCode;
+        var PM_ID = PM_Data.ID;
+        var Type = PM_Data.Type;
+        //Site_Code = PM_Data.SiteCode;
+        //PM_ID = PM_Data.ID;
+        var data = new Object();
+        data.Site_Code = PM_Data.SiteCode;
+        data.PM_ID = PM_Data.ID;
+
+        if (id == 'BTS_Image')
+            var blobFile = $('.uploadedFile')[0].files[0];
+        if (id == 'Alarms_Image')
+            var blobFile = $('.uploadedFile')[1].files[0];
+        if (id == 'Antenna_Image_1')
+            var blobFile = $('.uploadedFile')[2].files[0];
+        if (id == 'Antenna_Image_2')
+            var blobFile = $('.uploadedFile')[3].files[0];
+        if (id == 'Antenna_Image_3')
+            var blobFile = $('.uploadedFile')[4].files[0];
+        //if (blobFile.size > 10000000) {
+        //    alertify.alert('Failure', 'File Size is greater than allowed size!');
+        //}
+        //else {
+            var formData = new FormData();
+            formData.append("fileToUpload", blobFile);
+            formData.append('PM_ID', PM_ID);
+            formData.append('Site_Code', Site_Code);
+            formData.append('Type', Type);
+            formData.append('id', id);
+            $.ajax({
+                url: "/PreventiveMaintenance/Upload_Image",
+                type: "POST",
+                data: formData,
+
+                // data: {formData, model:data},
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    debugger;
+                    alert(result);
+                },
+
+                error: function (err) {
+                    debugger;
+                    alert(err.statusText);
+                }
+            });
+
+        }
+    //}
+</script>
+
+
+<div class="tab-pane fade" id="panel7" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_images">
+
+        <!-- #region ODUType -->
+        @*------------ODU Type---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>BTS<span class="asterick"> *</span></label>
+                </div>
+            </div>
+                   
+                <form id="fileUploadForm1"
+                      action="/"
+                      enctype="multipart/form-data">
+                    <fieldset style="padding-right:15px;">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <div class="row">
+                                   
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="hidden" id="filename1" name="filename" value="">
+                                            <input type="file" id="uploadedFile_BTS" name="uploadedFile" class="form-control form-control-sm uploadedFile requiredinput" accept=".jpg,.png" style="padding-left:0px">
+                                            <div class="input-group-btn">
+                                                <input id ="BTS_Image"type="button" value="Upload" class="rounded-0 btn btn-primary" onclick="Upload(this.id);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Current Alarm<span class="asterick"> *</span></label>
+                </div>
+            </div>
+
+            <form id="fileUploadForm2"
+                  action="/"
+                  enctype="multipart/form-data">
+                <fieldset style="padding-right:15px;">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="hidden" id="filename2" name="filename" value="">
+                                        <input type="file" id="uploadedFile_Alarms" name="uploadedFile" class="form-control form-control-sm uploadedFile requiredinput" accept=".jpg,.png" style="padding-left:0px">
+                                        <div class="input-group-btn">
+                                            <input id="Alarms_Image" type="button" value="Upload" class="rounded-0 btn btn-primary" onclick="Upload(this.id);">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Top Antenna/Dishes (Pics from 3 different angles required)<span class="asterick"> *</span></label>
+                </div>
+            </div>
+
+            <form id="fileUploadForm3"
+                  action="/"
+                  enctype="multipart/form-data">
+                <fieldset style="padding-right:15px;">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="hidden" id="filename3" name="filename" value="">
+                                        <input type="file" id="uploadedFile_Antenna1" name="uploadedFile" class="form-control form-control-sm  uploadedFile requiredinput" accept=".jpg,.png" style="padding-left:0px">
+                                        <div class="input-group-btn">
+                                            <input id="Antenna_Image_1" type="button" value="Upload" class="rounded-0 btn btn-primary" onclick="Upload(this.id);">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <form id="fileUploadForm4"
+                  action="/"
+                  enctype="multipart/form-data">
+                <fieldset style="padding-right:15px;">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="hidden" id="filename4" name="filename" value="">
+                                        <input type="file" id="uploadedFile_Antenna2" name="uploadedFile" class="form-control form-control-sm uploadedFile requiredinput" accept=".jpg,.png" style="padding-left:0px">
+                                        <div class="input-group-btn">
+                                            <input id="Antenna_Image_2" type="button" value="Upload" class="rounded-0 btn btn-primary" onclick="Upload(this.id);">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <div class="col-md-2">
+                <div class="form-inline mylabelstyle">
+                   
+                </div>
+            </div>
+            <form id="fileUploadForm5"
+                  action="/"
+                  enctype="multipart/form-data">
+                <fieldset style="padding-right:15px;">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="hidden" id="filename5" name="filename" value="">
+                                        <input type="file" id="uploadedFile_Antenna3" name="uploadedFile" class="form-control form-control-sm uploadedFile requiredinput" accept=".jpg,.png" style="padding-left:0px">
+                                        <div class="input-group-btn">
+                                            <input id="Antenna_Image_3" type="button" value="Upload" class="rounded-0 btn btn-primary" onclick="Upload(this.id);">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+      
+        <!--#endregion-->
+       
+        <button id="save_images_telco" name="save_images_telco" onclick="SaveImages()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+<!--/.Panel 6-->
+<!--#endregion-->

@@ -1,0 +1,343 @@
+﻿
+@{
+    ViewBag.Title = "PM";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+        var Latt = 0;
+        var Long = 0;
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+        function getLocation() {
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            var siteID = $("#txt_siteID").val();
+           
+            if (siteID) {
+               
+                doConfirm();
+                 }
+            else {
+                alertify.alert('Failed', 'Please enter Site ID.');
+
+                $("#txt_siteID").val('');
+                return;
+            }
+        }
+        function showError(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    showPosition(position);
+                    return;
+                }
+                else {
+                    error = "User denied the request for Geolocation."
+                }
+            }
+            else if (err.code == 2) {
+                error = "Location information is unavailable."
+            }
+            else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            }
+            else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+      
+
+        function OpenPM() {
+            debugger;
+            getLocation();
+            @*if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            var siteID = $("#txt_siteID").val();
+            if (siteID) {
+                var data = new Object();
+                data.SiteCode = siteID;
+                data.Situation = $('input[name=pmradio]:checked').val();
+                data.Type = $('input[name=typeradio]:checked').val();
+                data.User_Lat = '29.14168';
+                data.User_Long = '71.26808';
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/OpenPM", data, OnSuccessOpenPM)
+            }
+            else {
+                alertify.alert('Failed', 'Please enter Site ID.');
+
+                $("#txt_siteID").val('');
+                return;
+            }*@
+
+        }
+        function OnSuccessOpenPM(results) {
+            debugger;
+            if (results == "success") {
+                $('.PMopenModal').modal('hide');
+                $("#txt_siteID").val('');
+                alertify.alert('Success', 'PM has been opened successfully.');
+
+
+            }
+            else {
+                alertify.alert('Failed', results);
+            }
+            return;
+        }
+        function doConfirm() {
+            debugger;
+            var siteID = $("#txt_siteID").val();
+            if (siteID) {
+                var data = new Object();
+                data.SiteCode = siteID;
+                data.Situation = $('input[name=pmradio]:checked').val();
+                data.Type = $('input[name=typeradio]:checked').val();
+               
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/CheckReOpenedPM", data, OnSuccessCheckReOpenedPM)
+            }
+            
+        }
+        function OnSuccessCheckReOpenedPM(results) {
+            debugger;
+            if (results == "success") {
+                var r = confirm("PM for this site is already available in Re-Open state, Press Cancel to view Re-Open PMs and OK to continue with new PM Opening.");
+
+                if (r == false)
+                {
+                    debugger;
+                    window.location.replace("/PreventiveMaintenance/ViewPmForReOpen");
+                   
+                }
+                else
+                {
+                    var siteID = $("#txt_siteID").val();
+                    siteID = siteID.toUpperCase();
+                    var data = new Object();
+                    data.SiteCode = siteID;
+                    data.Situation = $('input[name=pmradio]:checked').val();
+                    data.Type = $('input[name=typeradio]:checked').val();
+                    //data.User_Lat = '29.14168';
+                    //data.User_Long = '71.26808';
+                    data.User_Lat = Latt;
+                    data.User_Long = Long;
+                    ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/OpenPM", data, OnSuccessOpenPM)
+
+                }
+             }
+            else {
+                var siteID = $("#txt_siteID").val();
+                siteID = siteID.toUpperCase();
+                var data = new Object();
+                data.SiteCode = siteID;
+                data.Situation = $('input[name=pmradio]:checked').val();
+                data.Type = $('input[name=typeradio]:checked').val();
+                //data.User_Lat = '29.14168';
+                //data.User_Long = '71.26808';
+                data.User_Lat = Latt;
+                data.User_Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/OpenPM", data, OnSuccessOpenPM)
+
+            }
+           
+        }
+
+
+    </script>
+
+}
+
+
+<div class="container">
+
+    <section class="content">
+
+        @if (ViewBag.Permissions.Contains("perm_start_pm"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="#" class="no-hover" data-toggle="modal" data-target="#modal-default">
+                        <span class="info-box-icon"><i class="fa fa-cog"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Open PM</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+
+
+        @if (ViewBag.Permissions.Contains("perm_start_pm"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewPM", "PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-tripadvisor"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">View PM/Close PM</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+        @if (ViewBag.Permissions.Contains("perm_approve_pm"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewPmForApproval", "PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-check-square-o"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Approve PM</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.Permissions.Contains("perm_start_pm"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewPmForReOpen", "PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-envelope-open-o"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Re Open PM</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.Permissions.Contains("perm_pending_pm"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewPendingPms", "PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-envelope-open-o"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Pending PMs</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+        @if (ViewBag.Permissions.Contains("perm_pm_planning_parameters"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("PMPlanningParameters", "PreventiveMaintenance")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-envelope-open-o"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Planning Parameters</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        }
+
+    </section>
+</div>
+
+
+<div class="modal fade PMopenModal" id="modal-default">
+    <div class="modal-dialog left-initial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Open PM</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+
+                        <div class="row">
+                            <div class="col-md-6 col-md-6 col-sm-5 col-xs-6">
+                                <label class="col-left-margin">
+                                    <input value="Normal" type="radio" class="option-input radio" name="pmradio" checked />
+                                    Scheduled PM
+                                </label>
+                            </div>
+                            <div class="col-md-4 col-sm-5 col-xs-5">
+                                <label class="col-left-margin">
+                                    <input value="Telco" type="radio" class="option-input radio" name="typeradio" checked />
+                                    Telco
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-md-6 col-sm-5 col-xs-6">
+                                <label class="col-left-margin">
+                                    <input value="Emergency" type="radio" class="option-input radio" name="pmradio" />
+                                    Emergency PM
+                                </label>
+                            </div>
+                            <div class="col-md-4 col-sm-5 col-xs-5">
+                                <label class="col-left-margin">
+                                    <input value="NON-Telco" type="radio" class="option-input radio" name="typeradio" />
+                                    Non Telco
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-5 col-sm-6 col-xs-7 col-left-margin top-margin-dialog">
+                                <input id="txt_siteID" type="text" class="form-control input-lg" placeholder="Enter Site ID">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Close</button>
+                <button type="button" onclick="OpenPM()" class="btn btn-primary">Proceed</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+

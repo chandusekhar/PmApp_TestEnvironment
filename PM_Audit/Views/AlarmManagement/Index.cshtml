@@ -1,0 +1,138 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+<section>
+    <div class="text-JazzYellow">
+        <div class="py-5 heading">
+            <h3>Alarm Management</h3>
+        </div>
+
+        <div class="row">
+            @*<div class="form-group col-md-4 col-md-offset-3">
+                    <input class="form-control" type="text" id="txt_SiteCode" placeholder="Enter Site ID." />
+                </div>
+                <div class="form-group col-md-2">
+                    <button class="btn btn-primary btn-block btn-flat login_btn  form-inline" type="button" id="btn_Search">Search</button>
+                </div>*@
+            <div class="col-md-6 col-sm-6 col-xs-12" style="float:none; margin:0 auto;">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" id="txt_SiteCode" placeholder="Enter Site ID.">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-info btn-flat" id="btn_Search">Go!</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="div_Alarm">
+        <table id="AlarmGridTable" class="display" width="100%">
+            <thead>
+                <tr>
+                    <th>Site Code</th>
+                    <th>Summary</th>
+                    <th>Category</th>
+                    <th>Site Type</th>
+                    <th>BSC Name</th>
+                    <th>BTS Name</th>
+                    <th>Micro Business Unit</th>
+                    <th>Region</th>
+                    <th>Commercial Region</th>
+                    <th>Vendor</th>
+                    <th>Coverage City</th>
+                    <th>First Occurrence</th>
+                    <th>Last Occurrence</th>
+                    <th>Clear Time</th>
+                    <th>NE Priority</th>
+                    <th>Node Alias</th>
+                    <th>OmcEms</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+        var tbl_AlarmGrid;
+        $(function () {
+            $("#btn_Search").on("click", function () {
+                GetAlarmsInformation();
+            });
+            tbl_AlarmGrid = $('#AlarmGridTable').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+                        { "data": "Summary", "orderable": true },
+                          { "data": "BusImportance", "orderable": true },
+                          { "data": "SiteType", "orderable": true },
+                      { "data": "BSC_Name", "orderable": true },
+                      { "data": "BTS_Name", "orderable": true },
+
+                      { "data": "MicroBusinessUnit", "orderable": true },
+                      { "data": "Region", "orderable": true },
+                      { "data": "CommRegion", "orderable": true },
+                      { "data": "Vendor", "orderable": true },
+                      { "data": "CovCity", "orderable": true },
+                      { "data": "Firstoccurrence", "orderable": true },
+                      { "data": "Lastoccurrence", "orderable": true },
+                      { "data": "cleartime", "orderable": true },
+                      { "data": "NePriority", "orderable": true },
+                      { "data": "NodeAlias", "orderable": true },
+                      { "data": "OmcEms", "orderable": true }
+                      
+
+                ],
+            });
+        });
+
+        function GetAlarmsInformation() {
+            var siteCode = $("#txt_SiteCode").val();
+            if (siteCode) {
+                var data = new Object();
+                data.Site_Code = siteCode.toUpperCase();
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/AlarmsManagement/GetSiteAlarmsInformation", data, OnSuccessAlarmsInformation)
+            }
+            else {
+                //alert("Please enter a valid Site ID.");
+                alertify.alert('Alert', 'Please enter a valid Site ID.')
+                $("#txt_SiteCode").val('');
+                return;
+            }
+
+        }
+        function OnSuccessAlarmsInformation(results) {
+            debugger;
+            tbl_AlarmGrid.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_AlarmGrid.row.add(results[i]);
+            });
+            tbl_AlarmGrid.draw();
+        }
+
+    </script>
+}
+
+
+
+

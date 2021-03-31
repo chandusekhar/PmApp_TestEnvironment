@@ -1,0 +1,134 @@
+﻿
+@{
+    ViewBag.Title = "PMPlanningParameters";
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        $(document).ready(function () {
+            GetPmPlanningParameters();
+        });
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+        function GetPmPlanningParameters() {
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/GetPlanningParameter", null, OnSuccessGetPMParametersData, "POST", false)
+        }
+        function OnSuccessGetPMParametersData(result) {
+            debugger;
+            console.log(result);
+            var splitDate = result.Date.split('T')[0].toString();
+            //console.log(splitDate);
+            $("#txt_entry_date").val(splitDate);
+            $("#txt_telco_days").val(result.TelcoDays);
+            $("#txt_nontelco_days").val(result.NonTelcoDays);
+            $("#txt_nontelco_genset_hours").val(result.NonTelcoDGHours);
+
+        }
+        function SavePlanningParameter() {
+            if (!validateRequiredInput('#parameters_div')) {
+                return false;
+            }
+            let telcoDays = $("#txt_telco_days").val();
+            let nonTelcoDays = $("#txt_nontelco_days").val();
+            let nonTelcoDGHours = $("#txt_nontelco_genset_hours").val();
+            let obj = { TelcoDays: telcoDays, NonTelcoDays: nonTelcoDays, NonTelcoDGHours: nonTelcoDGHours };
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SavePmPlanningParameters", obj, OnSuccessSavePmPlanningParameter, "POST", false)
+            console.log(obj);
+        }
+        function OnSuccessSavePmPlanningParameter(res) {
+            debugger;
+            if (res == "success") {
+                //alertify.alert("Success", "Pending PM has been Approved Successfully.");
+                alertify.alert('Success', 'PM Planning Parameters has been Saved Successfully', function () { alertify.success('Ok'); location.reload(); });
+
+            }
+            else {
+                alertify.alert("Alert", "Failed.");
+            }
+        }
+    </script>
+}
+<div class="container">
+    <div class="card" id="parameters_div">
+        <div class="card-header box-header">
+            <h3 style="color:white">Planning Parameters</h3>
+        </div>
+        <div class="card-body box-body">
+            <div class="row">
+                <div class="col-md-2 col-sm-6">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Last Update Date</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="text" readonly="readonly" class="form-control requiredinput" id="txt_entry_date">
+                    </div>
+                </div>
+            </div>
+            <h4 class="card-title" style="color:white">Telco</h4>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>No. of Days<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="number" step="any" min="0" class="form-control requiredinput" id="txt_telco_days">
+                    </div>
+                </div>
+            </div>
+            <h4 class="card-title" style="color:white">Non-Telco</h4>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>No. of Days<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="number" step="any" min="0" class="form-control requiredinput" id="txt_nontelco_days">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Genset Hours<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="number" step="any" min="0" class="form-control requiredinput " id="txt_nontelco_genset_hours">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mybutton btmbuttom" onclick="SavePlanningParameter()" style="float:right">Save</button>
+        </div>
+    </div>
+</div>
+

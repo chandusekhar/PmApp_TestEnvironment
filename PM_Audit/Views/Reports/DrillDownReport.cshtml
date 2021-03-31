@@ -1,0 +1,343 @@
+﻿
+@{
+    ViewBag.Title = "DrillDownReport";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+
+
+    var tbl_RegionGrid;
+    var tbl_MBUGrid;
+    var tbl_SitesGrid;
+    var dates = [];
+    var Report = [];
+    function GetPMWiseSiteOutageReport() {
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetPMWiseSiteOutageReport", "", GetPMWiseSiteOutageReportResponse, "GET");
+    }
+    function GetPMWiseSiteOutageReportResponse(obj) {
+        if (obj) {
+            dates = obj.ReportDates;
+            Report = obj.Report;
+        }
+
+        if (dates.length > 0) {
+            $('.DateHeader1').html(dates[0]);
+            $('.DateHeader2').html(dates[1]);
+            $('.DateHeader3').html(dates[2]);
+            $('.DateHeader4').html(dates[3]);
+            $('.DateHeader5').html(dates[4]);
+            $('.DateHeader6').html(dates[5]);
+            $('.DateHeader7').html(dates[6]);
+        }
+
+        tbl_RegionGrid.clear().draw();
+        $.each(Report, function (i, item) {
+            tbl_RegionGrid.row.add(Report[i]);
+        });
+        tbl_RegionGrid.draw();
+    }
+
+
+    function GetRegionWiseSiteOutageReport(Region) {
+        var obj = new Object();
+        obj.Region = Region;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetRegionWiseSiteOutageReport", obj, GetRegionWiseSiteOutageReportResponse);
+    }
+    function GetRegionWiseSiteOutageReportResponse(obj) {
+        if (obj) {
+            dates = obj.ReportDates;
+            Report = obj.Report;
+        }
+
+        if (dates.length > 0) {
+            $('.DateHeader1').html(dates[0]);
+            $('.DateHeader2').html(dates[1]);
+            $('.DateHeader3').html(dates[2]);
+            $('.DateHeader4').html(dates[3]);
+            $('.DateHeader5').html(dates[4]);
+            $('.DateHeader6').html(dates[5]);
+            $('.DateHeader7').html(dates[6]);
+        }
+
+        tbl_MBUGrid.clear().draw();
+        $.each(Report, function (i, item) {
+            tbl_MBUGrid.row.add(Report[i]);
+        });
+        tbl_MBUGrid.draw();
+    }
+
+
+    function GetMBUWiseSiteOutageReport(MBU) {
+        var obj = new Object();
+        obj.MBU = MBU;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetMBUWiseSiteOutageReport", obj, GetMBUWiseSiteOutageReportResponse);
+    }
+    function GetMBUWiseSiteOutageReportResponse(obj) {
+        if (obj) {
+            dates = obj.ReportDates;
+            Report = obj.Report;
+        }
+
+        if (dates.length > 0) {
+            $('.DateHeader1').html(dates[0]);
+            $('.DateHeader2').html(dates[1]);
+            $('.DateHeader3').html(dates[2]);
+            $('.DateHeader4').html(dates[3]);
+            $('.DateHeader5').html(dates[4]);
+            $('.DateHeader6').html(dates[5]);
+            $('.DateHeader7').html(dates[6]);
+        }
+
+        tbl_SitesGrid.clear().draw();
+        $.each(Report, function (i, item) {
+            tbl_SitesGrid.row.add(Report[i]);
+        });
+        tbl_SitesGrid.draw();
+    }
+
+
+    $(document).ready(function () {
+        tbl_RegionGrid = $('#tbl_region').DataTable({
+            responsive: true,
+            //"sScrollX": "100%",
+            //"sScrollXInner": "100%",
+            //"bScrollCollapse": true,
+            dom: 'Bfrtip',
+            //'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  {
+                      "data": "Region",
+                      "render": function (data, type, row) {
+                          // debugger;
+                          var a = '<span class="clickable-span"  onclick="ShowMBUTable(\''+ data +'\')">' + data + '</span>';
+                          return a;
+                      }
+                  },
+                  { "data": "Date1", "orderable": true },
+                  { "data": "Date2", "orderable": true },
+                  { "data": "Date3", "orderable": true },
+                  { "data": "Date4", "orderable": true },
+                  { "data": "Date5", "orderable": true },
+                  { "data": "Date6", "orderable": true },
+                  { "data": "Date7", "orderable": true }
+
+            ],
+
+        });
+        tbl_MBUGrid = $('#tbl_mbu').DataTable({
+            responsive: true,
+            //"sScrollX": "100%",
+            //"sScrollXInner": "100%",
+            //"bScrollCollapse": true,
+            dom: 'Bfrtip',
+            //'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  {
+                      "data": "MBU",
+                      "render": function (data, type, row) {
+                          //debugger;
+                          var a = '<span class="clickable-span"  onclick="ShowSitesTable(\'' + data + '\')">' + data + '</span>';
+                          return a;
+                      }
+                  },
+                  { "data": "Date1", "orderable": true },
+                  { "data": "Date2", "orderable": true },
+                  { "data": "Date3", "orderable": true },
+                  { "data": "Date4", "orderable": true },
+                  { "data": "Date5", "orderable": true },
+                  { "data": "Date6", "orderable": true },
+                  { "data": "Date7", "orderable": true }
+
+            ],
+
+        });
+        tbl_SitesGrid = $('#tbl_sites').DataTable({
+            responsive: true,
+            //"sScrollX": "100%",
+            //"sScrollXInner": "100%",
+            //"bScrollCollapse": true,
+            dom: 'Bfrtip',
+            //'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  {
+                      "data": "SiteCode",
+                      "render": function (data, type, row) {
+                          // debugger;
+                          var a = '<span class="non-clickable-span" >' + data + '</span>';
+                          return a;
+                      }
+                  },
+                  { "data": "Date1", "orderable": true },
+                  { "data": "Date2", "orderable": true },
+                  { "data": "Date3", "orderable": true },
+                  { "data": "Date4", "orderable": true },
+                  { "data": "Date5", "orderable": true },
+                  { "data": "Date6", "orderable": true },
+                  { "data": "Date7", "orderable": true }
+
+            ],
+
+        });
+
+
+        //tbl_RegionGrid.rows.add(Regions).draw();
+        //tbl_MBUGrid.rows.add(MBUs).draw();
+        //tbl_SitesGrid.rows.add(Sites).draw();
+        GetPMWiseSiteOutageReport();
+    });
+
+
+    function ShowMBUTable(region) {
+        debugger;
+        $('#div_region').hide();
+        $('#div_mbu').show();
+        $('#sp_MBU').show();
+        $('#span_regiontext').text(region);
+        GetRegionWiseSiteOutageReport(region);
+      
+    }
+
+    function ShowSitesTable(mbu) {
+          debugger;
+        $('#div_mbu').hide();
+        $('#div_sites').show();
+        $('#sp_MBU').show();
+        $('#sp_Site').show();
+        $('#span_mbutext').text(mbu);
+        GetMBUWiseSiteOutageReport(mbu);
+    }
+
+    function ShowRegionDiv() {
+        $('#div_region').show();
+        $('#div_mbu').hide();
+        $('#div_sites').hide();
+        $('#sp_MBU').hide();
+        $('#sp_Site').hide();
+    }
+
+    function ShowMBUDiv() {
+        $('#div_region').hide();
+        $('#div_mbu').show();
+        $('#div_sites').hide();
+        $('#sp_Site').hide();
+    }
+
+
+</script>
+
+
+<div id="page-content-wrapper">
+    <div class="container-fluid">
+        <div class="admin_box">
+            <span id="sp_Region">
+                <span class="clickable_drilldown_breadcrumb" onclick="ShowRegionDiv()"> Region</span>
+            </span>
+            <span id="sp_MBU" class="non_clickable_drilldown_breadcrumb" style="display:none">
+                > <span class="clickable_drilldown_breadcrumb" id="span_regiontext" onclick="ShowMBUDiv()"></span>
+            </span>
+            <span id="sp_Site" class="non_clickable_drilldown_breadcrumb" style="display:none">
+                ><span id="span_mbutext"></span>
+            </span>
+
+            @*<span><a title="Grid View" ><i class="drilldown_floatright fa fa-table"></i></a></span>
+                <span><a title="Pie Chart" ><i class="drilldown_floatright fa fa-pie-chart"></i></a></span>
+                <span><a title="Bar Chart" ><i class="drilldown_floatright fa fa-bar-chart"></i></a></span>*@
+
+        </div>
+        <div class="admin_box">
+            <div class="row">
+                <div id="div_region">
+                    <div class="div_table">
+                        <table id="tbl_region" class="display"  style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>Region</th>
+                                    <th class="DateHeader1"></th>
+                                    <th class="DateHeader2"></th>
+                                    <th class="DateHeader3"></th>
+                                    <th class="DateHeader4"></th>
+                                    <th class="DateHeader5"></th>
+                                    <th class="DateHeader6"></th>
+                                    <th class="DateHeader7"></th>
+                                </tr>
+
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="div_mbu" style="display:none">
+                    <div class="div_table">
+                        <table id="tbl_mbu" class="display" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>MBU</th>
+                                    <th class="DateHeader1"></th>
+                                    <th class="DateHeader2"></th>
+                                    <th class="DateHeader3"></th>
+                                    <th class="DateHeader4"></th>
+                                    <th class="DateHeader5"></th>
+                                    <th class="DateHeader6"></th>
+                                    <th class="DateHeader7"></th>
+
+
+                                </tr>
+
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="div_sites" style="display:none">
+                    <div class="div_table">
+                        <table id="tbl_sites" class="display"  style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>Sites</th>
+                                    <th class="DateHeader1"></th>
+                                    <th class="DateHeader2"></th>
+                                    <th class="DateHeader3"></th>
+                                    <th class="DateHeader4"></th>
+                                    <th class="DateHeader5"></th>
+                                    <th class="DateHeader6"></th>
+                                    <th class="DateHeader7"></th>
+                                </tr>
+
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

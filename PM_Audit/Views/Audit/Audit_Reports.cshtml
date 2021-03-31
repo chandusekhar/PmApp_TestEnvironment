@@ -1,0 +1,170 @@
+﻿
+@{
+    ViewBag.Title = "Audit_Reports";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+
+        function validateRequiredInput(selector) {
+            debugger;
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!');
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+      
+            function OpenSiteComparisonDetails() {
+                debugger;
+                if (!validateRequiredInput('#modal-default')) {
+                    return false;
+                }
+                var siteID = $("#txt_siteID").val();
+                if (siteID) {
+
+                    $('#formDiv').html('');
+                    var form = document.createElement("form");
+                    form.setAttribute("method", 'POST');
+                    form.setAttribute("action", '/Audit/ViewAuditListForComparisonReport');
+
+                    var hiddenFieldSiteCode = document.createElement("input");
+                    hiddenFieldSiteCode.setAttribute("type", "hidden");
+                    hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+                    hiddenFieldSiteCode.setAttribute("value", siteID.toUpperCase());
+                    form.appendChild(hiddenFieldSiteCode);
+
+                    var hiddenFieldPmType = document.createElement("input");
+                    hiddenFieldPmType.setAttribute("type", "hidden");
+                    hiddenFieldPmType.setAttribute("name", 'PM_Type');
+                    hiddenFieldPmType.setAttribute("value", $('#dd_site_type').val());
+                    form.appendChild(hiddenFieldPmType);
+
+                    document.getElementById('formDiv').appendChild(form);
+                    form.submit();
+
+                }
+                else {
+                    //  alert("Please enter Site ID.");
+                    alertify.alert('Alert', 'Please enter Site ID.');
+                    $("#txt_siteID").val('');
+                    return;
+                }
+
+            }
+        
+    </script>
+
+    }
+    <div class="container">
+
+        <section class="content">
+
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="#" class="no-hover" data-toggle="modal" data-target="#modal-default">
+                        <span class="info-box-icon"><i class="fa fa-table"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Analysis Reports</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewAuditDetailsReport", "Audit")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-info-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">PM Audit Details</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewGeneralAuditDetailsReport", "Audit")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-info-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">General Audit Details</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden" id="formDiv"></div>
+        </section>
+    </div>
+
+
+    <div class="modal fade SiteOpenModal" id="modal-default">
+        <div class="modal-dialog left-initial">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Site ID</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-5 col-sm-6 col-xs-7 col-left-margin top-margin-dialog">
+                                    <input id="txt_siteID" type="text" class="form-control input-lg requiredinput" placeholder="Enter Site ID">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 col-sm-6 col-xs-7 col-left-margin top-margin-dialog">
+                                    <div class="form-group">
+                                        <select class="form-control mydropdown dropdown_style requiredinput" id="dd_site_type">
+                                            <option value="" disabled selected hidden>Select Site Type</option>
+                                            <option>Telco</option>
+                                            <option>NON-Telco</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="OpenSiteComparisonDetails()" class="btn btn-primary">View Comparison</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+
+
+

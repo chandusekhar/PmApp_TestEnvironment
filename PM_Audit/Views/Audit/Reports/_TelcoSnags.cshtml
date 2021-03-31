@@ -1,0 +1,127 @@
+﻿<!-- #region Major Snags TAB -->
+<!--Panel 21-->
+<script type="text/javascript">
+
+    function SaveTelcoSnagsData() {
+        debugger;
+        var obj = new Object();
+
+        obj.SiteCode = PM_Data.SiteCode;
+        obj.FK_PM_ID = PM_Data.ID;
+        obj.Type = PM_Data.Type;
+        obj.vswr_alarm_exist = $('#txt_vswr_alarm_exist_audit').val();
+        obj.telco_equipment_cleaning = $('#txt_telco_equipment_cleaning_audit').val();
+        obj.fan_ac_functionality = $('#txt_fan_ac_functionality_audit').val();
+        obj.current_rsl = $('#txt_current_rsl_audit').val();
+        obj.active_alarm_bts = $('txt_active_alarm_bts_audit').val();
+        obj.active_alarm_microwave = $('#txt_active_alarm_microwave_audit').val();
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SaveTelcoSnagsAudit", obj, OnSuccessSaveTelcoSnags, "POST", false)
+    }
+
+    function OnSuccessSaveTelcoSnags(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert", "Failed.");
+        }
+    }
+
+
+</script>
+
+<div class="tab-pane fade in" id="pane31" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco">
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>VSWR Alarm Exists</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <div class="myinput">
+                        <input type="text" id="txt_vswr_alarm_exist_audit" class="form-control " disabled="disabled">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Telco Equipment Cleaning</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                   
+                        <div class="myinput">
+                            <input type="text" id="txt_telco_equipment_cleaning_audit" class="form-control " disabled="disabled">
+                        </div>
+                    </div>
+                  
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>FAN/AC Functionality</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <div class="myinput">
+                        <input type="text" id="txt_fan_ac_functionality_audit" class="form-control " disabled="disabled">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Current RSL</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <div class="myinput">
+                        <input type="text" id="txt_current_rsl_audit" class="form-control " disabled ="disabled">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Active Alarms on BTS </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <div class="myinput">
+                        <input type="text" id="txt_active_alarm_bts_audit" class="form-control " disabled ="disabled">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Active Alarms on microwave</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <div class="myinput">
+                        <input type="text" id="txt_active_alarm_microwave_audit" class="form-control " disabled ="disabled">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        @*<button id="save_majorsnags" name="save_majorsnags" onclick="SaveTelcoSnagsData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 21-->
+<!-- #endregion -->

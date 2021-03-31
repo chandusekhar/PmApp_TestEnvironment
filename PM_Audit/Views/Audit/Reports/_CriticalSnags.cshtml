@@ -1,0 +1,392 @@
+﻿<!-- #region Critical Snags TAB -->
+<!--Panel 20-->
+<script type="text/javascript">
+
+    function SaveCriticalSnagsData() {
+    
+
+        //if (PM_Data.CriticalSnags == null) {
+        //    PM_Data.CriticalSnags = new Object();
+        //}
+        var obj = new Object();
+
+        obj.SiteCode = PM_Data.SiteCode;
+        obj.FK_PM_ID = PM_Data.ID;
+        obj.Type = PM_Data.Type;
+        obj.DG_hrs_since_last_pm = $('#txt_dg_hrs_audit').val();
+        obj.Genset_module = $('#dd_genset_module_audit').val();
+        obj.Oil_fuel_water_leakage = $('#dd_oil_fuel_water_leakage_audit').val();
+        obj.Oil_Level = $('#dd_oil_level_audit').val();
+        obj.Safeties_working = $('#dd_safeties_working_audit').val();
+        obj.Filters_Status = $('#dd_filters_status_audit').val();
+        obj.Filters_Changed = $('#dd_filters_changed_audit').val();
+        obj.DG_Battery = $('#dd_dg_battery_audit').val();
+        obj.Radiator = $('#dd_radiator_audit').val();
+        obj.Battery_chargers = $('#dd_battery_chargers_audit').val();
+        obj.Magnetic_Contactor = $('#dd_magnetic_contactor_audit').val();
+        obj.Load_Breaker = $('#dd_load_breaker_audit').val();
+        obj.Rectifier_modules = $('#txt_rectifier_modules_audit').val();
+        obj.All_Phases_till_rectifier = $('#dd_all_phases_till_rectifier_audit').val();
+        obj.Load_balancing = $('#dd_load_balancing_audit').val();
+        obj.EAS_alarms = $('#dd_eas_alarms_audit').val();
+        obj.MCU_status = $('#dd_mcu_status_audit').val();
+        obj.RBS_cleaning_Fans = $('#dd_rbs_cleaning_audit').val();
+        obj.TN_cabinet_Cleaning_Fans = $('#dd_cabinet_cleaning_audit').val();
+        obj.Aircondition_status = $('#dd_aircon_status_audit').val();
+        obj.Site_floor_cleaning = $('#dd_site_floor_cleaning_audit').val();
+
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SaveCriticalSnagsAudit", obj, OnSuccessSaveCriticalSnags, "POST")
+    }
+
+    function OnSuccessSaveCriticalSnags(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+</script>
+
+<div class="tab-pane fade in" id="pane20" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco">
+
+
+        <!-- #region DG Hrs and Genset Module -->
+        @*------------DG Hrs since last PM---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG Hrs since last PM</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group myinput">
+                    <input type="text" id="txt_dg_hrs_audit" class="form-control" disabled="disabled">
+                </div>
+            </div>
+
+            @*------------Genset module---------------*@
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Genset module</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_genset_module_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Oil, fuel, water leakage -->
+        @*------------Oil, fuel, water leakage---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Oil, fuel, water leakage</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_oil_fuel_water_leakage_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Oil Level</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_oil_level_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Safeties working-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Safeties working</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_safeties_working_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Filters Status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_filters_status_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <!--#region Filters Changed-->
+        <div class="row">
+
+
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Filters Changed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_filters_changed_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>DG Battery</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_dg_battery_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+       
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Radiator</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_radiator_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Battery chargers (Dynamo, static)</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_battery_chargers_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Magnetic Contactor</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_magnetic_contactor_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Load Breaker</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_load_breaker_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Rectifier modules</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group myinput">
+                    <input id="txt_rectifier_modules_audit" type="text" class="form-control" disabled="disabled">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>All Phases till rectifier</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_all_phases_till_rectifier_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Load balancing</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_load_balancing_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>EAS alarms</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_eas_alarms_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>MCU status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_mcu_status_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>RBS cleaning / Fans</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_rbs_cleaning_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>TN cabinet Cleaning / Fans</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_cabinet_cleaning_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Aircondition status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_aircon_status_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Site floor cleaning</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_site_floor_cleaning_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        @*<button id="save_criticalsnags" name="save_criticalsnags" onclick="SaveCriticalSnagsData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 20-->
+<!-- #endregion -->
+

@@ -1,0 +1,54 @@
+﻿@model PM_Audit.Models.ViewModels.UserInfoVM
+@using PM_Audit.Extensions;
+@using PM_Audit.Models.Authorization_Models;
+<header>
+
+    <nav class="navbar navbar-static-top">
+        <div class="pull-left">@Html.Raw(Html.BuildBreadcrumbNavigation())</div>
+        <div>
+            <div class="navbar-custom-menu pull-right">
+                <ul class="nav navbar-nav">
+
+                    <li class="user-header dropdown user user-menu ">
+                        @if (Request.IsAuthenticated)
+            {
+                using (Html.BeginForm("LogOut", "Login", FormMethod.Post, new { role = "form" }))
+                {
+                                @Html.AntiForgeryToken()
+                            }
+                        }
+                        <a href="#" id="navbar-usermenu" class="dropdown-toggle" data-target="#user-drop-down" data-toggle="collapse">
+                            <img src="~/Content/Image/user.jpg" class="user-image" alt="User Image" style="text-align:center">
+                            <span> @Model.FriendlyName</span>
+                        </a>
+                        <ul id="user-drop-down" class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <img src="~/Content/Image/user.jpg" class="img-circle pull-left" alt="User Image">
+
+                                <p>
+                                    @Model.FriendlyName
+                                    <small>
+                                        @Model.UserName
+                                        @Model.Email
+                                    </small>
+                                </p>
+                                @if (!User.Identity.IsJazzUser())
+                                {
+                                    <div class="pull-left">
+                                        <a href="@Url.Action("Index","ProfileManagement")" class="btn btn-default btn-flat">Profile</a>
+                                    </div>
+                                }
+                                <div>
+                                    <a href="@Url.Action("LogOut","Login")" class="btn btn-default btn-flat">Sign out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </nav>
+</header>

@@ -1,0 +1,214 @@
+﻿<!-- #region Alarms TAB -->
+<script>
+    var AlarmsData;
+    function SaveAlarmData() {
+        var AllAlarmsToggled = true;
+        if (PM_Data.checkListAlarms== null) {
+            PM_Data.checkListAlarms = new Object();
+        }
+        if (AlarmsData == null) {
+            alertify.alert("Alert","Please toggle alarms first.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData == null) {
+            alertify.alert("Alert","Please toggle alarms first.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.Intruder != "Toggled") {
+            alertify.alert("Alert","Intruder alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.AC_Mains_Failure != "Toggled") {
+            alertify.alert("Alert","AC alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.DG_On != "Toggled") {
+            alertify.alert("Alert","DG ON alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.Low_Voltage != "Toggled") {
+            alertify.alert("Alert","Low Voltage alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.System_On_Batteries != "Toggled") {
+            alertify.alert("Alert","System on Batteries alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        if (AlarmsData.High_Temperature != "Toggled") {
+            alertify.alert("Alert","Hight Temperature alarm is not toggled.");
+            AllAlarmsToggled = false;
+        }
+        PM_Data.checkListAlarms.Intruder = AlarmsData.Intruder;
+        PM_Data.checkListAlarms.AC_Mains_Failure = AlarmsData.AC_Mains_Failure;
+        PM_Data.checkListAlarms.DG_On = AlarmsData.DG_On;
+        PM_Data.checkListAlarms.Low_Voltage = AlarmsData.Low_Voltage;
+        PM_Data.checkListAlarms.System_On_Batteries = AlarmsData.System_On_Batteries;
+        PM_Data.checkListAlarms.High_Temperature = AlarmsData.High_Temperature;
+        PM_Data.checkListAlarms.AllAlarmsToggled = AllAlarmsToggled;
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/PreventiveMaintenance/SaveAlarmsChecklistData", PM_Data, OnSuccessSaveAlarm, "POST", false)
+    }
+
+    function OnSuccessSaveAlarm(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+           // GetPMData();
+        }
+        else {
+            alertify.alert("Alert",res);
+        }
+    }
+    function GetPMAlarmsTogglingStatus() {
+        debugger;
+        var AlarmObj = new Object();
+        AlarmObj.PM_ID = PM_Data.ID;
+        AlarmObj.Site_Code = PM_Data.SiteCode;
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/AlarmsManagement/GetPMAlarmsTogglingStatus", AlarmObj, GetPMAlarmsTogglingStatusResponse, "POST");
+
+    }
+    function GetPMAlarmsTogglingStatusResponse(res) {
+        debugger;
+        AlarmsData = res;
+        $('#dd_intruder').text(res.Intruder);
+        $('#dd_ac_main_failure').text(res.AC_Mains_Failure);
+        $('#dd_dg_on').text(res.DG_On);
+        $('#dd_low_voltage').text(res.Low_Voltage);
+        $('#dd_system_on_batteries').text(res.System_On_Batteries);
+        $('#dd_high_temperature').text(res.High_Temperature);
+
+    }
+
+
+</script>
+
+<!--Panel 4-->
+
+
+<div class="tab-pane fade in" id="panel4" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco">
+
+        <!-- #region Intruder-->
+        @*------------Intruder---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Intruder</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_intruder"></label>
+                </div>
+            </div>
+            @*<div class="col-md-2 col-sm-2 col-xs-3">
+                <div class="checkbox">
+                    <label><input type="checkbox" id="checkbox_Intruder" value="">Not Toggled</label>
+                </div>
+            </div>*@
+        </div>
+        @*<div class="row hidden" div="div_Intruder">
+            <div class="col-md-2 col-sm-2 col-xs-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Intruder Reason<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-5 col-xs-5">
+                <div class="form-group">
+                    <textarea  class="form-control col-xs-12 no-resize" rows="3" id="txt_Intruder_reason"></textarea>
+                </div>
+            </div>
+        </div>*@
+        <!--#endregion-->
+        <!-- #region AC Mains Failure-->
+        @*------------AC Mains Failure---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>AC Mains Failure</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_ac_main_failure"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region DG On-->
+        @*------------DG On---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG On</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_dg_on"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region Low Voltage-->
+        @*------------Low Voltage---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Low Voltage</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_low_voltage"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region System on Batteries-->
+        @*------------System on Batteries---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> System on Batteries</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_system_on_batteries"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region High Temperature-->
+        @*------------High Temperature---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> High Temperature</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_high_temperature"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="form-group">
+            <div class="row">
+                <button id="toggle_alarms" name="toggle_alarms" onclick="GetPMAlarmsTogglingStatus()" class="btn btn-primary mybutton">Toggle</button>
+            </div>
+            <div class="row">
+                <button id="save_alarms" name="save_alarms" onclick="SaveAlarmData()" class="btn btn-primary mybutton">Save</button>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+
+
+<!--/.Panel 4-->
+<!-- #endregion -->

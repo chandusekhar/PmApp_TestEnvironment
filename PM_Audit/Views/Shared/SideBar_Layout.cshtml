@@ -1,0 +1,142 @@
+﻿@using Microsoft.AspNet.Identity
+@using System.Linq
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Preventive Maintenance</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/script")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/footable")
+    @Styles.Render("~/bundles/Theme")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).ajaxStart(function () {
+                ShowLoader();
+            });
+            $(document).ajaxComplete(function () {
+                HideLoader();
+            });
+        });
+        function ShowLoader() {
+            $("#wait").css("display", "block");
+        }
+        function HideLoader() {
+            $("#wait").css("display", "none");
+
+        }
+        $(document).ready(function () {
+
+            var dropdown = document.getElementsByClassName("dropdown-btn");
+            var i;
+
+            for (i = 0; i < dropdown.length; i++) {
+                dropdown[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var dropdownContent = this.nextElementSibling;
+                    if (dropdownContent.style.display === "block") {
+                        dropdownContent.style.display = "none";
+                    } else {
+                        dropdownContent.style.display = "block";
+                    }
+                });
+            }
+
+            $(".menu-toggle").click(function (e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+
+
+
+
+        });
+    </script>
+    @RenderSection("Scripts", false)
+</head>
+<body>
+    <div class="bbg">
+        @Html.Action("PartialHeader", "Dashboard")
+        <div class="">
+            <div id="wait" style="display:none;position:absolute;top:50%;left:50%;padding:2px;z-index:10002"><img src="~/Content/Image/loading-spinner.gif" width="100" height="100" /></div>
+            <nav class="navbar navbar-default NOnavbar-fixed-top navbar_visible">
+                <div>
+
+                    <button type="button" class="navbar-toggle collapsed menu-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                    </div>
+
+
+
+                </div>
+            </nav>
+            <div id="wrapper" class="sidenav">
+
+                <div id="sidebar-wrapper">
+                    <ul class="sidebar-nav sidenav">
+                        <li>
+                            <a href="@Url.Action("index","Reports")">
+                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <span class="dropdown-btn">
+                                <i class="fa fa-book"></i>  Reports
+
+                            </span>
+
+                            <div class="dropdown-container">
+                                <a href="@Url.Action("ExtractReports","Reports")">
+                                    <i class="fa fa-download"></i> <span>Extract Reports</span>
+                                </a>
+                                <a href="@Url.Action("ChecklistReport","Reports")">
+                                    <i class="fa fa-cog"></i> <span>PM Checklist Reports</span>
+                                </a>
+                                <a href="@Url.Action("PMPendingApproval","Reports")">
+                                    <i class="fa fa-cog"></i> <span>PM Pending Approval</span>
+                                </a>
+                                <a href="@Url.Action("InventoryReport","Reports")">
+                                    <i class="fa fa-tags"></i><span>Site Inventory Reports</span>
+                                </a>
+                                <a href="@Url.Action("InventoryPendingApproval","Reports")">
+                                    <i class="fa fa-tags"></i><span>Inventory Pending Approval</span>
+                                </a>
+                                <a href="@Url.Action("NonPMReport","Reports")">
+                                    <i class="fa fa-tags"></i><span>NON PM Reports</span>
+                                </a>
+                                <a href="@Url.Action("AlarmTogglingReport","Reports")">
+                                    <i class="fa fa-download"></i> <span>Alarm Toggling Reports</span>
+                                </a>
+                                <a href="@Url.Action("CpDetails","Reports")">
+                                    <i class="fa fa-download"></i> <span>Cp Details</span>
+                                </a>
+                                <a href="@Url.Action("DgDetails","Reports")">
+                                    <i class="fa fa-download"></i> <span>DG Details</span>
+                                </a>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("DrillDownReport","Reports")">
+                                <i class="fa fa-exclamation-circle"></i> <span>PM Site Outage Report</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</body>
+</html>

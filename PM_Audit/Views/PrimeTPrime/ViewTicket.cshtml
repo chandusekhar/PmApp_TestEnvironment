@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "View Tickets";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>Site Code</th>
+                <th>Start Time</th>
+                <th>Site Status</th>
+                <th>Ticket Status</th>
+                <th>Opened By</th>
+                <th>Approver</th>
+                <th>Assigned To</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="modal fade" id="CommentsModal">
+        <div class="modal-dialog left-initial">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Comments For Rejection</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="pending_pm_id" />
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-10 col-sm-10 col-xs-10 col-left-margin top-margin-dialog">
+                                    <span class="asterick"> *</span>
+                                    <textarea class="col-xs-12 col-md-12 text-area-closePM requiredinput" id="TxtArea_Reason"></textarea>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="SaveComments()" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var tbl_PMGrid;
+        $(document).ready(function () {
+            GetTickets();
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                "order": [[1, "desc"]],
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                    { "data": "sitecode", "orderable": true },
+                    //{ "data": "issuestarttime", "orderable": true },
+                    {
+                        "data": null, render: function (data, type, row) {
+                            var formattedDate = moment(row.issuestarttime).format("YYYY-MM-DD HH:mm");
+                            return formattedDate;
+                        }},
+                    { "data": "sitestatus", "orderable": true },
+                    { "data": "ttstatus", "orderable": true },
+                    { "data": "createdby", "orderable": true },
+                    { "data": "approver", "orderable": true },
+                    { "data": "assignedto", "orderable": true },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            debugger;
+                            //   if (row.PM_Status != "Closed") {
+                            if (row.stage == "Approval Logistics" || row.stage == "Approval OAN") {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicket(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            else if (row.stage == "Reopen/Close") {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicketForCloseReopen(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            else if (row.stage == "Resolution") {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicketForResolution(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            else if (row.stage == "Reopen") {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicketForResolution(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            else if (row.createby == row.approver) {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicketForCloseReopen(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            else {
+                                return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="viewTicket(\'' + row.primeid + '\')" class="btn btn-primary mybutton viewPm">View</button>';
+                            }
+                            // }
+                            //  else {
+                            //     return '';
+                            // }
+                        }
+                    }
+                ],
+
+            });
+        });
+        function GetTickets() {
+            $.ajax({
+                type: 'GET',
+                url: "/PrimeTPrime/GetAllTickets",
+                headers: { "Content-Type": "application/json" },
+                success: OnSuccessGetTickets
+            })
+        }
+        function OnSuccessGetTickets(results) {
+            console.log(results);
+            debugger;
+            if (results.success == true) {
+                //tbl_PMGrid.clear().draw();
+                $.each(results.Data, function (i, item) {
+                    debugger;
+                    tbl_PMGrid.row.add(results.Data[i]);
+                });
+                tbl_PMGrid.draw();
+            }
+            else {
+                var obj = { ExceptionMessage: 'Maximo Error', StackTrace: results.Data }
+                console.log(obj);
+                //ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/SaveException", obj, OnSuccessSaveException, "POST", false)
+                alertify.alert("Alert", "Failed to fetch tickets");
+            }
+        }
+        function viewTicket(primeId) {
+            var id = primeId;
+            var url = '@Url.Action("ViewTicketForApproval","PrimeTPrime")';
+            location.href = url + "/" + primeId;
+        }
+        function viewTicketForResolution(primeId) {
+            var url = '@Url.Action("ViewTicketForResolution", "PrimeTPrime")';
+            location.href = url + "/" + primeId;
+        }
+        function viewTicketForCloseReopen(primeId) {
+            var url = '@Url.Action("ViewTicketForCloseReopen", "PrimeTPrime")';
+            location.href = url + "/" + primeId;
+        }
+        function OnSuccessSaveException(result){
+
+        }
+
+    </script>
+}

@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Prime TPrime";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+<div class="container">
+    <section class="content">
+        @if (ViewBag.PrimeTPrimePermissions.Contains("perm_prime_tprime_open"))
+        {
+
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("OpenTicket","PrimeTPrime")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-cog"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Open Ticket</span>
+                        </div>
+                    </a>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+        }
+
+        @if (ViewBag.PrimeTPrimePermissions.Contains("perm_prime_tprime_view"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="@Url.Action("ViewTicket","PrimeTPrime")" class="no-hover">
+                        <span class="info-box-icon"><i class="fa fa-bell"></i></span>
+
+
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">View Ticket</span>
+                        </div>
+                    </a> <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        }
+    <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+        <div class="info-box narrow-2 bg_tile_colour">
+            <a href="@Url.Action("Report","PrimeTPrime")" class="no-hover">
+                <span class="info-box-icon"><i class="fa fa-bell"></i></span>
+
+
+                <div class="info-box-content">
+                    <span class="info-box-text text_wrap">Report</span>
+                </div>
+            </a> <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    </section>
+    @section Scripts{
+        @Scripts.Render("~/bundles/GlobalScripts")
+        @*<script>
+
+            $(document).ready(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "https://nocdev.jazz.com.pk/maximo/j_security_check",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    data: { j_username: "prime", j_password: "mobilink" },
+                    //xhrFields: { withCredentials: true },
+                    //crossDomain: true,
+                    success: function (response, status, xhr) {
+                        debugger;
+                        //var test = response.headers.getResponseHeader('Set-Cookie');
+                        //var test = xhr.getAllResponseHeaders();
+                        //console.log(xhr.getResponseHeader('Set-Cookie'));
+                        //setTimeout(
+                        //    () => {
+                        //        $.ajax({
+                        //            type: 'GET',
+                        //            url: "https://nocdev.jazz.com.pk/maximo/oslc/os/prime?oslc.select=category,description,primeid,issue&oslc.pageSize=10",
+                        //            headers: { "Content-Type": "application/json" },
+                        //            //xhrFields: { withCredentials: true },
+                        //            //crossDomain:true,
+                        //            success: function (res) {
+                        //                debugger;
+                        //                console.log(res);
+                        //            }
+                        //        })
+                        //    }, 1000
+                        //);
+
+                    }
+                });
+
+                //maximoLogin()
+                //var settings = {
+                //    "url": "https://nocdev.jazz.com.pk/maximo/j_security_check",
+                //    "method": "POST",
+                //    "timeout": 0,
+                //    "headers": {
+                //        "Content-Type": "application/x-www-form-urlencoded"
+                //    },
+                //    "data": {
+                //        "j_username": "prime",
+                //        "j_password": "mobilink"
+                //    }
+                //};
+                //$.ajax(settings).done(function (response,xhr) {
+                //    debugger;
+                //    console.log(xhr.getResponseHeader('Set-Cookie'));
+                //    console.log(response);
+                //});
+            });
+
+                    //function maximoLogin() {
+                    //    var obj = { j_username: "prime", j_password: "mobilink" };
+                    //    ApiCallService.Ajax("https://10.231.105.128", "/maximo/j_security_check", obj, OnSuccess, "POST", null, null, null, null, "application/x-www-form-urlencoded",)
+                    //}
+
+                    //function OnSuccess(result) {
+                    //    console.log(JSON.stringify(result));
+                    //    alertify("success", "Login successful");
+                    //}
+
+
+        </script>*@
+    }
+</div>
+
+
+

@@ -1,0 +1,225 @@
+﻿<!-- #region Other info TAB -->
+<!--Panel 14-->
+<script type="text/javascript">
+
+    function SaveOtherInfoDataAudit() {
+
+        if (PM_Data.checkListSiteOtherInfo == null) {
+            PM_Data.checkListSiteOtherInfo = new Object();
+        }
+        //if (!validateRequiredInput('#checklist_other')) {
+        //    return false;
+        //}
+        PM_Data.checkListSiteOtherInfo.Tower_Height = $('#txt_tower_height_other').val();
+        PM_Data.checkListSiteOtherInfo.Site_Cleaning = $('#dd_site_cleaning_other').val();
+        PM_Data.checkListSiteOtherInfo.Extra_Material = $('#dd_junk_material_other').val();
+        PM_Data.checkListSiteOtherInfo.Floor = $('#dd_floor_other').val();
+        PM_Data.checkListSiteOtherInfo.Main_Gate = $('#dd_main_gate_other').val();
+        PM_Data.checkListSiteOtherInfo.Boundary_Wall = $('#dd_boundary_wall_other').val();
+        PM_Data.checkListSiteOtherInfo.Fence = $('#dd_fence_other').val();
+        PM_Data.checkListSiteOtherInfo.Paint = $('#dd_paint_other').val();
+        PM_Data.checkListSiteOtherInfo.Rusty = $('#dd_rusty_other').val();
+        PM_Data.checkListSiteOtherInfo.Overloaded = $('#dd_overloaded_other').val();
+        PM_Data.checkListSiteOtherInfo.Tightening_Required = $('#dd_tightening_other').val();
+
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/SaveSiteOtherInfoChecklistDataGeneralAudit", PM_Data, OnSuccessSaveOtherInfo, "POST", false)
+    }
+
+    function OnSuccessSaveOtherInfo(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel14" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco" id="checklist_other">
+        <!-- #region Site Cleaning and Junk/Extra Material -->
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Site Cleaning </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_site_cleaning_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Junk/Extra Material</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_junk_material_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>PRESENT</option>
+                        <option>NOT PRESENT</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region (Civil Work) Floor and Main Gate -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Floor </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_floor_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Main Gate</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_main_gate_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region (Civil Work) Boundary Wall and Fence -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Boundary Wall </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_boundary_wall_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fence</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_fence_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region (Tower) Paint and Rusty -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Paint </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_paint_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Rusty</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_rusty_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region (Tower) Overloaded and Tightening -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Overloaded </label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_overloaded_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Tightening Required</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_tightening_other">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region Tower Height -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Tower Height</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="myinput" >
+                    <input type="text" id="txt_tower_height_other" class="form-control ">
+                </div>
+            </div>
+        </div>
+
+        <button id="save_other_info" name="save_other_info" onclick="SaveOtherInfoDataAudit()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+<!--/.Panel 14-->
+<!-- #endregion -->

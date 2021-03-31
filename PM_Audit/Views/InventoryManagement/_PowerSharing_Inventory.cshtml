@@ -1,0 +1,295 @@
+﻿<!-- #region Power Sharing TAB -->
+<!--Panel 24-->
+<script>
+    var Guest_Details_Inventory_List = [];
+    $(document).ready(function () {
+        var $modal_guest_details_inventory = $('#editor_modal_guest_details_inventory'),
+     $editor_guest_details_inventory = $('#editor_guest_details_inventory'),
+     $editorTitle_guest_details_inventory = $('#editor_title_guest_details_inventory'),
+     ft_ac = FooTable.init('#guest_details_inventory', {
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add More',
+             addRow: function () {
+                 if ($('#dd_sharing_status_inventory').val() == 'NO') {
+                     alertify.alert("Alert", "You can nnot add power sharing details when sharing status is NO.");
+                     return;
+                 }
+                 $modal_guest_details_inventory.removeData('row');
+                 $editor_guest_details_inventory[0].reset();
+                 $editorTitle_guest_details_inventory.text('Add a new Guest');
+                 $modal_guest_details_inventory.modal('show');
+             },
+             editRow: function (row) {
+                 var values = row.val();
+                 $editor_guest_details_inventory.find('#dd_guest_ID_inventory').val(values.ID);
+                 $editor_guest_details_inventory.find('#dd_guest_name_inventory').val(values.guest_name_inventory);
+                 if (values.powersharing_inventory != null) {
+                     $("#select_option_powersharing_inventory").val("");
+                 $editor_guest_details_inventory.find('#dd_powersharing_inventory').val(values.powersharing_inventory);
+                 }
+
+                 $modal_guest_details_inventory.data('row', row);
+                 $editorTitle_guest_details_inventory.text('Edit Guest Details');
+                 $modal_guest_details_inventory.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         'rows': PowerSharingDetailsList
+     }),
+     uid = 10;
+
+        $editor_guest_details_inventory.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            var row = $modal_guest_details_inventory.data('row'),
+                values = {
+                    ID: $editor_guest_details_inventory.find('#dd_guest_ID_inventory').val(),
+                    guest_name_inventory: $editor_guest_details_inventory.find('#dd_guest_name_inventory').val(),
+                    powersharing_inventory: $editor_guest_details_inventory.find('#dd_powersharing_inventory').val()
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_ac.rows.add(values);
+            }
+            $modal_guest_details_inventory.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+
+    });
+
+    function SavePowerSharingInventoryData() {
+
+        Inventory_Data.No_Of_Tenants = $('#dd_no_of_tenants_inventory option:selected').val();
+        Inventory_Data.Sharing_Status = $('#dd_sharing_status_inventory').val();
+        Inventory_Data.Host_Guest = $('#dd_host_guest_inventory option:selected').val();
+        Inventory_Data.Host_Name = $('#dd_host_name_inventory').val();
+        Inventory_Data.PowerSharingByHost = $('#dd_powerSharingByHost_inventory option:selected').val();
+        Inventory_Data.UpdateSection = "POWERSHARING";
+        var tempPowerSharingdetails = [];
+        var PowerSharingObj = FooTable.get("#guest_details_inventory");
+        $.each(PowerSharingObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.ID = values.ID;
+            obj.Guest_Name = values.guest_name_inventory;
+            obj.PowerSharingWithGuest = values.powersharing_inventory;
+            tempPowerSharingdetails.push(obj);
+        });
+        if ($('#dd_sharing_status_inventory').val() == 'NO') {
+            $('#guest_details_inventory tbody tr').each(function (index, elem) {
+                $(elem).remove();
+            });
+            Inventory_Data.ListPowerSharing = [];
+        }
+        else {
+            Inventory_Data.ListPowerSharing = tempPowerSharingdetails;
+        }
+        Inventory_Data.ListPowerSharing = tempPowerSharingdetails;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSavePowerSharingInventoryData, "POST", false)
+    }
+
+    function OnSuccessSavePowerSharingInventoryData(res) {
+        debugger;
+        if (res == "success") {
+            // alert("Data has been updated successfully.");
+            alertify.alert('Success', 'Data has been updated successfully.')
+            //  GetInventoryData();
+        }
+        else {
+            //alert("Failed.");
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+
+
+
+</script>
+
+
+
+<div class="tab-pane fade in" id="panel24" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> No. of Tenants</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <select class="form-control mydropdown_modal" id="dd_no_of_tenants_inventory">
+                    <option value="NA" id="select_option_no_of_tenants_inventory" disabled selected hidden>Select ..</option>
+                    <option>1 (With DG)</option>
+                    <option>1 (CP Only)</option>
+                    <option>1 (DC Shared)</option>
+                    <option>1 (No PowerShared)</option>
+                    <option>2 (With DG)</option>
+                    <option>2 (CP Only)</option>
+                    <option>2 (DC Shared)</option>
+                    <option>2 (No PowerShared)</option>
+                    <option>3 (With DG)</option>
+                    <option>3 (CP Only)</option>
+                    <option>3 (DC Shared)</option>
+                    <option>3 (No PowerShared)</option>
+                    <option>NA</option>
+                </select>
+            </div>
+        </div>
+        <!--#region Sharing status and Host Guest -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Sharing Status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <select class="form-control mydropdown_modal" id="dd_sharing_status_inventory">
+                    <option>YES</option>
+                    <option selected>NO</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Host Guest</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <select class="form-control mydropdown_modal" id="dd_host_guest_inventory">
+                    <option value="NA" id="select_option_host_guest_inventory" disabled selected hidden>Select ..</option>
+                    <option>GUEST</option>
+                    <option>HOST</option>
+                    <option>STAND ALONE</option>
+                    <option>NA</option>
+                </select>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Host Name and Power Sharing by Host-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>If PMCL Guest, Host Name</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="dd_host_name_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Power Sharing by Host</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <select class="form-control mydropdown_modal" id="dd_powerSharingByHost_inventory">
+                    <option value="NA" id="select_option_powerSharingByHost_inventory" disabled selected hidden>Select ..</option>
+                    <option>DG & DC & CP</option>
+                    <option>DG & CP</option>
+                    <option>DG & DC</option>
+                    <option>CP</option>
+                    <option>DG</option>
+                    <option>DC</option>
+                    <option>NA</option>
+                </select>
+            </div>
+        </div>
+        <!--#endregion-->
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Power Sharing Details</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+                <table id="guest_details_inventory" class="table inventory_table">
+                    <thead>
+                        <tr>
+                            <th data-name="ID" data-visible="false">ID</th>
+                            <th data-name="guest_name_inventory">Guest Name</th>
+                            <th data-name="powersharing_inventory">Power Sharing</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div class="modal fade" id="editor_modal_guest_details_inventory" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <form class="modal-content form-horizontal" id="editor_guest_details_inventory">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="editor_title_guest_details_inventory">If PMCL Host, Add More Guest Details</h4>
+                            </div>
+                            <div class="modal-body">
+                                <input id="dd_guest_ID_inventory" type="hidden" class="form-control ">
+                                <!--#region Guest Name and Power Sharing with Guest-->
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Guest Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="myinput_modal">
+                                            <input id="dd_guest_name_inventory" type="text" class="form-control ">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Power Sharing with Guest</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <select class="form-control mydropdown_modal" id="dd_powersharing_inventory">
+                                            <option value="NA" id="select_option_powersharing_inventory" disabled selected hidden>Select ..</option>
+                                            <option>DG & DC & CP</option>
+                                            <option>DG & CP</option>
+                                            <option>DG & DC</option>
+                                            <option>CP</option>
+                                            <option>DG</option>
+                                            <option>DC</option>
+                                            <option>NA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--#endregion-->
+
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <button id="save_powerSharing_inventory" name="save_powerSharing_inventory" onclick="SavePowerSharingInventoryData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 24-->
+<!-- #endregion -->

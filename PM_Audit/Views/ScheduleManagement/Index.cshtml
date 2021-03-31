@@ -1,0 +1,223 @@
+﻿@using Microsoft.AspNet.Identity
+@using PM_Audit.Models.Authorization_Models
+@{
+    ViewBag.Title = "Schedule Management";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    @Scripts.Render("~/bundles/ExcelUpload")
+    <script type="text/javascript">
+        var excelData = [];
+        var tbl_ExcelData;
+        $(document).ready(function () {
+            tbl_ExcelData = $('#TableExcelData').DataTable({
+                responsive: true,
+                "bLengthChange": false,
+                "searching": false,
+                "bInfo": false,
+
+                "pageLength": 5,
+                columns: [
+                      { "data": "SiteCode" },
+                      { "data": "SiteType" },
+                      { "data": "Region" },
+                      { "data": "PMType" },
+                      { "data": "PMDate" },
+                      { "data": "OSV" }
+                ],
+            });
+        });
+        function ResetData() {
+            excelData = [];
+            tbl_ExcelData.clear().draw();
+        }
+        function LoadExcelData(event) {
+            ShowLoader();
+            var file = $('#file_field')[0].files[0];
+            var reader = new FileReader();
+            excelData = [];
+            reader.onload = function (event) {
+                debugger;
+                var data = event.target.result;
+                var workbook = XLSX.read(data, {
+                    type: 'binary'
+                });
+                debugger;
+                workbook.SheetNames.forEach(function (sheetName) {
+                    debugger;
+                    var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                    //Formating Data as Our Model
+                    if (XL_row_object) {
+                        for (var i = 0; i < XL_row_object.length; i++) {
+                            XL_row_object[i].SiteCode = decodeEntities(typeof XL_row_object[i].SiteCode == "undefined" ? "" : XL_row_object[i].SiteCode);
+                            XL_row_object[i].SiteType = decodeEntities(typeof XL_row_object[i].SiteType == "undefined" ? "" : XL_row_object[i].SiteType);
+                            XL_row_object[i].Region = decodeEntities(typeof XL_row_object[i].Region == "undefined" ? "" : XL_row_object[i].Region);
+                            XL_row_object[i].PMType = decodeEntities(typeof XL_row_object[i].PMType == "undefined" ? "" : XL_row_object[i].PMType);
+                            XL_row_object[i].PMDate = decodeEntities(typeof XL_row_object[i].PMDate == "undefined" ? "" : XL_row_object[i].PMDate);
+                            XL_row_object[i].OSV = decodeEntities(typeof XL_row_object[i].OSV == "undefined" ? "" : XL_row_object[i].OSV);
+                        }
+                    }
+
+                    //Formating Data Ends
+                    excelData = XL_row_object;
+                })
+            };
+            reader.onerror = function (ex) {
+                alertify.alert("Alert", "Something went wrong. Please try again.")
+            };
+            reader.readAsBinaryString(file);
+            tbl_ExcelData.clear().draw();
+
+            setTimeout(function () {
+                $.each(excelData, function (i, item) {
+                    tbl_ExcelData.row.add(excelData[i]);
+                });
+                tbl_ExcelData.draw();
+                HideLoader();
+                alertify.alert('Success', 'Data is loaded successfully.');
+            }, 2000);
+
+        }
+        var decodeEntities = (function () {
+            // this prevents any overhead from creating the object each time
+            var element = document.createElement('div');
+
+            function decodeHTMLEntities(str) {
+                if (str && typeof str === 'string') {
+                    // strip script/html tags
+                    str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+                    str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+                    element.innerHTML = str;
+                    str = element.textContent;
+                    element.textContent = '';
+                }
+
+                return str;
+            }
+
+            return decodeHTMLEntities;
+        })();
+        function UploadExcelData() {
+
+            if (excelData != null) {
+                if (excelData.length > 0) {
+                    var obj = new Object();
+                    obj.PMData = JSON.stringify(excelData);
+                    ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/ScheduleManagement/UploadScheduleExcelData", obj, OnSuccessUploadExcelData);
+                }
+                else {
+                    alertify.alert('Alert', 'Now Rows Found.');
+                    return;
+                }
+            }
+            else {
+                alertify.alert('Alert', 'Now Rows Found.');
+                return;
+            }
+        }
+        function OnSuccessUploadExcelData(res) {
+
+            if (res == "success") {
+                alertify.alert('Success', 'Data has been updated successfully.')
+            }
+            else {
+                alertify.alert('Alert', 'Failed.')
+            }
+        }
+
+    </script>
+}
+
+
+<div class="container">
+
+    <section class="content">
+
+        @if (User.Identity.HasPermission("perm_monthly_schedule_upload_schedule"))
+        {
+            <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+                <div class="info-box narrow-2 bg_tile_colour">
+                    <a href="#" class="no-hover" data-toggle="modal" onclick="ResetData()" data-target="#modal-default">
+                        <span class="info-box-icon"><i class="fa fa-cog"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text_wrap">Upload Schedule Data</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        }
+
+@if (User.Identity.HasPermission("perm_monthly_schedule_main"))
+{
+        <div class="col-md-4 col-sm-5 col-xs-6  col-centered">
+            <div class="info-box narrow-2 bg_tile_colour">
+                <a href="@Url.Action("ViewSchedule", "ScheduleManagement")" class="no-hover">
+                    <span class="info-box-icon"><i class="fa fa-tripadvisor"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text text_wrap">View Schedule</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+}
+    </section>
+</div>
+
+<div class="modal fade PMopenModal" id="modal-default">
+    <div class="modal-dialog left-initial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Upload Excel File</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="form-group">
+                        <div class="col-md-10 col-sm-10 col-xs-10">
+                            <input id="file_field" type="file" class="form-control input-lg">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 table-div-uploadschedule">
+                        <table id="TableExcelData" class="display" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Site Code</th>
+                                    <th>Site Type</th>
+                                    <th>Region</th>
+                                    <th>PM Type</th>
+                                    <th>PM Date</th>
+                                    <th>OSV</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Close</button>
+                <button type="button" onclick="LoadExcelData(event)" class="btn btn-primary">Load Data</button>
+                <button type="button" onclick="UploadExcelData(event)" class="btn btn-primary">Save Data</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

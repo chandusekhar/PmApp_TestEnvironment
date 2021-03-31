@@ -1,0 +1,389 @@
+﻿
+@{
+    ViewBag.Title = "Audit_Reports";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <link href="~/Content/Css/TableStyle.css" rel="stylesheet" />
+    <script type="text/javascript">
+
+        var PM_Data;
+
+        $(document).ready(function () {
+            debugger;
+            GetPMData();
+
+
+        });
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = '@ViewBag.Site_Code';
+            obj.PM_Type = '@ViewBag.PM_Type';
+            obj.PM_ID = '@ViewBag.PM_ID';
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getApprovedTelcoPMDataForAudit", obj, OnSuccessPMData, "POST")
+           
+
+        }
+        var results_pm;
+
+        function GetAuditData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = '@ViewBag.Site_Code';
+            obj.PM_Type = '@ViewBag.PM_Type';
+            obj.PM_ID = '@ViewBag.PM_ID';
+           
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/getTelcoAuditDataforComparison", obj, OnSuccessAuditData, "POST")
+           
+        }
+
+        function OnSuccessPMData(obj) {
+            debugger;
+            results_pm = obj;
+            GetAuditData();
+
+        }
+
+        function OnSuccessAuditData(obj) {
+            debugger;
+            var results_audit = obj;
+            Comparison(results_pm, results_audit);
+
+        }
+
+
+
+
+
+        function Comparison(results_pm, results_audit) {
+            debugger;
+
+            var Type = '@ViewBag.PM_Type';
+            console.log(JSON.stringify(results_audit.checkListRRUs));
+            PM_Data = results_pm;
+            Audit_Data = results_audit;
+
+                var bts_cabinet_markup = "<tr><td>Backup</td><td>"
+                    + PM_Data.checkListBtsCabinet.Backup + "</td><td>"
+                    + Audit_Data.checkListBtsCabinet.Backup + "</td></tr><tr><td>Cleaning</td><td>"
+                    + PM_Data.checkListBtsCabinet.Cleaning + "</td><td>"
+                    + Audit_Data.checkListBtsCabinet.Cleaning + "</td></tr><tr><td>Grounding</td><td>"
+                    + PM_Data.checkListBtsCabinet.Grounding + "</td><td>"
+                    + Audit_Data.checkListBtsCabinet.Grounding + "</td></tr><tr><td>Site Type</td><td>"
+                    + PM_Data.checkListBtsCabinet.SiteType + "</td><td>"
+                    + Audit_Data.checkListBtsCabinet.SiteType + "</td></tr>";
+
+                $("#tbl_bts_cabinet tbody").append(bts_cabinet_markup);
+
+                //BTS Cabinet VSWR Values
+                for (var counter = 0; counter < PM_Data.checkListBtsCabinet.ListVSWR.length; counter++) {
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>VSWR Cell ID" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListVSWR[counter].Cell_ID + "</td><td>" + Audit_Data.checkListBtsCabinet.ListVSWR[counter].Cell_ID + "</td></tr>");
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>VSWR Cell Name" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListVSWR[counter].Cell_Name + "</td><td>" + Audit_Data.checkListBtsCabinet.ListVSWR[counter].Cell_Name + "</td></tr>");
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>VSWR Cell Value" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListVSWR[counter].VSWR_Value + "</td><td>" + Audit_Data.checkListBtsCabinet.ListVSWR[counter].VSWR_Value + "</td></tr>");
+                }
+
+                //BTS Cabinet Board Card Values
+                for (var counter = 0; counter < PM_Data.checkListBtsCabinet.ListBoardCards.length; counter++) {
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>Board Name" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListBoardCards[counter].BoardName + "</td><td>" + Audit_Data.checkListBtsCabinet.ListBoardCards[counter].BoardName + "</td></tr>");
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>Board Status" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListBoardCards[counter].BoardStatus + "</td><td>" + Audit_Data.checkListBtsCabinet.ListBoardCards[counter].BoardStatus + "</td></tr>");
+                    $("#tbl_bts_cabinet tbody").append("<tr><td>Board Quantity" + (counter + 1) + "</td><td>" + PM_Data.checkListBtsCabinet.ListBoardCards[counter].Quantity + "</td><td>" + Audit_Data.checkListBtsCabinet.ListBoardCards[counter].Quantity + "</td></tr>");
+                }
+
+            debugger;
+            //RRUs Values
+            if (PM_Data.checkListRRUs.length != 0) {
+                for (var i = 0; i < PM_Data.checkListRRUs.length; i++) {
+                    $("#tbl_rru tbody").append("<tr><td>RRU Type" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].RRUType + "</td><td>" + Audit_Data.checkListRRUs[i].RRUType + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>RRU Model" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].RRUModel + "</td><td>" + Audit_Data.checkListRRUs[i].RRUModel + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>RRU RRU Vendor" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].RRUVendor + "</td><td>" + Audit_Data.checkListRRUs[i].RRUVendor + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Grounding" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].Grounding + "</td><td>" + Audit_Data.checkListRRUs[i].Grounding + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Weather Proofing" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].WeatherProofing + "</td><td>" + Audit_Data.checkListRRUs[i].WeatherProofing + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Backup" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].Backup + "</td><td>" + Audit_Data.checkListRRUs[i].Backup + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Installation Height(meters)" + (i + 1) + "</td><td>" + PM_Data.checkListRRUs[i].InstallationHeight + "</td><td>" + Audit_Data.checkListRRUs[i].InstallationHeight + "</td></tr>");
+                    //for (var j = 0; j < PM_Data.checkListRRUs[i].ListVSWR.length; j++) {
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell ID" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].Cell_ID + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].Cell_ID + "</td></tr>");
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell Name" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].Cell_Name + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].Cell_Name + "</td></tr>");
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell Value" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].VSWR_Value + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].VSWR_Value + "</td></tr>");
+
+                    //}
+                }
+            }
+            else if (Audit_Data.checkListRRUs.length != 0) {
+                for (var i = 0; i < Audit_Data.checkListRRUs.length; i++) {
+                    $("#tbl_rru tbody").append("<tr><td>RRU Type" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].RRUType + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>RRU Model" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].RRUModel + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>RRU RRU Vendor" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].RRUVendor + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Grounding" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].Grounding + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Weather Proofing" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].WeatherProofing + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Backup" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].Backup + "</td></tr>");
+                    $("#tbl_rru tbody").append("<tr><td>Installation Height(meters)" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListRRUs[i].InstallationHeight + "</td></tr>");
+                    //for (var j = 0; j < PM_Data.checkListRRUs[i].ListVSWR.length; j++) {
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell ID" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].Cell_ID + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].Cell_ID + "</td></tr>");
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell Name" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].Cell_Name + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].Cell_Name + "</td></tr>");
+                    //    $("#tbl_rru tbody").append("<tr><td>RRU" + (i + 1) + " Cell Value" + (j + 1) + "</td><td>" + PM_Data.checkListRRUs[i].ListVSWR[j].VSWR_Value + "</td><td>" + Audit_Data.checkListRRUs[i].ListVSWR[j].VSWR_Value + "</td></tr>");
+
+                    //}
+                }
+            }
+            else {
+                $("#tbl_rru tbody").append("<tr><td colspan='3' style='text-align:center;'>No Record Found</td></tr>");
+            }
+
+            //Antennas Values
+            if (PM_Data.checkListAntennas.length != 0) {
+                for (var i = 0; i < PM_Data.checkListAntennas.length; i++) {
+                    $("#tbl_antennas tbody").append("<tr><td>Antenna Type" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].AntennaType + "</td><td>" + Audit_Data.checkListAntennas[i].AntennaType + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Blockage" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].Blockage + "</td><td>" + Audit_Data.checkListAntennas[i].Blockage + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Weather Proofing" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].WeatherProofing + "</td><td>" + Audit_Data.checkListAntennas[i].WeatherProofing + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Azimuth" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].Azimuth + "</td><td>" + Audit_Data.checkListAntennas[i].Azimuth + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Count" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].Count + "</td><td>" + Audit_Data.checkListAntennas[i].Count + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Installation Height(meters)" + (i + 1) + "</td><td>" + PM_Data.checkListAntennas[i].InstallationHeight + "</td><td>" + Audit_Data.checkListAntennas[i].InstallationHeight + "</td></tr>");
+                    //for (var j = 0; j < PM_Data.checkListRRUs[i].ListVSWR.length; j++) {
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell ID" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].Cell_ID + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].Cell_ID + "</td></tr>");
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell Name" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].Cell_Name + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].Cell_Name + "</td></tr>");
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell Value" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].VSWR_Value + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].VSWR_Value + "</td></tr>");
+
+                    //}
+                }
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 2G</td><td>" + PM_Data.Electrical_tilt_2g + "</td><td>" + Audit_Data.Electrical_tilt_2g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 3G</td><td>" + PM_Data.Electrical_tilt_3g + "</td><td>" + Audit_Data.Electrical_tilt_3g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 4G</td><td>" + PM_Data.Electrical_tilt_4g + "</td><td>" + Audit_Data.Electrical_tilt_4g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Mechanical Tilt</td><td>" + PM_Data.Mechanical_tilt + "</td><td>" + Audit_Data.Mechanical_tilt + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>RET Installed</td><td>" + PM_Data.Ret_Installed + "</td><td>" + Audit_Data.Ret_Installed + "</td></tr>");
+            }
+            else if (Audit_Data.checkListAntennas.length != 0) {
+                for (var i = 0; i < Audit_Data.checkListAntennas.length; i++) {
+                    $("#tbl_antennas tbody").append("<tr><td>Antenna Type" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].AntennaType + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Blockage" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].Blockage + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Weather Proofing" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].WeatherProofing + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Azimuth" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].Azimuth + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Count" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].Count + "</td></tr>");
+                    $("#tbl_antennas tbody").append("<tr><td>Installation Height(meters)" + (i + 1) + "</td><td>null</td><td>" + Audit_Data.checkListAntennas[i].InstallationHeight + "</td></tr>");
+                    //for (var j = 0; j < PM_Data.checkListRRUs[i].ListVSWR.length; j++) {
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell ID" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].Cell_ID + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].Cell_ID + "</td></tr>");
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell Name" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].Cell_Name + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].Cell_Name + "</td></tr>");
+                    //    $("#tbl_antennas tbody").append("<tr><td>RRU" + (i + 1) + " Cell Value" + (j + 1) + "</td><td>" + PM_Data.checkListAntennas[i].ListVSWR[j].VSWR_Value + "</td><td>" + Audit_Data.checkListAntennas[i].ListVSWR[j].VSWR_Value + "</td></tr>");
+
+                    //}
+                }
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 2G</td><td>null</td><td>" + Audit_Data.Electrical_tilt_2g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 3G</td><td>null</td><td>" + Audit_Data.Electrical_tilt_3g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Electrical Tilt 4G</td><td>null</td><td>" + Audit_Data.Electrical_tilt_4g + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>Mechanical Tilt</td><td>null</td><td>" + Audit_Data.Mechanical_tilt + "</td></tr>");
+                $("#tbl_antennas tbody").append("<tr><td>RET Installed</td><td>null</td><td>" + Audit_Data.Ret_Installed + "</td></tr>");
+            }
+            else {
+                $("#tbl_antennas tbody").append("<tr><td colspan='3' style='text-align:center;'>No Record Found</td></tr>");
+            }
+
+              
+
+                //IDU Values
+                var idu_markup = "<tr><td>IDU Type</td><td>"
+                   + PM_Data.checkListIDU.IDUType + "</td><td>"
+                   + Audit_Data.checkListIDU.IDUType + "</td></tr><tr><td>Grounding Status</td><td>"
+                   + PM_Data.checkListIDU.Grounding + "</td><td>"
+                   + Audit_Data.checkListIDU.Grounding + "</td></tr><tr><td>Count</td><td>"
+                   + PM_Data.checkListIDU.Count + "</td><td>"
+                   + Audit_Data.checkListIDU.Count + "</td></tr><tr><td>Faulty Slots</td><td>"
+                   + PM_Data.checkListIDU.FacultySlots + "</td><td>"
+                    + Audit_Data.checkListIDU.FacultySlots + "</td></tr><tr><td>Vendor</td><td>"
+                    + PM_Data.checkListIDU.IDUVendor + "</td><td>"
+                    + Audit_Data.checkListIDU.IDUVendor + "</td></tr>";
+
+                $("#tbl_idu tbody").append(idu_markup);
+
+                //MMU Cards Values
+                for (var counter = 0; counter < PM_Data.checkListIDU.ListMmuCards.length; counter++) {
+                    $("#tbl_idu tbody").append("<tr><td>Card Type" + (counter + 1) + "</td><td>" + PM_Data.checkListIDU.ListMmuCards[counter].Type + "</td><td>" + Audit_Data.checkListIDU.ListMmuCards[counter].Type + "</td></tr>");
+                    $("#tbl_idu tbody").append("<tr><td>Card Status" + (counter + 1) + "</td><td>" + PM_Data.checkListIDU.ListMmuCards[counter].Status + "</td><td>" + Audit_Data.checkListIDU.ListMmuCards[counter].Status + "</td></tr>");
+                    $("#tbl_idu tbody").append("<tr><td>LB Verification" + (counter + 1) + "</td><td>" + PM_Data.checkListIDU.ListMmuCards[counter].LbVerification + "</td><td>" + Audit_Data.checkListIDU.ListMmuCards[counter].LbVerification + "</td></tr>");
+                }
+
+              
+            //Alarms Values
+                var alarms_markup = "<tr><td>Intruder</td><td>"
+                   + PM_Data.checkListAlarms.Intruder + "</td><td>"
+                   + Audit_Data.checkListAlarms.Intruder + "</td></tr><tr><td>AC Mains Failure</td><td>"
+                   + PM_Data.checkListAlarms.AC_Mains_Failure + "</td><td>"
+                   + Audit_Data.checkListAlarms.AC_Mains_Failure + "</td></tr><tr><td>DG On</td><td>"
+                   + PM_Data.checkListAlarms.DG_On + "</td><td>"
+                   + Audit_Data.checkListAlarms.DG_On + "</td></tr><tr><td>Low Voltage</td><td>"
+                   + PM_Data.checkListAlarms.Low_Voltage + "</td><td>"
+                   + Audit_Data.checkListAlarms.Low_Voltage + "</td></tr><tr><td>System On Batteries</td><td>"
+                   + PM_Data.checkListAlarms.System_On_Batteries + "</td><td>"
+                   + Audit_Data.checkListAlarms.System_On_Batteries + "</td></tr><td>High Temperature</td><td>"
+                   + PM_Data.checkListAlarms.High_Temperature + "</td><td>"
+                   + Audit_Data.checkListAlarms.High_Temperature + "</td></tr>";
+
+                $("#tbl_alarms tbody").append(alarms_markup);
+
+
+                //ODU Values
+                var odu_markup = "<tr><td>ODU Type</td><td>"
+                   + PM_Data.checkListODU.OdUType + "</td><td>"
+                   + Audit_Data.checkListODU.OdUType + "</td></tr><tr><td>Grounding Status</td><td>"
+                   + PM_Data.checkListODU.Grounding + "</td><td>"
+                   + Audit_Data.checkListODU.Grounding + "</td></tr><tr><td>If Cable Grounded</td><td>"
+                   + PM_Data.checkListODU.CableGrounding + "</td><td>"
+                   + Audit_Data.checkListODU.CableGrounding + "</td></tr><tr><td>Installation Height(meters)</td><td>"
+                   + PM_Data.checkListODU.InstallationHeight + "</td><td>"
+                   + Audit_Data.checkListODU.InstallationHeight + "</td></tr><tr><td>RSL</td><td>"
+                   + PM_Data.checkListODU.RSL + "</td><td>"
+                    + Audit_Data.checkListODU.RSL + "</td></tr><tr><td>Vendor</td><td>"
+                    + PM_Data.checkListODU.ODUVendor + "</td><td>"
+                    + Audit_Data.checkListODU.ODUVendor + "</td></tr>";
+
+                $("#tbl_odu tbody").append(odu_markup);
+
+                          
+
+            $('table tr').each(function () {
+                if ($(this).find('td:eq(1)').text() != $(this).find('td:eq(2)').text()) {
+                    $(this).css("background-color", '#ff934c');
+                }
+            });
+        }
+
+    </script>
+
+}
+
+
+<div class="container">
+    <section class="content">
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">BTS Cabinet</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_bts_cabinet">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">RRUs</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_rru">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Antennas</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_antennas">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Alarms</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_alarms">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">IDUs</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_idu">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">ODUs</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_odu">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </section>
+</div>

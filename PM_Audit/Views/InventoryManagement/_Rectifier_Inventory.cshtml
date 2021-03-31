@@ -1,0 +1,872 @@
+﻿<!-- #region DG TAB -->
+<!--Panel 27-->
+<script>
+    var Rectifier_Inventory_List = [];
+    function resetHybridFunctionalityFields() {
+        $('#dd_not_hybrid_reason_rectifier_inventory').val('');
+        $('#txt_reason_for_others_rectifier_inventory').val('');
+        $('#dd_hybrid_functionality_status_rectifier').val('');
+        $('#dd_not_hybrid_reason_rectifier_inventory').attr('disabled', 'disabled');
+        $('#txt_reason_for_others_rectifier_inventory').attr('disabled', 'disabled');
+        $('#dd_hybrid_functionality_status_rectifier').attr('disabled', 'disabled');
+    }
+    function resetHybridFunctionalityReasonFields() {
+        $('#dd_not_hybrid_reason_rectifier_inventory').val('');
+        $('#txt_reason_for_others_rectifier_inventory').val('');
+        $('#dd_not_hybrid_reason_rectifier_inventory').attr('disabled', 'disabled');
+        $('#txt_reason_for_others_rectifier_inventory').attr('disabled', 'disabled');
+    }
+    $(document).ready(function () {
+        $("#txt_no_of_operational_rectifier_inventory").val(Inventory_Data.TotalNumberOfOperationalRectifiers);
+        resetHybridFunctionalityFields();
+        $('#dd_hybrid_functionality_rectifier_inventory').on('change', function () {
+            debugger;
+            var hybridFunctionality = $('#dd_hybrid_functionality_rectifier_inventory').val();
+            if (hybridFunctionality == "NO") {
+                resetHybridFunctionalityFields();
+            } else {
+                resetHybridFunctionalityReasonFields();
+                $('#dd_hybrid_functionality_status_rectifier').val('');
+                $('#dd_hybrid_functionality_status_rectifier').removeAttr('disabled');
+            }
+
+        });
+
+        $('#dd_hybrid_functionality_status_rectifier').on('change', function () {
+            debugger;
+            var hybridFunctionalityStatus = $('#dd_hybrid_functionality_status_rectifier').val();
+            if (hybridFunctionalityStatus == "ACTIVE") {
+                resetHybridFunctionalityReasonFields();
+            } else {
+                $('#dd_not_hybrid_reason_rectifier_inventory').removeAttr('disabled');
+                $('#dd_not_hybrid_reason_rectifier_inventory').removeAttr('disabled');
+            }
+
+        });
+
+        //function setOtherHybridFunctionalityFields() {
+        $('#dd_not_hybrid_reason_rectifier_inventory').on('change',
+            function () {
+                debugger;
+                var hybridFunctionalityReason = $('#dd_not_hybrid_reason_rectifier_inventory').val();
+                if (hybridFunctionalityReason == "OTHERS") {
+                    $('#txt_reason_for_others_rectifier_inventory').removeAttr('disabled');
+                    $('#txt_reason_for_others_rectifier_inventory').val('');
+                } else {
+                    $('#txt_reason_for_others_rectifier_inventory').attr('disabled', 'disabled');
+                    $('#txt_reason_for_others_rectifier_inventory').val('');
+
+                }
+            });
+
+        $("#txt_rectifier_battery_installation_date_inventory").datepicker();
+        var $modal_rectifier_inventory = $('#editor_modal_rectifier_inventory'),
+        $editor_rectifier_inventory = $('#editor_rectifier_inventory'),
+        $editorTitle_rectifier_inventory = $('#editor_title_rectifier_inventory'),
+        ft_ac = FooTable.init('#rectifier_inventory', {
+            editing: {
+                enabled: true,
+                alwaysShow: true,
+                addText: 'Add More Rectifier',
+                addRow: function () {
+                    if ($('#txt_no_of_operational_rectifier_inventory').val() <= 0) {
+                        alertify.alert("Alert", "You cannot add Rectifiers no of operational rectifier inventory is 0");
+                        return;
+                    }
+                    resetHybridFunctionalityFields();
+                    $modal_rectifier_inventory.removeData('row');
+                    $editor_rectifier_inventory[0].reset();
+                    $editorTitle_rectifier_inventory.text('Add a new Rectifier');
+                    $modal_rectifier_inventory.modal('show');
+                },
+                editRow: function (row) {
+                    var values = row.val();
+
+                    $editor_rectifier_inventory.find('#txt_rectifier_ID_inventory').val(values.ID);
+                    if (values.rectifier_manufacturer_inventory != null) {
+                        $('#select_option_rectifier_manufacturer_inventory').val("");
+                        $editor_rectifier_inventory.find('#txt_rectifier_manufacturer_inventory').val(values.rectifier_manufacturer_inventory);
+                    }
+                    $editor_rectifier_inventory.find('#txt_rectifier_capacity_inventory').val(values.rectifier_capacity_inventory);
+                    if (values.rectifier_module_capacity_inventory != null) {
+                        $('#select_option_rectifier_module_capacity_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_module_capacity_inventory').val(values.rectifier_module_capacity_inventory);
+                    }
+                    if (values.rectifier_installed_modules_inventory != null) {
+                        $('#select_option_rectifier_installed_modules_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_installed_modules_inventory').val(values.rectifier_installed_modules_inventory);
+                    }
+                    $editor_rectifier_inventory.find('#txt_rectifier_mcu_status_inventory').val(values.rectifier_mcu_status_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_dc_load_inventory').val(values.rectifier_dc_load_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_serving_to_inventory').val(values.rectifier_serving_to_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_battery_installation_date_inventory').val(values.rectifier_battery_installation_date_inventory);
+                    if (values.rectifier_no_of_battery_cells_inventory != null) {
+                        $('#select_option_rectifier_no_of_battery_cells_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_no_of_battery_cells_inventory').val(values.rectifier_no_of_battery_cells_inventory);
+                    }
+                    if (values.rectifier_battery_model_inventory != null) {
+                        $('#select_option_rectifier_battery_model_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_battery_model_inventory').val(values.rectifier_battery_model_inventory);
+                    }
+                    if (values.rectifier_battery_type_inventory != null) {
+                        $('#select_option_rectifier_battery_type_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_battery_type_inventory').val(values.rectifier_battery_type_inventory);
+                    }
+                    if (values.rectifier_per_cell_capacity_inventory != null) {
+                        $('#select_option_rectifier_per_cell_capacity_inventory').val("");
+                    $editor_rectifier_inventory.find('#txt_rectifier_per_cell_capacity_inventory').val(values.rectifier_per_cell_capacity_inventory);
+                    }
+                    $editor_rectifier_inventory.find('#txt_rectifier_acb_batteries_manufacturer_inventory').val(values.rectifier_acb_batteries_manufacturer_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_acb_batteries_inventory').val(values.rectifier_acb_batteries_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_acb_inventory').val(values.rectifier_acb_inventory);
+                    $editor_rectifier_inventory.find('#txt_rectifier_bb_time_inventory').val(values.rectifier_bb_time_inventory);
+                    if (values.BatteryCagingStatus != null) {
+                        $('#select_option_battery_caging_status_rectifier_inventory').val("");
+                    $editor_rectifier_inventory.find('#dd_battery_caging_status_rectifier_inventory').val(values.rectifier_battery_caging_status_inventory);
+                    }
+                    resetHybridFunctionalityFields();
+                    $editor_rectifier_inventory.find('#dd_hybrid_functionality_rectifier_inventory').val(values.rectifier_hybrid_functionality);
+                    $editor_rectifier_inventory.find('#dd_hybrid_functionality_rectifier_inventory').trigger('change');
+                    if (values.hybrid_functionality_status_rectifier != null) {
+                        $('#select_option_hybrid_functionality_status_rectifier').val("");
+                    $editor_rectifier_inventory.find('#dd_hybrid_functionality_status_rectifier').val(values.hybrid_functionality_status_rectifier);
+                    }
+                    $editor_rectifier_inventory.find('#dd_hybrid_functionality_status_rectifier').trigger('change');
+                    if (values.rectifier_not_hybrid_reason != null) {
+                        $('#select_option_not_hybrid_reason_rectifier_inventory').val("");
+                    $editor_rectifier_inventory.find('#dd_not_hybrid_reason_rectifier_inventory').val(values.rectifier_not_hybrid_reason);
+                    }
+                    $editor_rectifier_inventory.find('#dd_not_hybrid_reason_rectifier_inventory').trigger('change');
+                    $editor_rectifier_inventory.find('#txt_reason_for_others_rectifier_inventory').val(values.rectifier_reason_for_others);
+
+                    $modal_rectifier_inventory.data('row', row);
+                    $editorTitle_rectifier_inventory.text('Edit Rectifier');
+                    $modal_rectifier_inventory.modal('show');
+                },
+                deleteRow: function (row) {
+                    if (confirm('Are you sure you want to delete the row?')) {
+                        row.delete();
+                    }
+                }
+            },
+            'rows': RectifierList
+        }),
+        uid = 10;
+
+        $editor_rectifier_inventory.on('submit', function (e) {
+            //   if (validateRequiredInput('#div_inventory_rectifier')) {
+
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            if (!validateRequiredInput('#editor_modal_rectifier_inventory')) {
+                return false;
+            }
+            var row = $modal_rectifier_inventory.data('row'),
+
+                    values = {
+
+                        ID: $editor_rectifier_inventory.find('#txt_rectifier_ID_inventory').val(),
+                        rectifier_manufacturer_inventory: $editor_rectifier_inventory.find('#txt_rectifier_manufacturer_inventory option:selected').val(),
+                        rectifier_capacity_inventory: $editor_rectifier_inventory.find('#txt_rectifier_capacity_inventory').val(),
+                        rectifier_module_capacity_inventory: $editor_rectifier_inventory.find('#txt_rectifier_module_capacity_inventory option:selected').val(),
+                        rectifier_installed_modules_inventory: $editor_rectifier_inventory.find('#txt_rectifier_installed_modules_inventory option:selected').val(),
+                        rectifier_mcu_status_inventory: $editor_rectifier_inventory.find('#txt_rectifier_mcu_status_inventory').val(),
+                        rectifier_dc_load_inventory: $editor_rectifier_inventory.find('#txt_rectifier_dc_load_inventory').val(),
+                        rectifier_serving_to_inventory: $editor_rectifier_inventory.find('#txt_rectifier_serving_to_inventory').val(),
+                        rectifier_battery_installation_date_inventory: $editor_rectifier_inventory.find('#txt_rectifier_battery_installation_date_inventory').val(),
+                        rectifier_no_of_battery_cells_inventory: $editor_rectifier_inventory.find('#txt_rectifier_no_of_battery_cells_inventory option:selected').val(),
+                        rectifier_battery_model_inventory: $editor_rectifier_inventory.find('#txt_rectifier_battery_model_inventory option:selected').val(),
+                        rectifier_battery_type_inventory: $editor_rectifier_inventory.find('#txt_rectifier_battery_type_inventory option:selected').val(),
+                        rectifier_per_cell_capacity_inventory: $editor_rectifier_inventory.find('#txt_rectifier_per_cell_capacity_inventory option:selected').val(),
+                        rectifier_acb_batteries_manufacturer_inventory: $editor_rectifier_inventory.find('#txt_rectifier_acb_batteries_manufacturer_inventory').val(),
+                        rectifier_acb_batteries_inventory: $editor_rectifier_inventory.find('#txt_rectifier_acb_batteries_inventory').val(),
+                        rectifier_acb_inventory: $editor_rectifier_inventory.find('#txt_rectifier_acb_inventory').val(),
+                        rectifier_bb_time_inventory: $editor_rectifier_inventory.find('#txt_rectifier_bb_time_inventory').val(),
+                        rectifier_battery_caging_status_inventory: $editor_rectifier_inventory.find('#dd_battery_caging_status_rectifier_inventory option:selected').val(),
+                        rectifier_hybrid_functionality: $editor_rectifier_inventory.find('#dd_hybrid_functionality_rectifier_inventory').val(),
+                        rectifier_not_hybrid_reason: $editor_rectifier_inventory.find('#dd_not_hybrid_reason_rectifier_inventory option:selected').val(),
+                        rectifier_reason_for_others: $editor_rectifier_inventory.find('#txt_reason_for_others_rectifier_inventory').val(),
+                        hybrid_functionality_status_rectifier: $editor_rectifier_inventory.find('#dd_hybrid_functionality_status_rectifier option:selected').val()
+
+                    };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_ac.rows.add(values);
+            }
+            $modal_rectifier_inventory.modal('hide');
+
+        });
+        $('.footable-editing').hide();
+
+
+    });
+
+    function SaveRectifierInventoryData() {
+        debugger;
+        var noOfRectifiers = $("#txt_no_of_operational_rectifier_inventory").val();
+        if (noOfRectifiers == null || noOfRectifiers == 0) {
+            var tempListRectifier = [];
+            //var RectifierdetailsObj = FooTable.get("#rectifier_inventory");
+            //$.each(RectifierdetailsObj.rows.all, function (i, row) {
+            //    var values = row.val();
+            //    if (values.rectifier_hybrid_functionality == null ||
+            //        values.rectifier_hybrid_functionality == undefined ||
+            //        values.rectifier_hybrid_functionality == "") {
+            //        alertify.alert("Alert", "Please enter Hybrid Status Data of all the rectifiers.");
+            //        return;
+            //    }
+            //    var obj = new Object();
+            //    obj.Manufacturer = values.rectifier_manufacturer_inventory;
+            //    obj.ID = values.ID;
+            //    obj.Capacity = values.rectifier_capacity_inventory;
+            //    obj.InstalledModules = values.rectifier_installed_modules_inventory;
+            //    obj.ModuleCapacity = values.rectifier_module_capacity_inventory;
+            //    obj.MCUStatus = values.rectifier_mcu_status_inventory;
+            //    obj.DCLoad = values.rectifier_dc_load_inventory;
+            //    obj.ServingTo = values.rectifier_serving_to_inventory;
+            //    obj.BatteryInstallationDate = values.rectifier_battery_installation_date_inventory;
+            //    obj.BatteryCells = values.rectifier_no_of_battery_cells_inventory;
+            //    obj.BatteryModel = values.rectifier_battery_model_inventory;
+            //    obj.BatteryType = values.rectifier_battery_type_inventory;
+            //    obj.PerCellCapacity = values.rectifier_per_cell_capacity_inventory;
+            //    obj.ACBBatteries_Manufacturer = values.rectifier_acb_batteries_manufacturer_inventory;
+            //    obj.ACBBatteries_CellsInstalled = values.rectifier_acb_batteries_inventory;
+            //    obj.ACBBatteries_PerCellCapacity = values.rectifier_acb_inventory;
+            //    obj.BBTime = values.rectifier_bb_time_inventory;
+            //    obj.BatteryCagingStatus = values.rectifier_battery_caging_status_inventory;
+            //    obj.Hybrid_Functionality = values.rectifier_hybrid_functionality;
+            //    obj.Not_Hybrid_Reason = values.rectifier_not_hybrid_reason;
+            //    obj.Not_Hybrid_Reason_Other = values.rectifier_reason_for_others;
+            //    obj.Hybrid_Functionality_Status = values.hybrid_functionality_status_rectifier;
+
+            //    tempListRectifier.push(obj);
+            //});
+            debugger;
+            Inventory_Data.ListRectifiers = tempListRectifier;
+            Inventory_Data.TotalNumberOfOperationalRectifiers = $('#txt_no_of_operational_rectifier_inventory').val();
+            Inventory_Data.UpdateSection = "RECTIFIERS";
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveRectifierInventoryData, "POST", false)
+        }
+        //else if () {
+        //    var RectifierdetailsObj = FooTable.get("#rectifier_inventory");
+        //    if (RectifierdetailsObj != null || RectifierdetailsObj != '') {
+
+        //    }
+        //}
+        else {
+            //var footableData = FooTable.get("#rectifier_inventory").rows.all;
+            var footableData = $("#rectifier_inventory tbody tr").length;
+            var className = $("#rectifier_inventory tbody tr").attr("class");
+            if (footableData != 0 && className != "footable-empty") {
+
+                
+                /*else*/ {
+                    var tempListRectifier = [];
+                    var RectifierdetailsObj = FooTable.get("#rectifier_inventory");
+                    $.each(RectifierdetailsObj.rows.all, function (i, row) {
+                        var values = row.val();
+                        if (values.rectifier_hybrid_functionality == null ||
+                            values.rectifier_hybrid_functionality == undefined ||
+                            values.rectifier_hybrid_functionality == "") {
+                            alertify.alert("Alert", "Please enter Hybrid Status Data of all the rectifiers.");
+                            return;
+                        }
+                        var obj = new Object();
+                        obj.Manufacturer = values.rectifier_manufacturer_inventory;
+                        obj.ID = values.ID;
+                        obj.Capacity = values.rectifier_capacity_inventory;
+                        obj.InstalledModules = values.rectifier_installed_modules_inventory;
+                        obj.ModuleCapacity = values.rectifier_module_capacity_inventory;
+                        obj.MCUStatus = values.rectifier_mcu_status_inventory;
+                        obj.DCLoad = values.rectifier_dc_load_inventory;
+                        obj.ServingTo = values.rectifier_serving_to_inventory;
+                        obj.BatteryInstallationDate = values.rectifier_battery_installation_date_inventory;
+                        obj.BatteryCells = values.rectifier_no_of_battery_cells_inventory;
+                        obj.BatteryModel = values.rectifier_battery_model_inventory;
+                        obj.BatteryType = values.rectifier_battery_type_inventory;
+                        obj.PerCellCapacity = values.rectifier_per_cell_capacity_inventory;
+                        obj.ACBBatteries_Manufacturer = values.rectifier_acb_batteries_manufacturer_inventory;
+                        obj.ACBBatteries_CellsInstalled = values.rectifier_acb_batteries_inventory;
+                        obj.ACBBatteries_PerCellCapacity = values.rectifier_acb_inventory;
+                        obj.BBTime = values.rectifier_bb_time_inventory;
+                        obj.BatteryCagingStatus = values.rectifier_battery_caging_status_inventory;
+                        obj.Hybrid_Functionality = values.rectifier_hybrid_functionality;
+                        obj.Not_Hybrid_Reason = values.rectifier_not_hybrid_reason;
+                        obj.Not_Hybrid_Reason_Other = values.rectifier_reason_for_others;
+                        obj.Hybrid_Functionality_Status = values.hybrid_functionality_status_rectifier;
+
+                        tempListRectifier.push(obj);
+                    });
+                    debugger;
+                    Inventory_Data.ListRectifiers = tempListRectifier;
+                    Inventory_Data.TotalNumberOfOperationalRectifiers = $('#txt_no_of_operational_rectifier_inventory').val();
+                    Inventory_Data.UpdateSection = "RECTIFIERS";
+                    ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveRectifierInventoryData, "POST", false)
+                }
+            }
+            else {
+                if (!validateRequiredInput("#div_inventory_rectifier")) {
+                    return false;
+                }
+                else {
+
+                    var tempListRectifier = [];
+                    var RectifierdetailsObj = FooTable.get("#rectifier_inventory");
+                    $.each(RectifierdetailsObj.rows.all, function (i, row) {
+                        var values = row.val();
+                        if (values.rectifier_hybrid_functionality == null ||
+                            values.rectifier_hybrid_functionality == undefined ||
+                            values.rectifier_hybrid_functionality == "") {
+                            alertify.alert("Alert", "Please enter Hybrid Status Data of all the rectifiers.");
+                            return;
+                        }
+                        var obj = new Object();
+                        obj.Manufacturer = values.rectifier_manufacturer_inventory;
+                        obj.ID = values.ID;
+                        obj.Capacity = values.rectifier_capacity_inventory;
+                        obj.InstalledModules = values.rectifier_installed_modules_inventory;
+                        obj.ModuleCapacity = values.rectifier_module_capacity_inventory;
+                        obj.MCUStatus = values.rectifier_mcu_status_inventory;
+                        obj.DCLoad = values.rectifier_dc_load_inventory;
+                        obj.ServingTo = values.rectifier_serving_to_inventory;
+                        obj.BatteryInstallationDate = values.rectifier_battery_installation_date_inventory;
+                        obj.BatteryCells = values.rectifier_no_of_battery_cells_inventory;
+                        obj.BatteryModel = values.rectifier_battery_model_inventory;
+                        obj.BatteryType = values.rectifier_battery_type_inventory;
+                        obj.PerCellCapacity = values.rectifier_per_cell_capacity_inventory;
+                        obj.ACBBatteries_Manufacturer = values.rectifier_acb_batteries_manufacturer_inventory;
+                        obj.ACBBatteries_CellsInstalled = values.rectifier_acb_batteries_inventory;
+                        obj.ACBBatteries_PerCellCapacity = values.rectifier_acb_inventory;
+                        obj.BBTime = values.rectifier_bb_time_inventory;
+                        obj.BatteryCagingStatus = values.rectifier_battery_caging_status_inventory;
+                        obj.Hybrid_Functionality = values.rectifier_hybrid_functionality;
+                        obj.Not_Hybrid_Reason = values.rectifier_not_hybrid_reason;
+                        obj.Not_Hybrid_Reason_Other = values.rectifier_reason_for_others;
+                        obj.Hybrid_Functionality_Status = values.hybrid_functionality_status_rectifier;
+
+                        tempListRectifier.push(obj);
+                    });
+                    debugger;
+                    Inventory_Data.ListRectifiers = tempListRectifier;
+                    Inventory_Data.TotalNumberOfOperationalRectifiers = $('#txt_no_of_operational_rectifier_inventory').val();
+                    Inventory_Data.UpdateSection = "RECTIFIERS";
+                    ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveRectifierInventoryData, "POST", false)
+                }
+            }
+        }
+    }
+    function OnSuccessSaveRectifierInventoryData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+            //  GetInventoryData();
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel27" role="tabpanel">
+    <div id="div_inventory_rectifier" class="container tab_body tab-margin tab_inventory">
+
+        <!--#region No. of Operational Rectifier -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Total No. of Operational Rectifier</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_no_of_operational_rectifier_inventory" type="number" class="form-control">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <table id="rectifier_inventory" class="table inventory_table margin_top">
+                    <thead>
+                        <tr>
+                            <th data-name="ID" data-visible="false">ID</th>
+                            <th data-name="rectifier_manufacturer_inventory">Manufacturer</th>
+                            <th data-name="rectifier_capacity_inventory">Capacity(KW)</th>
+                            <th data-name="rectifier_module_capacity_inventory" data-breakpoints="all">Each Module Capacity(KW)</th>
+                            <th data-name="rectifier_installed_modules_inventory" data-breakpoints="all">No. of Installed Modules</th>
+                            <th data-name="rectifier_mcu_status_inventory" data-breakpoints="xs sm">MCU Status</th>
+                            <th data-name="rectifier_dc_load_inventory" data-breakpoints="xs sm">DC Load</th>
+                            <th data-name="rectifier_serving_to_inventory" data-breakpoints="xs sm">Serving to</th>
+                            <th data-name="rectifier_battery_installation_date_inventory" data-breakpoints="all">Battery Installation Date</th>
+                            <th data-name="rectifier_no_of_battery_cells_inventory" data-breakpoints="all">No. of Battery Cells</th>
+                            <th data-name="rectifier_battery_model_inventory" data-breakpoints="all">Battery Model</th>
+                            <th data-name="rectifier_battery_type_inventory" data-breakpoints="all">Battery Type</th>
+                            <th data-name="rectifier_battery_caging_status_inventory" data-breakpoints="all">Battery Caging Status</th>
+                            <th data-name="rectifier_per_cell_capacity_inventory" data-breakpoints="all">Per Cell Capacity</th>
+                            <th data-name="rectifier_acb_batteries_manufacturer_inventory" data-breakpoints="all"> ACB Batteries Manufacturer</th>
+                            <th data-name="rectifier_acb_batteries_inventory" data-breakpoints="all">ACB Batteries (No. of Cells installed)</th>
+                            <th data-name="rectifier_acb_inventory" data-breakpoints="all">ACB (Per Cell Capacity)</th>
+                            <th data-name="rectifier_bb_time_inventory" data-breakpoints="xs sm">BB Time(Min)</th>
+                            <th data-name="rectifier_hybrid_functionality" data-breakpoints="all">Hybrid Functionality</th>
+                            <th data-name="rectifier_not_hybrid_reason" data-breakpoints="all">Reson for not Hybrid</th>
+                            <th data-name="rectifier_reason_for_others" data-breakpoints="all">Other reason</th>
+                            <th data-name="hybrid_functionality_status_rectifier" data-breakpoints="all">Hybrid Functionality Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div class="modal fade" id="editor_modal_rectifier_inventory" role="dialog">
+                    <div class="modal-dialog dialog-dg-width fixed-dialog" role="document">
+                        <form class="modal-content form-horizontal" id="editor_rectifier_inventory">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="editor_title_rectifier_inventory">Add More Rectifier</h4>
+                            </div>
+                            <div class="modal-body">
+                                <input id="txt_rectifier_ID_inventory" type="hidden" class="form-control">
+                                <!--#region Manufacturer and Capacity(KW)-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Manufacturer</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_manufacturer_inventory" type="text" class="form-control requiredinput">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_manufacturer_inventory">
+                                                <option value="NA" id="select_option_rectifier_manufacturer_inventory" disabled selected hidden>Select ..</option>
+                                                <option>HUAWEI/POWER CUBE/DCDU/CES</option>
+                                                <option>EMERSON/VERTIV/NETSURE</option>
+                                                <option>EMERSON/VERTIV/NETSURE</option>
+                                                <option>ZXD3000</option>
+                                                <option>DELTA 1200W</option>
+                                                <option>DELTA 2000W</option>
+                                                <option>DELTA 2900W</option>
+                                                <option>DELTA 3000W</option>
+                                                <option>DELTA 2400W</option>
+                                                <option>ELTEK 1500W</option>
+                                                <option>ELTEK/FLATPACK 2000W</option>
+                                                <option>DC SHARED</option>
+                                                <option>AIRSIS</option>
+                                                <option>SMARTPACK</option>
+                                                <option>ASCOM</option>
+                                                <option>SAFTPOWER</option>
+                                                <option>POWER TECK</option>
+                                                <option>MINI PACK</option>
+                                                <option>OTHER</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Capacity(KW)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_capacity_inventory" type="number" step="any" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--#endregion-->
+                                <!--#region (Each module Capacity)KW and No. of Installed Modules-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Each Module Capacity(KW)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_module_capacity_inventory" type="number" step="any" class="form-control requiredinput">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_module_capacity_inventory">
+                                                <option value="NA" id="select_option_rectifier_module_capacity_inventory" disabled selected hidden>Select ..</option>
+                                                <option>3KW</option>
+                                                <option>2KW</option>
+                                                <option>3KW</option>
+                                                <option>3KW</option>
+                                                <option>1.2KW</option>
+                                                <option>2KW</option>
+                                                <option>2.9KW</option>
+                                                <option>3KW</option>
+                                                <option>2.4KW</option>
+                                                <option>1.5KW</option>
+                                                <option>2KW</option>
+                                                <option>3KW</option>
+                                                <option>1.8KW</option>
+                                                <option>OTHER</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>No. of Installed Modules</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_installed_modules_inventory" type="number" step="any" class="form-control requiredinput">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_installed_modules_inventory">
+                                                <option value="0" id="select_option_rectifier_installed_modules_inventory" disabled selected hidden>Select ..</option>
+                                                <option>0</option>
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                                <option>6</option>
+                                                <option>7</option>
+                                                <option>8</option>
+                                                <option>9</option>
+                                                <option>10</option>
+                                                <option>11</option>
+                                                <option>12</option>
+                                                <option>13</option>
+                                                <option>14</option>
+                                                <option>15</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region MCU Status and DC Load-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> MCU Status<</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_mcu_status_inventory" type="text" class="form-control requiredinput">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_mcu_status_inventory">
+                                                <option>OK</option>
+                                                <option selected>NOT OK</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>DC Load</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_dc_load_inventory" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region Serving to and Battery Installation Date-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Serving to</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_serving_to_inventory" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Battery Installation Date</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_battery_installation_date_inventory" readonly="readonly" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region No. of Battery Cells and Battery Model-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> No. of Battery Cells</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_no_of_battery_cells_inventory" type="number" step="any" class="form-control requiredinput ">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_no_of_battery_cells_inventory">
+                                                <option value="0" id="select_option_rectifier_no_of_battery_cells_inventory" disabled selected hidden>Select ..</option>
+                                                <option>0</option>
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>8</option>
+                                                <option>12</option>
+                                                <option>16</option>
+                                                <option>20</option>
+                                                <option>24</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Battery Model</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        @*<div class="myinput_modal">
+                                                <input id="txt_rectifier_battery_model_inventory" type="text" class="form-control requiredinput ">
+                                            </div>*@
+                                        <div class="myinput_modal">
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_battery_model_inventory">
+                                                <option value="NA" id="select_option_rectifier_battery_model_inventory" disabled selected hidden>Select ..</option>
+                                                <option>AGISSON</option>
+                                                <option>VOLTA</option>
+                                                <option>LI-ION NARADA</option>
+                                                <option>LI-ION VISION</option>
+                                                <option>CD TRUE</option>
+                                                <option>MORTHIN</option>
+                                                <option>MONO LIGHT</option>
+                                                <option>MARATHON</option>
+                                                <option>POWER SAFE</option>
+                                                <option>NARADA</option>
+                                                <option>NORTH STAR</option>
+                                                <option>ACMT</option>
+                                                <option>ACME</option>
+                                                <option>OTHER</option>
+                                                <option>VISION</option>
+                                                <option>OERLIKON</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region Battery Type and Per Cell Capacity-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Battery Type</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_battery_type_inventory" type="text" class="form-control requiredinput ">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_battery_type_inventory">
+                                                <option value="NA" id="select_option_rectifier_battery_type_inventory" disabled selected hidden>Select ..</option>
+                                                <option>FCB 12V</option>
+                                                <option>TCB 12V</option>
+                                                <option>TCB 2V</option>
+                                                <option>DCB</option>
+                                                <option>FCB 2V</option>
+                                                <option>Li-ION 12V (ACB)</option>
+                                                <option>12 V AGM</option>
+                                                <option>48 V</option>
+                                                <option>12 V FCB</option>
+                                                <option>12 V AGM</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>Per Cell Capacity</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            @*<input id="txt_rectifier_per_cell_capacity_inventory" type="text" class="form-control requiredinput ">*@
+                                            <select class="form-control mydropdown_modal" id="txt_rectifier_per_cell_capacity_inventory">
+                                                <option value="0" id="select_option_rectifier_per_cell_capacity_inventory" disabled selected hidden>Select ..</option>
+                                                <option>0</option>
+                                                <option>50</option>
+                                                <option>100</option>
+                                                <option>150</option>
+                                                <option>170</option>
+                                                <option>172</option>
+                                                <option>180</option>
+                                                <option>190</option>
+                                                <option>200</option>
+                                                <option>300</option>
+                                                <option>400</option>
+                                                <option>490</option>
+                                                <option>500</option>
+                                                <option>600</option>
+                                                <option>650</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region ACB Batteries Manufacturer and ACB Batteries (No. of Cells installed)-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>ACB Batteries Manufacturer</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_acb_batteries_manufacturer_inventory" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>ACB Batteries (No. of Cells installed)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_acb_batteries_inventory" type="number" step="any" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <!--#region ACB (Per Cell Capacity) and BB Time(Min)-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> ACB (Per Cell Capacity)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_acb_inventory" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>BB Time(Min)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <input id="txt_rectifier_bb_time_inventory" type="text" class="form-control">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!--#endregion-->
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Hybrid Functionality Supported</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="">
+                                            <select class="form-control mydropdown_modal" id="dd_hybrid_functionality_rectifier_inventory">
+                                                <option>YES</option>
+                                                <option selected>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label>  Hybrid Functionality Status</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="">
+                                            <select class="form-control mydropdown_modal" id="dd_hybrid_functionality_status_rectifier">
+                                                <option value="NA" id="select_option_hybrid_functionality_status_rectifier" disabled selected hidden>Select ..</option>
+                                                <option>ACTIVE</option>
+                                                <option>IN ACTIVE</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Reason for Not Hybrid</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="">
+                                            <select class="form-control mydropdown_modal" id="dd_not_hybrid_reason_rectifier_inventory">
+                                                <option value="NA" id="select_option_not_hybrid_reason_rectifier_inventory" disabled selected hidden>Select ..</option>
+                                                <option>BYPASSED</option>
+                                                <option>NOT INTEGRATED</option>
+                                                <option>NOT CONFIGURED</option>
+                                                <option>OTHERS</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal ">
+                                            <label> Reason for Others</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="myinput_modal">
+                                            <textarea id="txt_reason_for_others_rectifier_inventory" type="text" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 ">
+                                        <div class="form-inline  mylabelstyle_modal">
+                                            <label> Battery Caging Status</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6 ">
+                                        <div class="">
+                                            <select class="form-control mydropdown_modal" id="dd_battery_caging_status_rectifier_inventory">
+                                                <option value="NA" id="select_option_battery_caging_status_rectifier_inventory" disabled selected hidden>Select ..</option>
+                                                <option>WELDING</option>
+                                                <option>INTERNAL CAGE</option>
+                                                <option>CONCERETE WALL(L)</option>
+                                                <option>CONCERETE WALL(DOUBLE L)</option>
+                                                <option>NA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="save_rectifier_inventory" name="save_rectifier_inventory" onclick="SaveRectifierInventoryData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+<!--/.Panel 27-->
+<!-- #endregion -->

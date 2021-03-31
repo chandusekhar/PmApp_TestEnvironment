@@ -1,0 +1,460 @@
+﻿<!-- #region DG TAB -->
+<!--Panel 23-->
+<script>
+    var DG_Inventory_List = [];
+    $(document).ready(function () {
+
+        resetDGoverhauledDateFields();
+
+        $('#txt_dg_overhauled_inventory').on('change', function () {
+            debugger;
+            var overhauled_value = $('#txt_dg_overhauled_inventory').val();
+            if (overhauled_value == 0) {
+                $('#txt_dg_overhauled_date_inventory').attr('disabled', 'disabled');
+                $('#txt_dg_overhauled_date_inventory').val('');
+            }
+            else {
+                $('#txt_dg_overhauled_date_inventory').removeAttr('disabled');
+            }
+
+
+        });
+
+        $("#txt_dg_overhauled_date_inventory").datepicker();
+    var $modal_dg_inventory = $('#editor_modal_dg_inventory'),
+     $editor_dg_inventory = $('#editor_dg_inventory'),
+     $editorTitle_dg_inventory = $('#editor_title_dg_inventory'),
+     ft_ac = FooTable.init('#dg_inventory', {
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add More DG',
+             addRow: function () {
+                 if ($('#txt_dg_denial_inventory').val() == 'YES') {
+                     alertify.alert("Alert","You cannot add DG details when DG denial is YES");
+                     return;
+                 }
+                 $modal_dg_inventory.removeData('row');
+                 $editor_dg_inventory[0].reset();
+                 $editorTitle_dg_inventory.text('Add a new DG');
+                 $modal_dg_inventory.modal('show');
+             },
+             editRow: function (row) {
+                 debugger;
+                 var values = row.val();
+                 if (values.dg_model_inventory != null) {
+                     $('#select_option_dg_model_inventory').val("");
+                    $editor_dg_inventory.find('#txt_dg_model_inventory').val(values.dg_model_inventory);
+                 }
+                 $editor_dg_inventory.find('#txt_dg_ID').val(values.ID);
+                 if (values.dg_rating_kva_inventory != null) {
+                     $('#select_option_dg_rating_kva_inventory').val("");
+                    $editor_dg_inventory.find('#txt_dg_rating_kva_inventory').val(values.dg_rating_kva_inventory);
+                 }
+                 if (values.dg_status_inventory != null) {
+                     $('#select_option_dg_status_inventory').val("");
+                    $editor_dg_inventory.find('#dd_dg_status_inventory').val(values.dg_status_inventory);
+                 }
+                 $editor_dg_inventory.find('#dd_dg_controlled_from_rectifier_inventory').val(values.dg_controlled_from_rectifier_inventory);
+                 $editor_dg_inventory.find('#txt_dg_overhauled_inventory').val(values.dg_overhauled_inventory);
+                 $editor_dg_inventory.find('#txt_dg_overhauled_date_inventory').val(values.dg_overhauled_date_inventory);
+                 $editor_dg_inventory.find('#txt_dg_remarks_inventory').val(values.dg_remarks_inventory);
+
+                 $modal_dg_inventory.data('row', row);
+                 $editorTitle_dg_inventory.text('Edit DG');
+                 $modal_dg_inventory.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         'rows': dgDetailsList
+     }),
+     uid = 10;
+
+        $editor_dg_inventory.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            if (!validateRequiredInput('#editor_modal_dg_inventory')) {
+                return false;
+            }
+            var row = $modal_dg_inventory.data('row'),
+                values = {
+                    ID: $editor_dg_inventory.find('#txt_dg_ID').val(),
+                    dg_model_inventory: $editor_dg_inventory.find('#txt_dg_model_inventory option:selected').val(),
+                    dg_rating_kva_inventory: $editor_dg_inventory.find('#txt_dg_rating_kva_inventory option:selected').val(),
+                    dg_status_inventory: $editor_dg_inventory.find('#dd_dg_status_inventory option:selected').val(),
+                    dg_controlled_from_rectifier_inventory: $editor_dg_inventory.find('#dd_dg_controlled_from_rectifier_inventory').val(),
+                    dg_overhauled_inventory: $editor_dg_inventory.find('#txt_dg_overhauled_inventory').val(),
+                    dg_overhauled_date_inventory: $editor_dg_inventory.find('#txt_dg_overhauled_date_inventory').val(),
+                    dg_remarks_inventory: $editor_dg_inventory.find('#txt_dg_remarks_inventory').val()
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_ac.rows.add(values);
+            }
+            $modal_dg_inventory.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+
+    });
+    function resetDGoverhauledDateFields() {
+        if ($('#txt_dg_overhauled_inventory').val('0'))
+        {
+            $('#txt_dg_overhauled_date_inventory').attr('disabled', 'disabled');
+            $('#txt_dg_overhauled_date_inventory').val('');
+        }
+        else
+        {
+            $('#txt_dg_overhauled_date_inventory').removeAttr('disabled');
+        }
+
+
+    }
+    function SaveDGInventoryData() {
+        debugger;
+        if (!validateRequiredInput('#div_dg_inventory')) {
+            return false;
+        }
+        else {
+            Inventory_Data.DG_Installed = $('#dd_dg_installed_inventory option:selected').val();
+            Inventory_Data.DG_Denial = $('#txt_dg_denial_inventory').val();
+            Inventory_Data.DG_Denial_By = $('#txt_dg_denial_by_inventory').val();
+            Inventory_Data.Dgs_Working_During_CP_Outage = $('#txt_dg_working_inventory').val();
+            Inventory_Data.UpdateSection = "DG";
+            var tempListDGdetails = [];
+            var DGdetaisObj = FooTable.get("#dg_inventory");
+            $.each(DGdetaisObj.rows.all, function (i, row) {
+                debugger;
+                var values = row.val();
+                var obj = new Object();
+                if (values.ID) {
+                    obj.ID = values.ID;
+                }
+                else {
+                    obj.ID = 0;
+                }
+
+                obj.DG_Model = values.dg_model_inventory;
+                obj.Rating_KVA = values.dg_rating_kva_inventory;
+                obj.Status = values.dg_status_inventory;
+                obj.DG_Controlled_From_Rectifier = values.dg_controlled_from_rectifier_inventory;
+                obj.DG_Overhauled_Count = values.dg_overhauled_inventory;
+                obj.LatestOverhauledDate = values.dg_overhauled_date_inventory;
+                obj.Remarks = values.dg_remarks_inventory;
+                tempListDGdetails.push(obj);
+            });
+
+            if ($('#txt_dg_denial_inventory').val() == 'YES') {
+                $('#dg_inventory tbody tr').each(function (index, elem) {
+                    $(elem).remove();
+                });
+                Inventory_Data.ListDgs = [];
+            }
+            else {
+                Inventory_Data.ListDgs = tempListDGdetails;
+            }
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveDG, "POST", false)
+        }
+    }
+    function OnSuccessSaveDG(res) {
+        debugger;
+        if (res == "success") {
+            // alert("Data has been updated successfully.");
+            alertify.alert('Success', 'Data has been updated successfully.')
+          //  GetInventoryData();
+        }
+        else {
+            //alert("Failed.");
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+
+
+
+</script>
+
+
+
+<div class="tab-pane fade in" id="panel23" role="tabpanel">
+    <div id="div_dg_inventory" class="container tab_body tab-margin tab_inventory">
+        <!--#region No. of DGs and DG Denial -->
+        @*<div class="row">
+                <div class="col-md-3 col-sm-6 ">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label> Total No. of DGs at site<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 ">
+                   <div class="form-group myinput">
+                        <input id="txt_no_of_dg_inventory" type="text" class="form-control requiredinput">
+                    </div>
+                </div>
+            </div>*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_dg_installed_inventory">
+                        <option value="NO" id="select_option_dg_installed_inventory" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                        <option>YES,DENIED</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG Denial</label>
+                </div>
+            </div>
+            @*<div class="col-md-3 col-sm-6 ">
+                   <div class="form-group myinput">
+                        <input id="txt_dg_denial_inventory" type="text" class="form-control ">
+                    </div>
+                </div>*@
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="txt_dg_denial_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region DG Denial By and DGs working-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>DG Denial By</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_dg_denial_by_inventory" type="text" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DGs working during CP outage</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_dg_working_inventory" type="number" class="form-control  requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>DG Details</label>
+                </div>
+            </div>
+            <div class="col-md-9 col-sm-12 col-xs-12">
+                <table id="dg_inventory" class="table inventory_table margin_top">
+                    <thead>
+                        <tr>
+                            <th data-name="ID" data-visible="false">ID</th>
+                            <th data-name="dg_model_inventory">DG Model</th>
+                            <th data-name="dg_rating_kva_inventory" data-breakpoints="xs sm">Rating KVA</th>
+                            <th data-name="dg_status_inventory">Status</th>
+                            <th data-name="dg_controlled_from_rectifier_inventory">DG Controlled from Rectifier</th>
+                            <th data-name="dg_overhauled_inventory" data-breakpoints="xs sm">No. of times DG overhauled</th>
+                            <th data-name="dg_overhauled_date_inventory" data-breakpoints="xs sm">Latest overhaul date</th>
+                            <th data-name="dg_remarks_inventory" data-breakpoints="xs sm">Remarks for DG</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+
+            </div>
+        </div>
+
+        <button id="save_dg_inventory" name="save_dg_inventory" onclick="SaveDGInventoryData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+    <div class="modal fade" id="editor_modal_dg_inventory" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content form-horizontal" id="editor_dg_inventory">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="editor_title_dg_inventory">Add More Diesel Genset</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="txt_dg_ID" type="hidden" class="form-control">
+                    <!--#region Model and Rating-->
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label> DG Model</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            @*<div class="myinput_modal">
+                                    <input id="txt_dg_model_inventory" type="text" class="form-control requiredinput">
+                                </div>*@
+                            <select class="form-control mydropdown_modal" id="txt_dg_model_inventory">
+                                <option value="NA" id="select_option_dg_model_inventory" disabled selected hidden>Select ..</option>
+                                <option>JOHN DEERE (JD)</option>
+                                <option>CUMMINS</option>
+                                <option>DENYO</option>
+                                <option>YANMAR</option>
+                                <option>FG WILLSON</option>
+                                <option>DC DG</option>
+                                <option>PETBOW</option>
+                                <option>METS</option>
+                                <option>MILAT</option>
+                                <option>OLYMPION</option>
+                                <option>IMPAC</option>
+                                <option>NEQ</option>
+                                <option>GHADDAR</option>
+                                <option>WP</option>
+                                <option>LISTER PETTER</option>
+                                <option>DJ KUA</option>
+                                <option>NEQ(JD)</option>
+                                <option>NEWAGE</option>
+                                <option>JET</option>
+                                <option>ALLIED</option>
+                                <option>PERKINS GJ</option>
+                                <option>PERKINS HH</option>
+                                <option>PERKINS HL</option>
+                                <option>PERKINS GK</option>
+                                <option>PERKINS HP</option>
+                                <option>PERKINS GN</option>
+                                <option>PERKINS CM</option>
+                                <option>PERKINS DJ</option>
+                                <option>OTHER</option>
+                                <option>NA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label>Rating KVA</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            @*<div class="myinput_modal">
+                                    <input id="txt_dg_rating_kva_inventory" type="number" step="any"  class="form-control requiredinput">
+                                </div>*@
+                            <select class="form-control mydropdown_modal" id="txt_dg_rating_kva_inventory">
+                                <option value="0" id="select_option_dg_rating_kva_inventory" disabled selected hidden>Select ..</option>
+                                <option>0</option>
+                                <option>9</option>
+                                <option>13</option>
+                                <option>17</option>
+                                <option>20</option>
+                                <option>27</option>
+                                <option>30</option>
+                                <option>31</option>
+                                <option>33</option>
+                                <option>63</option>
+                                <option>7.5</option>
+                                <option>35</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--#endregion-->
+                    <!--#region Status and Overhauled-->
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label>Status</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <select class="form-control mydropdown_modal" id="dd_dg_status_inventory">
+                                <option value="NA" id="select_option_dg_status_inventory" disabled selected hidden>Select ..</option>
+                                <option>WORKING</option>
+                                <option>NOT WORKING</option>
+                                <option>SIEZED</option>
+                                <option>OH REQUIRED</option>
+                                <option>WEAK</option>
+                                <option>NA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label>DG Controlled from Rectifier</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <select class="form-control mydropdown_modal" id="dd_dg_controlled_from_rectifier_inventory">
+                                <option>YES</option>
+                                <option selected>NO</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label>No. of times DG overhauled</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="myinput_modal">
+                                <input id="txt_dg_overhauled_inventory" type="number" step="any" min="0" class="form-control">
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--#endregion-->
+                    <!--#region Latest overhaul date and Remarks for DG-->
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label> Latest overhaul date</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="myinput_modal">
+                                <input id="txt_dg_overhauled_date_inventory" type="text" readonly="readonly" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-inline  mylabelstyle_modal">
+                                <label>Remarks for DG</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="myinput_modal">
+                                <input id="txt_dg_remarks_inventory" type="text" class="form-control ">
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--#endregion-->
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 23-->
+<!-- #endregion -->

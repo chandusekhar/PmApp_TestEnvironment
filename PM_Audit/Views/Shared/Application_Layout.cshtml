@@ -1,0 +1,43 @@
+﻿@using Microsoft.AspNet.Identity
+@using System.Linq
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Preventive Maintenance</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/script")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/footable")
+    @Styles.Render("~/bundles/Theme")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).ajaxStart(function () {
+                ShowLoader();
+            });
+            $(document).ajaxComplete(function () {
+                HideLoader();
+            });
+        });
+        function ShowLoader() {
+            $("#wait").css("display", "block");
+        }
+        function HideLoader()
+        {
+            $("#wait").css("display", "none");
+
+        }
+    </script>
+    @RenderSection("Scripts", false)
+</head>
+<body>
+    <div class="bbg">
+     @Html.Action("PartialHeader", "Dashboard")
+        <div class="container">
+            <div id="wait" style="display:none;position:absolute;top:50%;left:50%;padding:2px;z-index:10002"><img src="~/Content/Image/loading-spinner.gif" width="100" height="100" /></div>
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

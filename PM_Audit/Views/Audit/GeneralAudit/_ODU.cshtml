@@ -1,0 +1,248 @@
+﻿<!-- #region ODU TAB -->
+<!--Panel 6-->
+<script>
+
+    function SaveODUDataAudit() {
+        //if (!validateRequiredInput('#checklist_odu')) {
+        //    return false;
+        //}
+
+        PM_Data.checkListODU.OdUType = $('#dd_odu_type').val();
+        PM_Data.checkListODU.ODUVendor = $('#dd_vendor_odu').val();
+        PM_Data.checkListODU.Grounding = $('#dd_grounding_status_odu').val();
+        PM_Data.checkListODU.CableGrounding = $('#dd_cable_grounded_odu').val();
+        PM_Data.checkListODU.InstallationHeight = $('#txt_installation_height_odu').val();
+        PM_Data.checkListODU.RSL = $('#txt_rsl_odu').val();
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/SaveODUChecklistDataGeneralAudit", PM_Data, OnSuccessSaveODU, "POST", false)
+    }
+
+    function OnSuccessSaveODU(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+
+
+
+</script>
+
+
+
+
+
+<div class="tab-pane fade" id="panel6" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_odu">
+
+        <!-- #region ODUType -->
+        @*------------ODU Type---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Select ODU Type</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+               @*<div class="form-group myinput">
+                    <input type="text" class="form-control " id="dd_odu_type">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_odu_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>38/A 12</option>
+                        <option>38/A 16</option>
+                        <option>38/A 36</option>
+                        <option>38/A 32</option>
+                        <option>23/A 01</option>
+                        <option>23/A 05</option>
+                        <option>23/A 02</option>
+                        <option>23/A 06</option>
+                        <option>18/A 15</option>
+                        <option>18/A 11</option>
+                        <option>18/A 15HP</option>
+                        <option>18/A 11HP</option>
+                        <option>18/A 13</option>
+                        <option>18/A 17</option>
+                        <option>18/A 13HP</option>
+                        <option>18/A 17HP</option>
+                        <option>10/A 72</option>
+                        <option>10/A 76</option>
+                        <option>10/A 72HP</option>
+                        <option>10/A 76HP</option>
+                        <option>11/A 01</option>
+                        <option>11/A 05</option>
+                        <option>11/A 02</option>
+                        <option>11/A06</option>
+                        <option>11/A 01HP</option>
+                        <option>11/A 05HP</option>
+                        <option>11/A 02HP</option>
+                        <option>11/A06HP</option>
+                        <option>TND1ODU (SLB2CSHNU)</option>
+                        <option>TND1ODU (X113HA)</option>
+                        <option>TND1ODU (SL91ISV3)</option>
+                        <option>TND1ODU (SLF2CSHO)</option>
+                        <option>TND1ODU (X1821010ALA)</option>
+                        <option>TND1ODU (X1821010AHA)</option>
+                        <option>TND1ODU (TN16UXCM)</option>
+                        <option>TND1ODU (/)</option>
+                        <option>TND1ODU (X113LA)</option>
+                        <option>TND1ODU (X1020350AHA)</option>
+                        <option>TND1ODU (TN16AUX)</option>
+                        <option>TND1ODU (TN13OAU106)</option>
+                        <option>TND1ODU (TN13FIU03)</option>
+                        <option>TND1ODU (TN13OAU101)</option>
+                        <option>TND1ODU (TN55TTX)</option>
+                        <option>TND1ODU (TN16EFI)</option>
+                        <option>TND1ODU (SSE1FIU03)</option>
+                        <option>TND1ODU (SSE5OAUC01C)</option>
+                        <option>TND1ODU (X183HA)</option>
+                        <option>TND1ODU (X383HA)</option>
+                        <option>TND1ODU (X233HA)</option>
+                        <option>TND1ODU (SL91ISM6)</option>
+                        <option>TND1ODU (TN15WSMD901)</option>
+                        <option>TND1ODU (TN58NS4T65)</option>
+                        <option>TND1ODU (TN52SCC01)</option>
+                        <option>TND1ODU (X1020350ALA)</option>
+                        <option>TND1ODU (TN54TOA01)</option>
+                        <option>TND1ODU (SL91SL1D01)</option>
+                        <option>TND1ODU (X3821260BLA)</option>
+                        <option>TND1ODU (SSE2VA401)</option>
+                        <option>TND1ODU (X2321232BHA)</option>
+                        <option>TND1ODU (TN12M4001)</option>
+                        <option>TND1ODU (X2321232BLA)</option>
+                        <option>TND1ODU (X183LA)</option>
+                        <option>TND1ODU (TN12DCP01)</option>
+                        <option>TND1ODU (X233LA)</option>
+                        <option>TND1ODU (TN11ITL06)</option>
+                        <option>TND1ODU (TN12OPM801)</option>
+                        <option>TND1ODU (TN16ATE)</option>
+                        <option>TND1ODU (SL91ISU2)</option>
+                        <option>TND1ODU (SSE5OPUC03C)</option>
+                        <option>TND1ODU (TN13OAU107)</option>
+                        <option>TND1ODU (TN13WSMD401)</option>
+                        <option>TND1ODU (SSE1SC207)</option>
+                        <option>TND1ODU (TN12ST2)</option>
+                        <option>TND1ODU (TN58NS4T50)</option>
+                        <option>TND1ODU (TN13OAU105)</option>
+                        <option>TND1ODU (TN16FIU01)</option>
+                        <option>TND1ODU (SSE1SCC01)</option>
+                        <option>TND1ODU (TN18EFIB)</option>
+                        <option>TND1ODU (X3821260BHA)</option>
+                        <option>TND1ODU (TNZ5UXCMS)</option>
+                        <option>TND1ODU (SLF1CSHO)</option>
+                        <option>TND1ODU (SSJ1JSTG01)</option>
+                        <option>TND1ODU (SLB1CSHNA)</option>
+                        <option>TND1ODU (TN13OBU104)</option>
+                        <option>TND1ODU (TN13OBU103)</option>
+                        <option>TND1ODU (TN12D4001)</option>
+                        <option>TND1ODU (SL91EG4)</option>
+                        <option>TND1ODU (--)</option>
+                        <option>TND1ODU (X383LA)</option>
+                        <option>ML 6651 Compact Node</option>
+                        <option>ML 6692</option>
+                        <option>ML 6693</option>
+                        <option>ML 6694</option>
+                        <option>ML 6654</option>
+                        <option>ML 6691</option>
+                        <option>ftts</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Vendor</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_vendor_odu">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>ERICSSON</option>
+                        <option>HUAWEI</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- #region Grounding-->
+        @*------------Grounding Status---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Grounding Status</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_grounding_status_odu">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region IF Cable Grounded-->
+        @*------------IF Cable Grounded---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> IF Cable Grounded</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_cable_grounded_odu">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Installation Height-->
+        @*------------Installation Height---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Installation Height(meters)</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+               <div class="form-group myinput">
+                    <input type="number" step="any" min="0" class="form-control " id="txt_installation_height_odu">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region RSL-->
+        @*------------RSL---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> RSL</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+               <div class="form-group myinput">
+                    <input type="number" step="any" class="form-control  " id="txt_rsl_odu">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <button id="save_odu" name="save_odu" onclick="SaveODUDataAudit()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+<!--/.Panel 6-->
+<!--#endregion-->

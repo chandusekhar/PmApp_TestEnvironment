@@ -1,0 +1,168 @@
+﻿<!-- #region Major Snags TAB -->
+<!--Panel 22-->
+<script type="text/javascript">
+
+    function SaveMinorSnagsData() {
+
+        var obj = new Object();
+        obj.SiteCode = PM_Data.SiteCode;
+        obj.FK_PM_ID = PM_Data.ID;
+        obj.Type = PM_Data.Type;
+        obj.Power_cable_routing_from_meter_to_100A = $('#dd_power_cable_routing_meter_to_100_audit').val();
+        obj.Power_cable_routing_from_100A_to_ATS = $('#dd_power_cable_routing_100_to_ats_audit').val();
+        obj.Genset_power_cable_routing = $('#dd_genset_power_cable_routing_audit').val();
+        obj.ATS_DB_locks = $('#dd_db_locks_audit').val();
+        obj.Genset_canopy_status = $('#dd_genset_canopy_status_audit').val();
+        obj.Tower_light = $('#dd_tower_light_audit').val();
+        obj.PM_book_availability = $('#dd_pm_book_availabilty_audit').val();
+        obj.Security_log_book_availability = $('#dd_security_book_availabilty_audit').val();
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SaveMinorSnagsAudit", obj, OnSuccessSaveMinorSnags, "POST", false)
+    }
+
+    function OnSuccessSaveMinorSnags(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+</script>
+
+<div class="tab-pane fade in" id="pane22" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco">
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Power cable routing from meter to 100 A</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_power_cable_routing_meter_to_100_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Power cable routing from 100 A to ATS</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_power_cable_routing_100_to_ats_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Genset power cable routing</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_genset_power_cable_routing_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>100 A, ATS and DB locks</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_db_locks_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Genset canopy status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_genset_canopy_status_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Tower light</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_tower_light_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>PM book availability</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_pm_book_availabilty_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Security log book availability</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown " id="dd_security_book_availabilty_audit" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+
+        @*<button id="save_minorsnags" name="save_minorsnags" onclick="SaveMinorSnagsData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 21-->
+<!-- #endregion -->
+

@@ -1,0 +1,196 @@
+﻿<!-- #region Alarms TAB -->
+<script>
+    var AlarmsData;
+    function SaveAlarmDataAudit() {
+        if (PM_Data.checkListAlarms== null) {
+            PM_Data.checkListAlarms = new Object();
+        }
+        //if (AlarmsData == null) {
+        //    alert("Please toggle alarms first.");
+        //    return false;
+        //}
+        //if (AlarmsData == null) {
+        //    alert("Please toggle alarms first.");
+        //    return false;
+        //}
+        //if (AlarmsData.Intruder != "Cleared") {
+        //    alert("Intruder alarm is not toggled.");
+        //    return false;
+        //}
+        //if (AlarmsData.AC_Mains_Failure != "Cleared") {
+        //    alert("AC alarm is not toggled.");
+        //    return false;
+        //}
+        //if (AlarmsData.DG_On != "Cleared") {
+        //    alert("DG ON alarm is not toggled.");
+        //    return false;
+        //}
+        //if (AlarmsData.Low_Voltage != "Cleared") {
+        //    alert("Low Voltage alarm is not toggled.");
+        //    return false;
+        //}
+        //if (AlarmsData.System_On_Batteries != "Cleared") {
+        //    alert("System on Batteries alarm is not toggled.");
+        //    return false;
+        //}
+        //if (AlarmsData.High_Temperature != "Cleared") {
+        //    alert("Hight Temperature alarm is not toggled.");
+        //    return false;
+        //}
+        //}
+        if (AlarmsData != null) {
+            PM_Data.checkListAlarms.Intruder = AlarmsData.Intruder;
+            PM_Data.checkListAlarms.AC_Mains_Failure = AlarmsData.AC_Mains_Failure;
+            PM_Data.checkListAlarms.DG_On = AlarmsData.DG_On;
+            PM_Data.checkListAlarms.Low_Voltage = AlarmsData.Low_Voltage;
+            PM_Data.checkListAlarms.System_On_Batteries = AlarmsData.System_On_Batteries;
+            PM_Data.checkListAlarms.High_Temperature = AlarmsData.High_Temperature;
+        }
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/SaveAlarmsChecklistDataGeneralAudit", PM_Data, OnSuccessSaveAlarm, "POST", false)
+    }
+
+    function OnSuccessSaveAlarm(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success","Data has been updated successfully.");
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+    function GetPMAlarmsTogglingStatus() {
+        debugger;
+        var AlarmObj = new Object();
+        AlarmObj.PM_ID = PM_Data.ID;
+        AlarmObj.Site_Code = PM_Data.SiteCode;
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/AlarmsManagement/GetGeneralAuditAlarmsTogglingStatus", AlarmObj, GetPMAlarmsTogglingStatusResponse, "POST");
+
+    }
+    function GetPMAlarmsTogglingStatusResponse(res) {
+        debugger;
+        AlarmsData = res;
+        $('#dd_intruder').text(res.Intruder);
+        $('#dd_ac_main_failure').text(res.AC_Mains_Failure);
+        $('#dd_dg_on').text(res.DG_On);
+        $('#dd_low_voltage').text(res.Low_Voltage);
+        $('#dd_system_on_batteries').text(res.System_On_Batteries);
+        $('#dd_high_temperature').text(res.High_Temperature);
+
+    }
+
+</script>
+
+<!--Panel 4-->
+
+
+<div class="tab-pane fade in" id="panel4" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco">
+
+        <!-- #region Intruder-->
+        @*------------Intruder---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Intruder</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_intruder"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region AC Mains Failure-->
+        @*------------AC Mains Failure---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>AC Mains Failure</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_ac_main_failure"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region DG On-->
+        @*------------DG On---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> DG On</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_dg_on"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region Low Voltage-->
+        @*------------Low Voltage---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Low Voltage</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_low_voltage"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region System on Batteries-->
+        @*------------System on Batteries---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> System on Batteries</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_system_on_batteries"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region High Temperature-->
+        @*------------High Temperature---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> High Temperature</label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <label class="form-control mylabelstyle input_disabled" id="dd_high_temperature"></label>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="form-group">
+            <div class="row">
+                <button id="toggle_alarms" name="toggle_alarms" onclick="GetPMAlarmsTogglingStatus()" class="btn btn-primary mybutton">Toggle</button>
+            </div>
+            <div class="row">
+                <button id="save_alarms" name="save_alarms" onclick="SaveAlarmDataAudit()" class="btn btn-primary mybutton">Save</button>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+
+
+<!--/.Panel 4-->
+<!-- #endregion -->

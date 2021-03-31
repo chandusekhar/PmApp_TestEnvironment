@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "Pending PMs";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    @*<div class="admin_box">
+            <div class="row">
+                <div class="col-md-1 col-sm-3 col-xs-6">
+                    <div class="form-inline  mylabelstyle">
+                        <label> From </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-3 col-xs-6">
+                    <div class="myinput">
+                        <input id="txt_from_date_approval" type="text" class="form-control date-pick">
+                    </div>
+                </div>
+                <div class="col-md-1 col-sm-3 col-xs-6">
+                    <div class="form-inline  mylabelstyle">
+                        <label> To </label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-3 col-xs-6">
+                    <div class="myinput">
+                        <input id="txt_to_date_approval" type="text" class="form-control date-pick">
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                    <button id="get_details" onclick="GetPendingPMs()" name="get_details" class="btn btn-primary">Get Details</button>
+
+                </div>
+            </div>
+        </div>*@
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>SiteCode</th>
+                <th>PMType</th>
+                <th>LastPMDate</th>
+                <th>DueDate</th>
+                <th>StatusDate</th>
+                <th>Status</th>
+                <th>DaysSinceLastPM</th>
+                <th>FuelSinceLastPM</th>
+                <th>DGAlarmSinceLastPM</th>
+                <th></th>
+                <th></th>
+                @*  <th style="min-width: 100px;"></th>*@
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="modal fade" id="CommentsModal">
+        <div class="modal-dialog left-initial">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Comments For Rejection</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="pending_pm_id" />
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-10 col-sm-10 col-xs-10 col-left-margin top-margin-dialog">
+                                    <span class="asterick"> *</span>
+                                    <textarea class="col-xs-12 col-md-12 text-area-closePM requiredinput" id="TxtArea_Reason"></textarea>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="SaveComments()" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+
+
+
+
+        var tbl_PMGrid;
+        $(document).ready(function () {
+            GetPendingPMs()
+            //$("#txt_from_date_approval").val('');
+            //$("#txt_to_date_approval").val('');
+            //GetPendingPMs();
+            //$("#txt_from_date_approval").datepicker();
+            //$("#txt_to_date_approval").datepicker();
+
+          //  $(".date-pick").datepicker('setDate', new Date());
+
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                "order": [[1, "desc"]],
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                    { "data": "SiteCode", "orderable": true },
+                    { "data": "PMType", "orderable": true },
+                    { "data": "LastPMDate", "orderable": true },
+                    { "data": "DueDate", "orderable": true },
+                    { "data": "StatusDate", "orderable": true },
+                    { "data": "Status", "orderable": true },
+                    { "data": "DaysSinceLastPM", "orderable": true },
+                    { "data": "FuelFillSinceLastPM", "orderable": true },
+                    { "data": "GensetAlarmSinceLastPM", "orderable": true },
+
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            debugger;
+                            //   if (row.PM_Status != "Closed") {
+                            return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="acceptPendingPm(\'' + row.ID + '\')" class="btn btn-primary mybutton viewPm">Accept</button>';
+                            // }
+                            //  else {
+                            //     return '';
+                            // }
+                        }
+                    }
+                    ,
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            debugger;
+
+                            return '<button style="min-width:10px;font-size:11px;margin-top:0px"  onclick="getComments(\'' + row.ID + '\')" class="btn btn-primary mybutton viewPm">Reject</button>';
+
+
+                        }
+                    }
+
+
+                ],
+
+            });
+        });
+
+
+
+        function GetPendingPMs() {
+            debugger;
+            var obj = new Object();
+            //obj.DateFrom = '';
+            //obj.DateTO = '';
+            //obj.DateFrom = $("#txt_from_date_approval").val();
+            //obj.DateTO = $("#txt_to_date_approval").val();
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getListPendingPm",obj, OnSuccessGetPendingPMs)
+
+
+        }
+        function OnSuccessGetPendingPMs(results) {
+            debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_PMGrid.row.add(results[i]);
+            });
+            tbl_PMGrid.draw();
+        }
+        function getComments(ID) {
+            debugger;
+            $('#pending_pm_id').val(ID);
+            $('#CommentsModal').modal('show');
+            $('#TxtArea_Reason').val('');
+        }
+         function SaveComments() {
+             if (!validateRequiredInput('#CommentsModal')) {
+            return false;
+        }
+             var obj = new Object();
+             debugger;
+             obj.ID = $('#pending_pm_id').val();
+             obj.RejectionRemarks = $('#TxtArea_Reason').val();
+
+             ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/SavePendingPMRejectionComments", obj, OnSuccessSaveComments, "POST", false)
+    }
+
+    function OnSuccessSaveComments(res) {
+        debugger;
+        if (res == "Success") {
+           // alertify.alert("Success", "Rejected and Comments Saved Successfully.");
+            alertify.alert('Success','Rejected and Comments Saved Successfully', function () { alertify.success('Ok'); location.reload(); });
+            $('#CommentsModal').modal('hide');
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+
+
+        
+   }
+
+    function acceptPendingPm(ID) {
+
+             var obj = new Object();
+             debugger;
+             obj.ID = ID;
+             ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/AcceptPendingPM", obj, OnSuccessAcceptPendingPm, "POST", false)
+    }
+
+        function OnSuccessAcceptPendingPm(res) {
+        debugger;
+        if (res == "Success") {
+            //alertify.alert("Success", "Pending PM has been Approved Successfully.");
+            alertify.alert('Success', 'Pending PM has been Accepted Successfully', function () { alertify.success('Ok'); location.reload();});
+          
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+       // location.reload();
+    }
+
+
+    </script>
+}

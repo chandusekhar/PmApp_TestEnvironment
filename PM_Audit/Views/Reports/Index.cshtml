@@ -1,0 +1,332 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts");
+<link href="~/Content/Css/MonthPicker.css" rel="stylesheet" />
+<script>
+    $(function () {
+      
+        $('#month_picker1').monthpicker();
+        $('#month_picker2').monthpicker();
+        GetRBUWiseStats();
+        MonthWisePMSuccessRate();
+
+
+        
+       
+        $('#dd_rbu').on('change', function () {
+            MonthWisePMSuccessRate();
+        });
+
+        $('#month_picker1').on('change', function () {
+            MonthWisePMSuccessRate();
+        });
+
+        $('#month_picker2').on('change', function () {
+            MonthWisePMSuccessRate();
+        });
+    });
+
+    //var json = '[{"MonthName":"AUG","SuccessRate":4,"UnSuccessRate":0},{"MonthName":"SEP","SuccessRate":4,"UnSuccessRate":6},{"MonthName":"OCT","SuccessRate":4,"UnSuccessRate":2},{"MonthName":"JAN","SuccessRate":4,"UnSuccessRate":4}]';
+    //var obj = JSON.parse(json);
+    var monthArr = [];
+    var successArr = [];
+    var UnsussessArr = [];
+
+    function GetRBUWiseStats() {
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/RbuWisePMCounters", "", GetRBUWiseStatsResponse, "GET");
+    }
+    function GetRBUWiseStatsResponse(obj) {
+        debugger;
+        if (obj!= null) {
+            $('#centralA_count').text(obj.CentralATotal);
+            $('#centralA_scheduled').text(obj.CentralAPlanned);
+            $('#centralA_successful').text(obj.CentralASuccessCount);
+            $('#centralA_unsuccessful').text(obj.CentralAUnsuccessfulCount);
+
+            $('#centralB_count').text(obj.CentralBTotal);
+            $('#centralB_scheduled').text(obj.CentralBPlanned);
+            $('#centralB_successful').text(obj.CentralBSuccessCount);
+            $('#centralB_unsuccessful').text(obj.CentralBUnsuccessfulCount);
+
+            $('#north_count').text(obj.NorthTotal);
+            $('#north_scheduled').text(obj.NorthPlanned);
+            $('#north_successful').text(obj.NorthSuccessCount);
+            $('#north_unsuccessful').text(obj.NorthUnsuccessfulCount);
+
+            $('#south_count').text(obj.SouthTotal);
+            $('#south_scheduled').text(obj.SouthPlanned);
+            $('#south_successful').text(obj.SouthSuccessCount);
+            $('#south_unsuccessful').text(obj.SouthUnsuccessfulCount);
+        }
+    }
+
+    function MonthWisePMSuccessRate() {
+        var obj = new Object();
+        obj.RBU = $('#dd_rbu').val();
+        obj.Start_Date = $('#month_picker1').val();
+        obj.End_Date = $('#month_picker2').val();
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/MonthWisePMSuccessRate", obj, MonthWisePMSuccessRateResponse)
+    }
+    var dashboardChart;
+    function MonthWisePMSuccessRateResponse(obj) {
+        monthArr = [];
+        successArr = [];
+        UnsussessArr = [];
+
+        for (var i = 0; i < obj.length; i++) {
+            monthArr.push(obj[i].MonthName);
+            successArr.push(obj[i].SuccessRate);
+            UnsussessArr.push(obj[i].UnSuccessRate);
+        }
+        Chart.defaults.global.defaultFontColor = '#9faab7';
+
+        if (dashboardChart != null || typeof (dashboardChart) != "undefined")
+        {
+            dashboardChart.destroy();
+        }
+      dashboardChart =   new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: monthArr,
+                datasets: [{
+                    data: successArr,
+                    label: "Successful PMs",
+                    borderColor: "#3cba9f",
+                    fill: false
+                }, {
+                    data: UnsussessArr,
+                    label: "Unsuccessful PMs",
+                    borderColor: "#c45850",
+                    fill: false
+                }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Successful and Unsuccessful PM Trend'
+                },
+                legend: {
+                    display: true,
+                    labels: {
+                        fontColor: '#9faab7'
+                    }
+                }
+            }
+        });
+    }
+
+
+</script>
+
+
+
+
+
+
+<div class="main">
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+            <div class="container-fluid">
+              
+                <div class="admin_box">
+                    <div class="row reports_heading">
+                        <h3> Current Month Stats</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box tiles-bg-color">
+                                <div class="tiles-box-name">
+                                    CENTRAL A
+                                    <br />
+                                    <div class="tiles-box-number">
+                                        <span id="centralA_count"></span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box-content">
+                                    <div class="tiles-scheduled">
+                                        <span id="centralA_scheduled"></span>
+                                    </div>
+                                    <div class="tiles-successful">
+                                        <span id="centralA_successful"></span>
+                                    </div>
+                                    <div class="tiles-unsuccessful">
+                                        <span id="centralA_unsuccessful"></span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                                <!-- /.info-box -->
+                            </div>
+
+                            <!-- /.col -->
+
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+
+                            <div class="info-box tiles-bg-color">
+                                <div class="tiles-box-name">
+                                    CENTRAL B
+                                    <br />
+                                    <div class="tiles-box-number">
+                                        <span id="centralB_count"></span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box-content">
+                                    <div class="tiles-scheduled">
+                                        <span id="centralB_scheduled"></span>
+                                    </div>
+                                    <div class="tiles-successful">
+                                        <span id="centralB_successful"></span>
+                                    </div>
+                                    <div class="tiles-unsuccessful">
+                                        <span id="centralB_unsuccessful"></span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                                <!-- /.info-box -->
+                            </div>
+
+                            <!-- /.col -->
+
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+
+                            <div class="info-box tiles-bg-color">
+                                <div class="tiles-box-name">
+                                    NORTH
+                                    <br />
+                                    <div class="tiles-box-number">
+                                        <span id="north_count"></span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box-content">
+                                    <div class="tiles-scheduled">
+                                        <span id="north_scheduled"></span>
+                                    </div>
+                                    <div class="tiles-successful">
+                                        <span id="north_successful"></span>
+                                    </div>
+                                    <div class="tiles-unsuccessful">
+                                        <span id="north_unsuccessful"></span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                                <!-- /.info-box -->
+                            </div>
+
+                            <!-- /.col -->
+
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+
+                            <div class="info-box tiles-bg-color">
+                                <div class="tiles-box-name">
+                                    SOUTH
+                                    <br />
+                                    <div class="tiles-box-number">
+                                        <span id="south_count"></span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box-content">
+                                    <div class="tiles-scheduled">
+                                        <span id="south_scheduled"></span>
+                                    </div>
+                                    <div class="tiles-successful">
+                                        <span id="south_successful"></span>
+                                    </div>
+                                    <div class="tiles-unsuccessful">
+                                        <span id="south_unsuccessful"></span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                                <!-- /.info-box -->
+                            </div>
+
+                            <!-- /.col -->
+
+                        </div>
+                    </div>
+                    <div class="chart-legend clearfix pull-right">
+                        <i class="fa fa-square count_color"></i><label class="legend_styles"> Total Count</label>
+                        <i class="fa fa-square scheduled_color"></i><label class="legend_styles"> Scheduled</label>
+                        <i class="fa fa-square successful_color"></i><label class="legend_styles"> Successful</label>
+                        <i class="fa fa-square unsuccessful_color"></i><label class="legend_styles"> Unsuccessful</label>
+                    </div>
+
+                </div>
+                <div class="admin_box">
+                    <div class="row">
+                        <div class="col-md-1 col-sm-6 col-xs-6">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> RBU</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 col-xs-6">
+                            <div class="form-group">
+                                <select class="form-control mydropdown" id="dd_rbu">
+                                    <option value="" selected>ALL</option>
+                                    <option>Central A</option>
+                                    <option>Central B</option>
+                                    <option>North</option>
+                                    <option>South</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-6 col-xs-6">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> From</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 col-xs-6">
+                            <div class="form-group myinput">
+                                <input type="text" id="month_picker1" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-6 col-xs-6">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> To</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 col-xs-6">
+                            <div class="form-group myinput">
+                                <input type="text" id="month_picker2" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- LINE CHART -->
+                        <div class="admin_box box-info">
+                            @*<div class="box-header with-border">
+                                <h3 class="box-title">Line Chart</h3>
+                            </div>*@
+                            <div class="box-body">
+
+                                <canvas id="line-chart" width="800" height="450"></canvas>
+
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    <!-- /#page-content-wrapper -->
+</div>
+
+

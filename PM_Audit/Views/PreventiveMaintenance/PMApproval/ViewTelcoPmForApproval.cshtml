@@ -1,0 +1,566 @@
+﻿
+@{
+    ViewBag.Title = "View Telco PM Details";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var Site_Code = "";
+        var PM_ID = "";
+        Site_Code = '@ViewBag.Site_Code';
+        PM_ID = '@ViewBag.PM_ID';
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+        var btsVSWRList = [];
+        var IDU_MMUCardsList = [];
+        var DG_List = [];
+        var AC_List = [];
+        var Rectifiers_List = [];
+        var btsBoardCardsList = [];
+        var RRUsCountArray = [0];
+        var AntennasCountArray = [0];
+        $(document).ready(function () {
+            $('body').on('blur', '.requiredinput', function (e) {
+                var val = $(this).val();
+                if (val == '' || val == null) {
+                    $(this).addClass('invalid');
+                }
+                else {
+                    $(this).removeClass('invalid');
+                }
+            });
+            $('.container').on('click', '.add_button_rru', function (e) {
+                debugger;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var mainindex = $(this).attr('id').split('_').pop();
+                var subIndex = RRUsCountArray[mainindex];
+                var wrapper_rru = $('#field_wrapper_rru_' + mainindex + '_' + subIndex).closest(".row"); //Input field wrapper
+                subIndex = RRUsCountArray[mainindex] = RRUsCountArray[mainindex] + 1
+                var fieldHTML = '<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label></label></div></div><div class="field_wrapper_rru" id="field_wrapper_rru_' + mainindex + '_' + subIndex + '"><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_cell_id_' + mainindex + '_' + subIndex + '" placeholder="Cell ID" disabled="disabled" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_cell_name_' + mainindex + '_' + subIndex + '" placeholder="Cell Name" disabled="disabled" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_value_' + mainindex + '_' + subIndex + '" placeholder="Value" disabled="disabled" /></div></div></div><div class="col-sm-2"><a href="javascript:void(0);" style="display:none" id="remove_button_rru_' + mainindex + '_' + subIndex + '" class="remove_button_rru"><i class="fa fa-minus"></i></a></div></div>'; //New input field html
+                $(wrapper_rru).after(fieldHTML); //Add field html
+
+            });
+            $('#add_more_rru_pm_approval').click(function (e) {
+                debugger;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var mainAddMoreIndex = RRUsCountArray.length;
+                var wrapper_rru_addMore = $('#field_more_rru_' + (mainAddMoreIndex - 1)); //Input field wrapper
+                // var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"><label>RRU Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="myinput"><input id="txt_type_rru_' + mainAddMoreIndex + '" type="text" class="requiredinput form-control requiredinput" disabled="disabled"></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Grounding Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option></select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option></select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Backup Taken<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option></select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput" disabled="disabled"></div></div></div><button id="remove_more_rru_' + (mainAddMoreIndex) + '" style="display:none" class="btn btn-danger remove-me remove_more_rru">Remove</button></div>';
+                //var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_type_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>3936</option><option>3936</option><option>3959</option><option>3959</option><option>3953</option><option>3826</option><option>R8881 (S9000)</option><option>R8881 (S1800)</option><option>R8863 (S9000)</option><option>R8863 (S1800)</option><option>R8872 (S1800)</option><option>R8881 (S2100)</option><option>R8863 (S2100)</option><option>FXJB</option><option>AREA</option> </select></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Model<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_model_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> Vendor<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_vendor_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>HUAWEI</option><option>ZTE</option><option>NOKIA</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Grounding Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Backup Taken<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput" disabled="disabled"></div></div></div> <button id="remove_more_rru_' + (mainAddMoreIndex) + '" style="display:none" class="btn btn-danger remove-me remove_more_rru">Remove</button></div>';
+                var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top: 1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_type_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>3936</option><option>3936</option><option>3959</option><option>3959</option><option>3953</option><option>3826</option><option>R8881 (S9000)</option><option>R8881 (S1800)</option><option>R8863 (S9000)</option><option>R8863 (S1800)</option><option>R8872 (S1800)</option><option>R8881 (S2100)</option><option>R8863 (S2100)</option><option>FXJB</option><option>AREA</option><option>R8862 (S1800)</option><option>R8854 (S1800)</option><option>R8852 (S1800)</option><option>R8894 (M1821)</option> </select></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> RRU Model<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_model_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Vendor<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_vendor_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>HUAWEI</option><option>ZTE</option><option>NOKIA</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Grounding Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Backup Taken<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="number" step="any" class="form-control requiredinput" /></div></div></div> <button id="remove_more_rru_' + (mainAddMoreIndex) + '" style="display: none;" class="btn btn-danger remove-me remove_more_rru">Remove</button></div>';
+                RRUsCountArray.push(0);
+                $(wrapper_rru_addMore).after(fieldHTMLAddMoreRRU); //Add field html
+                $('.remove_more_rru').hide();
+              //  $('.remove_more_rru:last').show();
+
+            });
+
+            //Antenna Start
+            $('.container').on('click', '.add_button_antennas', function (e) {
+                debugger;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var mainindex_antennas = $(this).attr('id').split('_').pop();
+                var subIndex_antennas = AntennasCountArray[mainindex_antennas];
+                var wrapper_antennas = $('#field_wrapper_antennas_' + mainindex_antennas + '_' + subIndex_antennas).closest(".row"); //Input field wrapper
+                subIndex_antennas = AntennasCountArray[mainindex_antennas] = AntennasCountArray[mainindex_antennas] + 1
+                var fieldHTML_antennas = '<div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>VSWR Values<span class="asterick">*</span></label></div></div><div class="field_wrapper_antennas" id="field_wrapper_antennas_' + mainindex_antennas + '_' + subIndex_antennas + '"><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="antennas_cell_id_' + mainindex_antennas + '_' + subIndex_antennas + '" placeholder="Cell ID" disabled="disabled" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control  requiredinput" name="antennas_cell_name_' + mainindex_antennas + '_' + subIndex_antennas + '" placeholder="Cell Name" disabled="disabled" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="antennas_value_' + mainindex_antennas + '_' + subIndex_antennas + '" placeholder="Value" disabled="disabled" /></div></div><div class="col-sm-2"><a href="javascript:void(0);" style="display:none" id="remove_button_antennas_' + mainindex_antennas + '_' + subIndex_antennas + '" class="remove_button_antennas"><i class="fa fa-minus"></i></a></div></div></div>'; //New input field html
+                $(wrapper_antennas).after(fieldHTML_antennas); //Add field html
+
+            });
+            $('#add_more_antenna').click(function (e) {
+                debugger;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var mainAddMoreIndex = AntennasCountArray.length;
+                var wrapper_antennas_addMore = $('#field_more_antennas_' + (mainAddMoreIndex - 1)); //Input field wrapper
+                //var fieldHTMLAddMoreantennas = '<div class="field_more_antennas" id="field_more_antennas_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"><label>Select Antenna Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input id="txt_type_antenna_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput" disabled="disabled"></div></div></div><!--#endregion--><!-- #region Blockage--><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Blockage<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><select class="form-control requiredinput mydropdown" id="dd_blockage_antenna_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option></select></div></div></div><!--#endregion--><!-- #region WeatherProofing--><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class=""><div class="form-group"><select class="form-control requiredinput mydropdown" id="dd_weather_proofing_antenna_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option></select></div></div></div></div><!--#endregion--><!--#region Azimuth--><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Azimuth<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input id="txt_azimuth_antenna_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput " disabled="disabled"></div></div></div><!--#endregion--><!--#region Count--><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Count<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input type="text" id="txt_count_antenna_' + mainAddMoreIndex + '" class="form-control requiredinput " disabled="disabled"></div></div></div><!--#endregion--><!--#region Installation Height(meters)--><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input type="text" class="form-control requiredinput " id="txt_installation_height_antenna_' + mainAddMoreIndex + '" disabled="disabled"></div></div></div><!--#endregion--><button id="remove_more_antennas_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_antennas" style="display:none">Remove</button></div>';
+                var fieldHTMLAddMoreantennas = '<div class="field_more_antennas" id="field_more_antennas_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label>Select Antenna Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control requiredinput mydropdown" id="txt_type_antenna_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>SINGLE BAND</option><option>DUAL BAND</option><option>TRI BAND</option><option>QUAD BAND</option><option>2100MHz</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Blockage<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control requiredinput mydropdown" id="dd_blockage_antenna_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class=""><div class="form-group"> <select class="form-control requiredinput mydropdown" id="dd_weather_proofing_antenna_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Azimuth<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input id="txt_azimuth_antenna_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput " disabled="disabled"></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Count<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input type="text" id="txt_count_antenna_' + mainAddMoreIndex + '" class="form-control requiredinput " disabled="disabled"></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input type="text" class="form-control requiredinput " id="txt_installation_height_antenna_' + mainAddMoreIndex + '" disabled="disabled"></div></div></div> <button id="remove_more_antennas_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_antennas" style="display:none">Remove</button></div>';
+                AntennasCountArray.push(0);
+                $(wrapper_antennas_addMore).after(fieldHTMLAddMoreantennas); //Add field html
+                $('.remove_more_antennas').hide();
+         //       $('.remove_more_antennas:last').show();
+
+            });
+            //Antenna End
+            getAccordion("#tabs", 768);
+            GetPMData();
+            //GetAlarmsInformation();
+
+
+
+        });
+
+
+
+
+
+        var PM_Data;
+        var FooObj_BtsCabinatVswr;
+        var FooObj_BtsCabinatBoardCards;
+
+        var ANTENNASVSWRCOUNT = 0;
+        var RRUsCountArray = [0];
+        var antennassCountArray = [0];
+        var mmu_cardssCountArray = [0];
+
+
+        var btsBoardCardsCOUNT = 0;
+        function GetPMData() {
+            var obj = new Object();
+            obj.Site_Code = Site_Code;
+            obj.PM_ID = PM_ID;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getTelcoPMDataForApproval", obj, OnSuccessGetPMData, "POST", false)
+        }
+        function OnSuccessGetPMData(results) {
+            debugger;
+
+            PM_Data = results;
+            if (PM_Data) {
+                $('#lbl_SiteID').text(PM_Data.SiteCode);
+                $('#lbl_SiteName').text(PM_Data.SiteName);
+                $('#lbl_RBU').text(PM_Data.RBU);
+                $('#lbl_CommercialRegion').text(PM_Data.CommercialRegion);
+
+
+                ////////Telco///////////
+
+                //BTS Cabinet
+                if (PM_Data.checkListBtsCabinet) {
+
+                    if (PM_Data.checkListBtsCabinet.Backup != null) {
+                        $('#dd_backup_taken').val(PM_Data.checkListBtsCabinet.Backup);
+                    }
+                    if (PM_Data.checkListBtsCabinet.Cleaning != null) {
+                        $('#dd_cleaning_status').val(PM_Data.checkListBtsCabinet.Cleaning);
+                    }
+                    if (PM_Data.checkListBtsCabinet.Grounding != null) {
+                        $('#dd_grounding_status').val(PM_Data.checkListBtsCabinet.Grounding);
+                    }
+                    if (PM_Data.checkListBtsCabinet.SiteType != null) {
+                        $('#dd_site_type').val(PM_Data.checkListBtsCabinet.SiteType);
+                    }
+                    for (var counter = 0; counter < PM_Data.checkListBtsCabinet.ListVSWR.length; counter++) {
+                        var obj = new Object();
+                        obj.cell_id_bts_cabinet = PM_Data.checkListBtsCabinet.ListVSWR[counter].Cell_ID;
+                        obj.cell_name_bts_cabinet = PM_Data.checkListBtsCabinet.ListVSWR[counter].Cell_Name;
+                        obj.cell_value_bts_cabinet = PM_Data.checkListBtsCabinet.ListVSWR[counter].VSWR_Value;
+                        btsVSWRList.push(obj);
+                    }
+
+
+                    for (var counter = 0; counter < PM_Data.checkListBtsCabinet.ListBoardCards.length; counter++) {
+                        var obj = new Object();
+                        obj.board_name = PM_Data.checkListBtsCabinet.ListBoardCards[counter].BoardName;
+                        obj.board_status = PM_Data.checkListBtsCabinet.ListBoardCards[counter].BoardStatus;
+                        obj.board_quantity = PM_Data.checkListBtsCabinet.ListBoardCards[counter].Quantity;
+                        btsBoardCardsList.push(obj);
+                    }
+
+                }
+
+                //Alarms
+                if (PM_Data.checkListAlarms) {
+
+                    if (PM_Data.checkListAlarms.Intruder != null) {
+                        $('#dd_intruder').text(PM_Data.checkListAlarms.Intruder);
+                    }
+                    if (PM_Data.checkListAlarms.AC_Mains_Failure != null) {
+                        $('#dd_ac_main_failure').text(PM_Data.checkListAlarms.AC_Mains_Failure);
+                    }
+                    if (PM_Data.checkListAlarms.DG_On != null) {
+                        $('#dd_dg_on').text(PM_Data.checkListAlarms.DG_On);
+                    }
+                    if (PM_Data.checkListAlarms.Low_Voltage != null) {
+                        $('#dd_low_voltage').text(PM_Data.checkListAlarms.Low_Voltage);
+                    }
+                    if (PM_Data.checkListAlarms.System_On_Batteries != null) {
+                        $('#dd_system_on_batteries').text(PM_Data.checkListAlarms.System_On_Batteries);
+                    }
+                    if (PM_Data.checkListAlarms.High_Temperature != null) {
+                        $('#dd_high_temperature').text(PM_Data.checkListAlarms.High_Temperature);
+                    }
+
+                }
+
+
+                //IDU
+                if (PM_Data.checkListIDU) {
+                    debugger;
+
+                    if (PM_Data.checkListIDU.Grounding != null) {
+                        $('#dd_grounding_status_idu').val(PM_Data.checkListIDU.Grounding);
+                    }
+                    if (PM_Data.checkListIDU.FacultySlots != null) {
+                        $('#txt_faulty_slots_idu').val(PM_Data.checkListIDU.FacultySlots);
+                    }
+                    if (PM_Data.checkListIDU.Count != null) {
+                        $('#txt_count_idu').val(PM_Data.checkListIDU.Count);
+                    }
+                    if (PM_Data.checkListIDU.IDUType != null) {
+                        $('#dd_idu_type').val(PM_Data.checkListIDU.IDUType);
+                    }
+                    if (PM_Data.checkListIDU.IDUVendor != null) {
+                        $('#dd_vendor_idu').val(PM_Data.checkListIDU.IDUVendor);
+                    }
+                    for (var counter = 0; counter < PM_Data.checkListIDU.ListMmuCards.length; counter++) {
+                        var obj = new Object();
+                        obj.card_type_mmu_cards = PM_Data.checkListIDU.ListMmuCards[counter].Type;
+                        obj.card_status_mmu_cards = PM_Data.checkListIDU.ListMmuCards[counter].Status;
+                        obj.lb_verification_mmu_cards = PM_Data.checkListIDU.ListMmuCards[counter].LbVerification;
+                        IDU_MMUCardsList.push(obj);
+                    }
+
+
+                }
+
+                //ODU
+                if (PM_Data.checkListODU) {
+
+                    if (PM_Data.checkListODU.OdUType != null) {
+                        $('#dd_odu_type').val(PM_Data.checkListODU.OdUType);
+                    }
+                    if (PM_Data.checkListODU.ODUVendor != null) {
+                        $('#dd_vendor_odu').val(PM_Data.checkListODU.ODUVendor);
+                    }
+                    if (PM_Data.checkListODU.Grounding != null) {
+                        $('#dd_grounding_status_odu').val(PM_Data.checkListODU.Grounding);
+                    }
+                    if (PM_Data.checkListODU.CableGrounding != null) {
+                        $('#dd_cable_grounded_odu').val(PM_Data.checkListODU.CableGrounding);
+                    }
+                    if (PM_Data.checkListODU.InstallationHeight != null) {
+                        $('#txt_installation_height_odu').val(PM_Data.checkListODU.InstallationHeight);
+                    }
+                    if (PM_Data.checkListODU.RSL != null) {
+                        $('#txt_rsl_odu').val(PM_Data.checkListODU.RSL);
+                    }
+                }
+
+
+                //if (PM_Data.checkListRRUs) {
+                //    debugger;
+                //    for (var i = 0; i < PM_Data.checkListRRUs.length -1; i++) {
+                //        if (i > 0) {
+                //            $('#add_more_rru_pm_approval').trigger("click");//.click();
+                //        }
+                //        var RruType = '#txt_type_rru_' + i;
+                //        var RruModel = '#txt_model_rru_' + i;
+                //        var RruVendor = '#txt_vendor_rru_' + i;
+                //        var GroundingStatus = '#dd_grounding_status_rru_' + i;
+                //        var waterProoing = '#dd_weather_proofing_rru_' + i;
+                //        var backupTaken = '#dd_backup_taken_rru_' + i;
+                //        var installationHeight = '#txt_installation_height_rru_' + i;
+                //        var AddButtonRRu = '#add_more_rru_pm_approval_' + i;
+
+                //        $(RruType).val(PM_Data.checkListRRUs[i].RRUType);
+                //        $(RruModel).val(PM_Data.checkListRRUs[i].RRUModel);
+                //        $(RruVendor).val(PM_Data.checkListRRUs[i].RRUVendor);
+                //        $(GroundingStatus).val(PM_Data.checkListRRUs[i].Grounding);
+                //        $(waterProoing).val(PM_Data.checkListRRUs[i].WeatherProofing);
+                //        $(backupTaken).val(PM_Data.checkListRRUs[i].Backup);
+                //        $(installationHeight).val(PM_Data.checkListRRUs[i].InstallationHeight);
+
+                //        //for (var j = 0; j < PM_Data.checkListRRUs[i].ListVSWR.length; j++) {
+                //        //    if (j > 0) {
+                //        //        $(AddButtonRRu).trigger("click");//.click();
+                //        //    }
+                //        //    var CellID = 'input[name="RRU_cell_id_' + i + '_' + j + '"]';
+                //        //    var CellName = 'input[name="RRU_cell_name_' + i + '_' + j + '"]';
+                //        //    var CellValue = 'input[name="RRU_value_' + i + '_' + j + '"]';
+                //        //    $(CellID).val(PM_Data.checkListRRUs[i].ListVSWR[j].Cell_ID);
+                //        //    $(CellName).val(PM_Data.checkListRRUs[i].ListVSWR[j].Cell_Name);
+                //        //    $(CellValue).val(PM_Data.checkListRRUs[i].ListVSWR[j].VSWR_Value);
+
+
+
+                //        //}
+                //    }
+
+                //}
+
+                //// Antennas
+
+                //if (PM_Data.checkListAntennas) {
+                //    debugger;
+                //    for (var i = 0; i < PM_Data.checkListAntennas.length -1; i++) {
+                //        if (i > 0) {
+                //            $('#add_more_antenna').trigger("click");//.click();
+                //        }
+                //        var AntennaType = '#txt_type_antenna_' + i;
+                //        var BlockageAntenna = '#dd_blockage_antenna_' + i;
+                //        var WeatherProoingAntenna = '#dd_weather_proofing_antenna_' + i;
+                //        var azimuth = '#txt_azimuth_antenna_' + i;
+                //        var countAntenna = '#txt_count_antenna_' + i;
+                //        var installationHeightAntenna = '#txt_installation_height_antenna_' + i;
+                //        var AddButtonAntenna = '#add_button_antennas_' + i;
+
+                //        $(AntennaType).val(PM_Data.checkListAntennas[i].AntennaType);
+                //        $(BlockageAntenna).val(PM_Data.checkListAntennas[i].Blockage);
+                //        $(WeatherProoingAntenna).val(PM_Data.checkListAntennas[i].WeatherProofing);
+                //        $(azimuth).val(PM_Data.checkListAntennas[i].Azimuth);
+                //        $(countAntenna).val(PM_Data.checkListAntennas[i].Count);
+                //        $(installationHeightAntenna).val(PM_Data.checkListAntennas[i].InstallationHeight);
+
+
+                      
+                //            $('#txt_2g_electrical_tilt').val(PM_Data.Electrical_tilt_2g);
+
+                //            $('#txt_3g_electrical_tilt').val(PM_Data.Electrical_tilt_3g);
+
+                //            $('#txt_4g_electrical_tilt').val(PM_Data.Electrical_tilt_4g);
+
+
+
+                //        $('#txt_mechanical_tilt').val(PM_Data.Mechanical_tilt);
+                //        $('#dd_ret_installed').val(PM_Data.Ret_Installed);
+
+
+
+
+
+                //        //for (var j = 0; j < PM_Data.checkListAntennas[i].ListVSWR.length; j++) {
+                //        //    if (j > 0) {
+                //        //        $(AddButtonAntenna).trigger("click");//.click();
+                //        //    }
+                //        //    var CellID = 'input[name="antennas_cell_id_' + i + '_' + j + '"]';
+                //        //    var CellName = 'input[name="antennas_cell_name_' + i + '_' + j + '"]';
+                //        //    var CellValue = 'input[name="antennas_value_' + i + '_' + j + '"]';
+                //        //    $(CellID).val(PM_Data.checkListAntennas[i].ListVSWR[j].Cell_ID);
+                //        //    $(CellName).val(PM_Data.checkListAntennas[i].ListVSWR[j].Cell_Name);
+                //        //    $(CellValue).val(PM_Data.checkListAntennas[i].ListVSWR[j].VSWR_Value);
+
+
+
+                //        //}
+                //    }
+
+                //}
+
+
+
+            }
+        }
+        //GetPMData();
+
+
+
+
+
+        var tbl_AlarmGrid;
+        $(function () {
+            //$("#btn_Search").on("click", function () {
+            //    GetAlarmsInformation();
+            //});
+            tbl_AlarmGrid = $('#AlarmGridTable_checklist_telco').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+                      { "data": "BSC_Name", "orderable": true },
+                      { "data": "BTS_Name", "orderable": true },
+                      { "data": "Firstoccurrence", "orderable": true },
+                      { "data": "Lastoccurrence", "orderable": true },
+                      { "data": "cleartime", "orderable": true },
+                      { "data": "SiteType", "orderable": true },
+                      { "data": "Summary", "orderable": true }
+                ],
+            });
+        });
+
+        function GetAlarmsInformation() {
+            var siteCode = $("#txt_SiteCode").val();
+            if (siteCode) {
+                var data = new Object();
+                data.Site_Code = siteCode;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/AlarmsManagement/GetSiteAlarmsInformation", data, OnSuccessAlarmsInformation)
+            }
+            else {
+                // alert("Please enter a valid Site ID.");
+                $("#txt_SiteCode").val('');
+                return;
+            }
+
+        }
+        function OnSuccessAlarmsInformation(results) {
+            debugger;
+            tbl_AlarmGrid.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_AlarmGrid.row.add(results[i]).draw();
+            });
+        }
+
+        var IsChecklistFilled = false;
+
+
+        $(document).ready(function () {
+            $('#my-box').boxWidget({
+                animationSpeed: 500,
+                collapseTrigger: '#my-collapse-button-trigger',
+                collapseIcon: 'fa-minus',
+                expandIcon: 'fa-plus'
+            })
+
+        });
+        function OnSuccessValidationCompleted(res) {
+            if (res == "success") {
+                IsChecklistFilled = true;
+            }
+            else {
+                alertify.alert('Failure', res);
+            }
+        }
+        function ViewInventory() {
+            debugger;
+            IsChecklistFilled = false;
+            var validateObj = new Object();
+            validateObj.PM_ID = PM_Data.ID;
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            form.setAttribute("action", '/InventoryManagement/ApproveTelcoInventory');
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", Site_Code);
+            form.appendChild(hiddenFieldSiteCode);
+
+            var HiddenPMID = document.createElement("input");
+            HiddenPMID.setAttribute("type", "hidden");
+            HiddenPMID.setAttribute("name", 'PM_ID');
+            HiddenPMID.setAttribute("value", PM_Data.ID);
+            form.appendChild(HiddenPMID);
+
+            var hiddenPmType = document.createElement("input");
+            hiddenPmType.setAttribute("type", "hidden");
+            hiddenPmType.setAttribute("name", 'PM_Type');
+            hiddenPmType.setAttribute("value", "Telco");
+            form.appendChild(hiddenPmType);
+
+            var hiddenPmCloseType = document.createElement("input");
+            hiddenPmCloseType.setAttribute("type", "hidden");
+            hiddenPmCloseType.setAttribute("name", 'Close_Type');
+            hiddenPmCloseType.setAttribute("value", PM_Data.Closed_Status);
+            form.appendChild(hiddenPmCloseType);
+
+            document.getElementById('pm_close_div').appendChild(form);
+
+            form.submit();
+        }
+
+    </script>
+}
+
+<div class="container">
+  
+    <!-- #region TABS-->
+    <!-- Nav tabs -->
+    <div class="tabs top-margin">
+
+        <ul id="tabs" class="nav nav-tabs nav-justified">
+            <li class="nav-item active">
+                <a class="nav-link active" data-toggle="tab" href="#panel1" role="tab">BTS Cabinet</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel2" role="tab">RRUs</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel3" role="tab">Antennas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel4" role="tab">Alarms</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel5" role="tab">Indoor Unit (IDU)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel6" role="tab">Outdoor Unit (ODU)</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel7" role="tab">Images</a>
+            </li>
+        </ul>
+
+        <!-- Tab panels -->
+        <!--#endregion-->
+
+
+        <div class="tab-content">
+
+            @{
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_BTSCabinet.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_RRUs.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_Antennas.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_Alarms.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_IDU.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_ODU.cshtml");
+                Html.RenderPartial("~/Views/PreventiveMaintenance/PMApproval/_Images.cshtml");  }
+
+
+
+        </div>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        </div>
+
+    </div>
+
+    <div class="body_div">
+        <div class="tab_body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="close_div top-margin">
+                        <button class="btn btn-primary mybutton" onclick="ViewInventory()" style="float:left">View Inventory And Approve PM</button>
+                        @*<button class="btn btn-primary mybutton" onclick="OpenUnCLosePMPopup()" style="float:right">Close PM Unsuccessfully</button>*@
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="hidden" id="pm_close_div">
+    </div>
+</div>
+
+
+

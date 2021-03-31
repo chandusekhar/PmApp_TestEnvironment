@@ -1,0 +1,136 @@
+﻿@using PM_Audit.Models.Authorization_Models
+@model LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/Login_Layout.cshtml";
+}
+
+
+<div class="hold-transition login-page bbg">
+
+    <div class="login-box">
+        <div class="login-logo ">
+            <img src="~/Content/Image/logo-jazz.png" class="img-circle" alt="User Image">
+        </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body col-md-offset-0 col-md-12 col-sm-offset-3 col-sm-6 col-xs-12 ">
+            <p style="color:#ffe600; text-align:center" class="heading">Preventive Maintenance</p>
+            @using (Html.BeginForm("Login", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group has-feedback">
+                    <label class="radio-inline"><input type="radio" name="optradio" value="username" checked>User Name</label>
+                    <label class="radio-inline"><input type="radio" name="optradio" value="phone">Phone Number</label>
+                </div>
+                <div class="form-group has-feedback" id="UserName-div">
+
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control input_width", placeholder = "Username", autocomplete = "off" })
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="form-group has-feedback" id="Phone-div">
+
+                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control input_width", placeholder = "+xx-xxx-xxxxxxx", autocomplete = "off" })
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="form-group has-feedback">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control input_width", placeholder = "Password", autocomplete = "off" })
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" onclick="ValidateFields()" class="btn btn-primary btn-block btn-flat login_btn">Sign In</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <div>
+                    @Html.ValidationMessage("LogOnError")
+                </div>
+            }
+        </div>
+        <!-- /.login-box-body -->
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function ValidateFields() {
+            debugger;
+            var selectedVal = $('input[name="optradio"]:checked').val();
+            if (selectedVal == 'username') {
+                var email = $('#Email').val();
+                email = email.replace(/\+/g, '');
+                email = email.replace(/\-/g, '');
+                if ($.isNumeric(email)) {
+                    email = '';
+                    $('#Phone').val(email);
+                    $('#Email').val(email);
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+        //   $('#UserName-div')
+        //  $('#Phone-div').mask('000-0000000');
+        
+        //     $('#Phone-div').find('input').val(00000);
+        $(document).ready(function () {
+            $('#Phone').mask('+00-000-0000000');
+            //$('#Phone').val('0');
+        });
+        
+
+        $('input[name="optradio"]').on('change', function () {
+            var selectedVal = $('input[name="optradio"]:checked').val();
+            if (selectedVal == 'username') {
+                $('#Phone-div').hide();
+                $('#Phone').val('');
+                $('#Email').val('');
+                $('#UserName-div').show();
+            }
+            else {
+                $('#UserName-div').hide();
+                $('#Phone-div').show();
+                $('#Phone').val('');
+                $('#Email').val('');
+                //$('#UserName-div').show();
+            }
+        });
+
+        $('#Phone').on('change', function () {
+            $('#Email').val($('#Phone').val());
+        });
+        $('#Email').on('change', function () {
+            var email = $('#Email').val();
+            $('#Phone').val($('#Email').val());
+        });
+        $('#Email').on('keyup', function () {
+            var email = $('#Email').val();
+            email = email.replace("+", '');
+            email = email.replace("-", '');
+            if ($.isNumeric(email)) {
+                email = '';
+                $('#Phone').val(email);
+                $('#Email').val(email);
+            }
+            //$('#Phone').val($('#Email').val());
+        });
+        debugger;
+        $('#Phone').val('');
+        $('#Email').val('');
+        $('#Phone-div').hide();
+    </script>
+
+}

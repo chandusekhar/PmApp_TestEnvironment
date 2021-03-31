@@ -1,0 +1,615 @@
+﻿
+@{
+    ViewBag.Title = "View Inventory";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var tanks = 0;
+        //var btsfueltankList = [];
+        function fuel_tanks() {
+
+            tanks++;
+            var objTo = document.getElementById('fuel_tanks')
+            var divtest = document.createElement("div");
+            divtest.setAttribute("class", "form-group removeclass" + tanks);
+            var rdiv = 'removeclass' + tanks;
+            divtest.innerHTML = '<div class="col-sm-3 col-md-offset-3 col-sm-offset-6 nopadding"><div class="form-group"><select class="form-control mydropdown" id="tank_capacity_' + tanks + '" name="tank_capacity[]"><option value="" disabled selected hidden>Select ..</option><option>300</option><option>500</option><option>600</option><option>1000</option><option>2000</option><option>4000</option></select></div></div><div class="input-group-btn"> <button class="btn btn-danger-bts" type="button" onclick="remove_fuel_tanks(' + tanks + ');"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button></div><div class="clear"></div>'
+            //divtest.innerHTML = '<div class="col-sm-3 col-md-offset-3 col-sm-offset-6 nopadding"><div class="form-group"><input type="number" class="form-control" id="tank_capacity_' + tanks + '" name="tank_capacity[]" value="" placeholder="Tank Capacity"></div></div><div class="input-group-btn"> <button class="btn btn-danger-bts" type="button" onclick="remove_fuel_tanks(' + tanks + ');"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button></div><div class="clear"></div>';
+
+            objTo.after(divtest)
+        }
+        function remove_fuel_tanks(rid) {
+            $('.removeclass' + rid).remove();
+        }
+
+
+        var Inventory_Data;
+        var dgDetailsList = [];
+        var PowerSharingDetailsList = [];
+        var RectifierList = [];
+
+        var SiteCode = '@ViewBag.SiteCode';
+        var PM_ID = '@ViewBag.PM_ID';
+        $('body').on('blur', '.requiredinput', function (e) {
+            var val = $(this).val();
+            if (val == '' || val == null) {
+                $(this).addClass('invalid');
+            }
+            else {
+                $(this).removeClass('invalid');
+            }
+        });
+
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+
+        $(document).ready(function () {
+            //$('#dd_is_cp_meter_installed_inventory').on('change', function () {
+            //    var CpVal = $(this).val();
+            //    if (CpVal != "YES") {
+            //        $('#dd_is_transformer_available_inventory').attr('disabled', 'disabled');
+            //        $('#dd_is_transformer_available_inventory').val('');
+
+            //        $('#txt_transformer_type_inventory').attr('disabled', 'disabled');
+            //        $('#txt_transformer_type_inventory').val('');
+
+            //        $('#txt_transformer_rating_kva_inventory').attr('disabled', 'disabled');
+            //        $('#txt_transformer_rating_kva_inventory').val('');
+
+            //    }
+            //    else {
+            //        $('#dd_is_transformer_available_inventory').removeAttr('disabled');
+            //        $('#dd_is_transformer_available_inventory').val('');
+
+            //        $('#txt_transformer_type_inventory').removeAttr('disabled');
+            //        $('#txt_transformer_type_inventory').val('');
+
+            //        $('#txt_transformer_rating_kva_inventory').removeAttr('disabled');
+            //        $('#txt_transformer_rating_kva_inventory').val('');
+            //    }
+            //})
+            $('#dd_sharing_status_inventory').on('change', function () {
+                var CpVal = $(this).val();
+                if (CpVal == "NO") {
+                    $('#dd_host_guest_inventory').attr('disabled', 'disabled');
+                    $('#dd_host_guest_inventory').val('');
+
+                    $('#dd_host_name_inventory').attr('disabled', 'disabled');
+                    $('#dd_host_name_inventory').val('');
+
+                    $('#dd_powerSharingByHost_inventory').attr('disabled', 'disabled');
+                    $('#dd_powerSharingByHost_inventory').val('');
+
+                }
+                else {
+                    $('#dd_host_guest_inventory').removeAttr('disabled');
+
+                    $('#dd_host_name_inventory').removeAttr('disabled');
+
+                    $('#dd_powerSharingByHost_inventory').removeAttr('disabled');
+                }
+            })
+            $('#dd_rms_installed_inventory').on('change', function () {
+                var CpVal = $(this).val();
+                if (CpVal == "NOT INSTALLED") {
+                    $('#txt_rms_status_inventory').attr('disabled', 'disabled');
+                    $('#txt_rms_status_inventory').val('');
+
+                    $('#txt_rms_vendor_inventory').attr('disabled', 'disabled');
+                    $('#txt_rms_vendor_inventory').val('');
+
+                }
+                else {
+                    $('#txt_rms_status_inventory').removeAttr('disabled');
+
+                    $('#txt_rms_vendor_inventory').removeAttr('disabled');
+                }
+            })
+            $('#dd_avr_lc_installed_inventory').on('change', function () {
+                var CpVal = $(this).val();
+                if (CpVal == "NO") {
+                    $('#txt_avr_lc_type_inventory').attr('disabled', 'disabled');
+                    $('#txt_avr_lc_type_inventory').val('');
+
+                    $('#txt_avr_lc_rating_inventory').attr('disabled', 'disabled');
+                    $('#txt_avr_lc_rating_inventory').val('');
+
+                    $('#dd_avr_lc_status_inventory').attr('disabled', 'disabled');
+                    $('#dd_avr_lc_status_inventory').val('');
+
+                }
+                else {
+                    $('#txt_avr_lc_type_inventory').removeAttr('disabled');
+
+                    $('#txt_avr_lc_rating_inventory').removeAttr('disabled');
+                    $('#dd_avr_lc_status_inventory').removeAttr('disabled');
+                }
+            })
+            getAccordion("#tabs_inventory", 768);
+
+            GetInventoryData();
+
+
+        });
+
+
+        function GetInventoryData() {
+
+            var obj = new Object();
+            obj.Site_Code = SiteCode;
+            obj.PM_ID = PM_ID;
+            //debugger;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/GetInventoryDetails", obj, OnSuccessGetInventoryData, "POST", false)
+        }
+        function OnSuccessGetInventoryData(results) {
+            debugger;
+            tanks = 0;
+            Inventory_Data = results;
+            if (Inventory_Data) {
+                debugger;
+                //General
+                if (PM_ID != 0) {
+                    Inventory_Data.FK_PM_ID = PM_ID;
+                    $('#PM_Closing_Div').show();
+                }
+                else {
+                    $('#PM_Closing_Div').hide();
+                }
+
+                if (Inventory_Data.SiteCode != null) {
+
+                    $('#txt_site_code_inventory').val(Inventory_Data.SiteCode);
+                }
+                if (Inventory_Data.SiteName != null) {
+                    $('#txt_site_name_inventory').val(Inventory_Data.SiteName);
+                }
+                if (Inventory_Data.SiteRegion != null) {
+                    $('#dd_site_region_inventory').val(Inventory_Data.SiteRegion);
+                }
+                if (Inventory_Data.Prime_TPrime != null) {
+                    $("#select_option_prime_tprime_inventory").val("");
+                    $('#dd_prime_tprime_inventory').val(Inventory_Data.Prime_TPrime);
+                }
+                if (Inventory_Data.Latitude != null) {
+                    $('#txt_lat_inventory').val(Inventory_Data.Latitude);
+                }
+                if (Inventory_Data.Longitude != null) {
+                    $('#txt_long_inventory').val(Inventory_Data.Longitude);
+                }
+                if (Inventory_Data.MBUNo != null) {
+                    $('#txt_mbu_no_inventory').val(Inventory_Data.MBUNo);
+                }
+                if (Inventory_Data.MBUName != null) {
+                    $('#txt_mbu_name_inventory').val(Inventory_Data.MBUName);
+                }
+                if (Inventory_Data.MBULead != null) {
+                    $('#txt_mbu_lead_inventory').val(Inventory_Data.MBULead);
+                }
+                if (Inventory_Data.ZonalManager != null) {
+                    $('#txt_zonal_manager_inventory').val(Inventory_Data.ZonalManager);
+                }
+                if (Inventory_Data.SiteType != null) {
+                    $('#txt_site_type_inventory').val(Inventory_Data.SiteType);
+                }
+                if (Inventory_Data.SiteCategory != null) {
+                    $('#txt_site_category_inventory').val(Inventory_Data.INDOOR_OUTDOOR);
+                }
+                if (Inventory_Data.Priority != null) {
+                    $('#txt_priority_inventory').val(Inventory_Data.Priority);
+                }
+                if (Inventory_Data.LOCKED != null) {
+                    $('#txt_lock_unlock_inventory').val(Inventory_Data.LOCKED);
+                }
+                if (Inventory_Data.SITEPOWERPROFILETYPE != null) {
+                    $('#txt_site_power_profile_type_inventory').val(Inventory_Data.SITEPOWERPROFILETYPE);
+                }
+
+
+
+                //BTS
+
+                if (Inventory_Data.BTS_Vendor != null) {
+                    debugger;
+                    $('#txt_bts_vendor_inventory').val(Inventory_Data.BTS_Vendor);
+                }
+                if (Inventory_Data.DependentSites != null) {
+                    $('#txt_no_of_dependent_sites_inventory').val(Inventory_Data.DependentSites);
+                }
+                if (Inventory_Data.Service_Type != null) {
+                    $("#select_option_service_type_inventory").val("");
+                    $('#dd_service_type_inventory').val(Inventory_Data.Service_Type);
+                }
+                if (Inventory_Data.Grounding_Status != null) {
+                    $('#dd_grounding_status_inventory').val(Inventory_Data.Grounding_Status);
+                }
+                debugger;
+                if (Inventory_Data.ListFuelTanks != null) {
+
+                    var fuelTanks = Inventory_Data.ListFuelTanks;
+                    for (var i = 0; i < fuelTanks.length; i++) {
+                        if (i > 0) {
+                            fuel_tanks();
+                        }
+                        $("#select_option_tank_capacity_" + i).val("");
+                        $('#tank_capacity_' + i).val(fuelTanks[i].FuelCapacity);
+                        $('#tank_capacity_' + i).data("data_tank_id", fuelTanks[i].ID);
+
+                    }
+                }
+
+                //CP
+                if (Inventory_Data.CP_Meter_Installed != null) {
+                    $('#dd_is_cp_meter_installed_inventory').val(Inventory_Data.CP_Meter_Installed.toUpperCase());
+                }
+                if (Inventory_Data.Transformer_Available != null) {
+                    $('#dd_is_transformer_available_inventory').val(Inventory_Data.Transformer_Available.toUpperCase());
+                }
+                if (Inventory_Data.Transformer_Type != null) {
+                    $('#select_option_transformer_type_inventory').val("");
+                    $('#txt_transformer_type_inventory').val(Inventory_Data.Transformer_Type);
+                }
+                if (Inventory_Data.Wapda_Transformer_Rating != null) {
+                    $('#select_option_transformer_rating_kva_inventory').val("");
+                    $('#txt_transformer_rating_kva_inventory').val(Inventory_Data.Wapda_Transformer_Rating);
+                }
+                if (Inventory_Data.Fueling_Required != null) {
+                    $('#dd_is_fueling_required_inventory').val(Inventory_Data.Fueling_Required.toUpperCase());
+                }
+                if (Inventory_Data.Fueling_Sensor_Installed != null) {
+                    debugger;
+                    $('#dd_is_fueling_sensor_installed_inventory').val(Inventory_Data.Fueling_Sensor_Installed.toUpperCase());
+                }
+                if (Inventory_Data.Smart_Energy_Meter_Installed != null) {
+                    $('#dd_is_smart_energy_meter_installed_inventory').val(Inventory_Data.Smart_Energy_Meter_Installed.toUpperCase());
+                }
+                if (Inventory_Data.AC_Power_SPD_Installed != null) {
+                    $('#dd_is_ac_power_spd_installed_inventory').val(Inventory_Data.AC_Power_SPD_Installed.toUpperCase());
+                }
+                $('#dd_is_cp_meter_installed_inventory').trigger('change');
+
+
+                //DG
+                if (Inventory_Data.DG_Installed != null) {
+                    $("#select_option_dg_installed_inventory").val("");
+                    $('#dd_dg_installed_inventory').val(Inventory_Data.DG_Installed);
+                }
+                if (Inventory_Data.DG_Denial != null) {
+                    $('#txt_dg_denial_inventory').val(Inventory_Data.DG_Denial);
+                }
+                if (Inventory_Data.DG_Denial_By != null) {
+                    $('#txt_dg_denial_by_inventory').val(Inventory_Data.DG_Denial_By);
+                }
+                if (Inventory_Data.Dgs_Working_During_CP_Outage != null) {
+                    $('#txt_dg_working_inventory').val(Inventory_Data.Dgs_Working_During_CP_Outage);
+                }
+                if (Inventory_Data.ListDgs) {
+                    for (var counter = 0; counter < Inventory_Data.ListDgs.length; counter++) {
+                        var obj = new Object();
+                        obj.ID = Inventory_Data.ListDgs[counter].ID;
+                        obj.dg_model_inventory = Inventory_Data.ListDgs[counter].DG_Model;
+                        obj.dg_rating_kva_inventory = Inventory_Data.ListDgs[counter].Rating_KVA;
+                        obj.dg_status_inventory = Inventory_Data.ListDgs[counter].Status;
+                        obj.dg_controlled_from_rectifier_inventory = Inventory_Data.ListDgs[counter].DG_Controlled_From_Rectifier;
+                        obj.dg_overhauled_inventory = Inventory_Data.ListDgs[counter].DG_Overhauled_Count;
+                        obj.dg_overhauled_date_inventory = Inventory_Data.ListDgs[counter].LatestOverhauledDate;
+                        obj.dg_remarks_inventory = Inventory_Data.ListDgs[counter].Remarks;
+                        dgDetailsList.push(obj);
+                    }
+                }
+
+                //Power Sharing
+                if (Inventory_Data.No_Of_Tenants != null) {
+                    $("#select_option_no_of_tenants_inventory").val("");
+                    $('#dd_no_of_tenants_inventory').val(Inventory_Data.No_Of_Tenants);
+                }
+                if (Inventory_Data.Sharing_Status != null) {
+                    $('#dd_sharing_status_inventory').val(Inventory_Data.Sharing_Status);
+                }
+                if (Inventory_Data.Host_Guest != null) {
+                    $("select_option_host_guest_inventory").val("");
+                    $('#dd_host_guest_inventory').val(Inventory_Data.Host_Guest);
+                }
+                if (Inventory_Data.Host_Name != null) {
+                    $('#dd_host_name_inventory').val(Inventory_Data.Host_Name);
+                }
+                if (Inventory_Data.PowerSharingByHost != null) {
+                    $("#select_option_powerSharingByHost_inventory").val("");
+                    $('#dd_powerSharingByHost_inventory').val(Inventory_Data.PowerSharingByHost);
+                }
+                if (Inventory_Data.ListPowerSharing) {
+
+                    for (var counter = 0; counter < Inventory_Data.ListPowerSharing.length; counter++) {
+                        var obj = new Object();
+                        obj.ID = Inventory_Data.ListPowerSharing[counter].ID;
+                        obj.guest_name_inventory = Inventory_Data.ListPowerSharing[counter].Guest_Name;
+                        obj.powersharing_inventory = Inventory_Data.ListPowerSharing[counter].PowerSharingWithGuest;
+                        PowerSharingDetailsList.push(obj);
+                    }
+                }
+                $('#dd_sharing_status_inventory').trigger('change');
+
+                //AC
+                if (Inventory_Data.NoOfACsNotWorking != null) {
+                    $('#txt_no_of_not_working_ac_inventory').val(Inventory_Data.NoOfACsNotWorking);
+                }
+                if (Inventory_Data.NoOfACsWorking != null) {
+                    $('#txt_no_of_working_ac_inventory').val(Inventory_Data.NoOfACsWorking);
+                }
+                if (Inventory_Data.GeneralAcComments != null) {
+                    $('#txt_general_comments_inventory').val(Inventory_Data.GeneralAcComments);
+                }
+
+                //RMS
+                if (Inventory_Data.RMS_Installed != null) {
+                    $('#dd_rms_installed_inventory').val(Inventory_Data.RMS_Installed);
+                }
+                if (Inventory_Data.RMS_status != null) {
+                    $('#txt_rms_status_inventory').val(Inventory_Data.RMS_status);
+                }
+                if (Inventory_Data.RMS_Vendor != null) {
+                    $("#select_option_rms_vendor_inventory").val("");
+                    $('#txt_rms_vendor_inventory').val(Inventory_Data.RMS_Vendor);
+                }
+                if (Inventory_Data.Fuel_Sensor_Installed != null) {
+                    $('#dd_fuel_sensor_installed_inventory').val(Inventory_Data.Fuel_Sensor_Installed);
+                }
+                if (Inventory_Data.Energy_Meter_Installed != null) {
+                    $('#dd_energy_meter_installed_inventory').val(Inventory_Data.Energy_Meter_Installed);
+                }
+                if (Inventory_Data.Deodar_NonDeodar != null) {
+                    $("#select_option_deodar_nondeodar_inventory").val("");
+                    $('#dd_deodar_nondeodar_inventory').val(Inventory_Data.Deodar_NonDeodar);
+                }
+                if (Inventory_Data.OnAirDate != null) {
+                    $('#txt_lock_date_inventory').val(Inventory_Data.OnAirDate);
+                }
+                $('#dd_rms_installed_inventory').trigger('change');
+                //Rectifier
+
+                if (Inventory_Data.ListRectifiers) {
+
+
+                    for (var counter = 0; counter < Inventory_Data.ListRectifiers.length; counter++) {
+                        var obj = new Object();
+                        obj.ID = Inventory_Data.ListRectifiers[counter].ID;
+                        obj.rectifier_manufacturer_inventory = Inventory_Data.ListRectifiers[counter].Manufacturer;
+                        obj.rectifier_capacity_inventory = Inventory_Data.ListRectifiers[counter].Capacity;
+                        obj.rectifier_installed_modules_inventory = Inventory_Data.ListRectifiers[counter].InstalledModules;
+                        obj.rectifier_module_capacity_inventory = Inventory_Data.ListRectifiers[counter].ModuleCapacity;
+                        obj.rectifier_mcu_status_inventory = Inventory_Data.ListRectifiers[counter].MCUStatus;
+                        obj.rectifier_dc_load_inventory = Inventory_Data.ListRectifiers[counter].DCLoad;
+                        obj.rectifier_serving_to_inventory = Inventory_Data.ListRectifiers[counter].ServingTo;
+                        obj.rectifier_battery_installation_date_inventory = Inventory_Data.ListRectifiers[counter].BatteryInstallationDate;
+                        obj.rectifier_no_of_battery_cells_inventory = Inventory_Data.ListRectifiers[counter].BatteryCells;
+                        obj.rectifier_battery_model_inventory = Inventory_Data.ListRectifiers[counter].BatteryModel;
+                        obj.rectifier_battery_type_inventory = Inventory_Data.ListRectifiers[counter].BatteryType;
+                        obj.rectifier_per_cell_capacity_inventory = Inventory_Data.ListRectifiers[counter].PerCellCapacity;
+                        obj.rectifier_acb_batteries_manufacturer_inventory = Inventory_Data.ListRectifiers[counter].ACBBatteries_Manufacturer;
+                        obj.rectifier_acb_batteries_inventory = Inventory_Data.ListRectifiers[counter].ACBBatteries_CellsInstalled;
+                        obj.rectifier_acb_inventory = Inventory_Data.ListRectifiers[counter].ACBBatteries_PerCellCapacity;
+                        obj.rectifier_bb_time_inventory = Inventory_Data.ListRectifiers[counter].BBTime;
+                        obj.rectifier_battery_caging_status_inventory = Inventory_Data.ListRectifiers[counter].BatteryCagingStatus;
+                        obj.rectifier_hybrid_functionality = Inventory_Data.ListRectifiers[counter].Hybrid_Functionality;
+                        obj.rectifier_not_hybrid_reason = Inventory_Data.ListRectifiers[counter].Not_Hybrid_Reason;
+                        obj.rectifier_reason_for_others = Inventory_Data.ListRectifiers[counter].Not_Hybrid_Reason_Other;
+                        obj.hybrid_functionality_status_rectifier = Inventory_Data.ListRectifiers[counter].Hybrid_Functionality_Status;
+                        RectifierList.push(obj);
+                    }
+
+
+                }
+                
+                //Security
+                if (Inventory_Data.Guard_Type != null) {
+                    $("#select_option_guard_type_inventory").val("");
+                    $('#dd_guard_type_inventory').val(Inventory_Data.Guard_Type);
+                }
+                if (Inventory_Data.Guard_Contact != null) {
+                    $('#txt_guard_contact_inventory').val(Inventory_Data.Guard_Contact);
+                }
+                if (Inventory_Data.Guard_Supervisor_Contact != null) {
+                    $('#txt_guard_supervisor_contact_inventory').val(Inventory_Data.Guard_Supervisor_Contact);
+                }
+
+                //AVR/LC
+                if (Inventory_Data.AvrLc_Installed != null) {
+                    $('#dd_avr_lc_installed_inventory').val(Inventory_Data.AvrLc_Installed);
+                }
+                if (Inventory_Data.AvrLc_Type != null) {
+                    $('#txt_avr_lc_type_inventory').val(Inventory_Data.AvrLc_Type);
+                }
+                if (Inventory_Data.AvrLc_Rating != null) {
+                    $("#select_option_avr_lc_rating_inventory").val("");
+                    $('#txt_avr_lc_rating_inventory').val(Inventory_Data.AvrLc_Rating);
+                }
+                if (Inventory_Data.AvrLc_Status != null) {
+                    $('#dd_avr_lc_status_inventory').val(Inventory_Data.AvrLc_Status);
+                }
+
+
+                $('#dd_avr_lc_installed_inventory').trigger('change');
+                //Others
+                if (Inventory_Data.FiberNode != null) {
+                    $('#txt_fiber_node_inventory').val(Inventory_Data.FiberNode);
+                }
+                if (Inventory_Data.SiteLocation != null) {
+                    $('#select_option_site_location_inventory').val("");
+                    $('#txt_site_location_inventory').val(Inventory_Data.SiteLocation);
+                }
+                if (Inventory_Data.EnergizationStatus != null) {
+                    $('#select_option_energization_status_inventory').val("");
+                    $('#dd_energization_status_inventory').val(Inventory_Data.EnergizationStatus);
+                }
+                if (Inventory_Data.FLMVendor != null) {
+                    $('#txt_flm_vendor_inventory').val(Inventory_Data.FLMVendor);
+                }
+                if (Inventory_Data.SecurityVendor != null) {
+                    $('#txt_security_vendor_inventory').val(Inventory_Data.SecurityVendor);
+                }
+                if (Inventory_Data.FuelingVendor != null) {
+                    $('#txt_fueling_vendor_inventory').val(Inventory_Data.FuelingVendor);
+                }
+                if (Inventory_Data.ProblematicSite != null) {
+                    $('#txt_problematic_site_inventory').val(Inventory_Data.ProblematicSite);
+                }
+                if (Inventory_Data.TheftIssue != null) {
+                    $('#txt_theft_issue_inventory').val(Inventory_Data.TheftIssue);
+                }
+                if (Inventory_Data.SiteAccessIssue != null) {
+                    $('#txt_site_access_issue_inventory').val(Inventory_Data.SiteAccessIssue);
+                }
+                if (Inventory_Data.AccessIssueType != null) {
+                    $('#txt_access_issue_type_inventory').val(Inventory_Data.AccessIssueType);
+                }
+                if (Inventory_Data.FuelTheft != null) {
+                    $('#select_option_fuel_theft_inventory').val("");
+                    $('#txt_fuel_theft_inventory').val(Inventory_Data.FuelTheft);
+                }
+                if (Inventory_Data.PowerTheft != null) {
+                    $('#select_option_power_theft_inventory').val("");
+                    $('#txt_power_theft_inventory').val(Inventory_Data.PowerTheft);
+                }
+                if (Inventory_Data.FireExtinguisherAvailable != null) {
+                    $('#dd_fire_extinguisher_available_inventory').val(Inventory_Data.FireExtinguisherAvailable);
+                }
+                if (Inventory_Data.FireExtinguisherType != null) {
+                    $("#select_option_fire_extinguisher_type_inventory").val("");
+                    $('#dd_fire_extinguisher_type_inventory').val(Inventory_Data.FireExtinguisherType);
+                }
+
+
+
+
+
+            }
+        }
+        function ClosePMSuccessfully() {
+            debugger;
+            var objPMClose = new Object();
+            objPMClose.PM_ID = PM_ID;
+            objPMClose.SiteCode = SiteCode;
+            objPMClose.PM_Type = 'NON-Telco';
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/ClosePM", objPMClose, onSuccessClosePM, "POST")
+        }
+        function onSuccessClosePM(results) {
+            if (results == "Success") {
+                alertify.alert('Success', 'PM has been closed successfully!')
+                window.location.href = "/PreventiveMaintenance/ViewPM";
+            }
+            else {
+                alertify.alert('Failure', results);
+            }
+        }
+    </script>
+}
+<div class="container">
+    <div class="tabs">
+
+        <!-- #region TABS-->
+        <!-- Nav tabs -->
+        <ul id="tabs_inventory" class="nav nav-tabs nav-justified">
+            <li class="nav-item active">
+                <a class="nav-link" data-toggle="tab" href="#panel20" role="tab">General</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#panel21" role="tab">BTS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel22" role="tab">Commercial Power</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel23" role="tab">Diesel Genset</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel24" role="tab">Power Sharing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel25" role="tab">Air Conditioners</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel26 " role="tab">RMS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel27" role="tab">Rectifiers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel28" role="tab">Security</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel29" role="tab">AVR/LC</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#panel30" role="tab">Others</a>
+            </li>
+
+        </ul>
+        <!-- Tab panels -->
+        <!--#endregion-->
+
+
+        <div class="tab-content">
+
+            @{  Html.RenderPartial("_General");
+                Html.RenderPartial("_BTS");
+                Html.RenderPartial("_CP_Inventory");
+                Html.RenderPartial("_DG_Inventory");
+                Html.RenderPartial("_PowerSharing_Inventory");
+                Html.RenderPartial("_Air_Cons_Inventory");
+                Html.RenderPartial("_RMS");
+                Html.RenderPartial("_Rectifier_Inventory");
+                Html.RenderPartial("_Security_Inventory");
+                Html.RenderPartial("_AVR");
+                Html.RenderPartial("_Others_Inventory");
+            }
+
+
+
+        </div>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        </div>
+    </div>
+@if (ViewBag.Close_Type == "success")
+{
+    <div class="body_div" style="display:none;" id="PM_Closing_Div">
+        <div class="tab_body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="close_div top-margin">
+                   
+                            <button class="btn btn-primary mybutton" onclick="window.history.back();" style="float:left">Back To CheckList</button>
+                        <button class="btn btn-primary mybutton" onclick="ClosePMSuccessfully()" style="float:right">Close PM</button>
+                        
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+</div>

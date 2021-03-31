@@ -1,0 +1,542 @@
+﻿<!-- #region Commercial Power TAB -->
+<!--Panel 8-->
+<script type="text/javascript">
+
+    function SaveCPData() {
+        if (!validateRequiredInput('#checklist_cp')) {
+            return false;
+        }
+
+        if (PM_Data.checkListCommercialPower == null) {
+            PM_Data.checkListCommercialPower = new Object();
+        }
+
+
+        PM_Data.checkListCommercialPower.Transformer_Type = $('#dd_transformer_type').val();
+        PM_Data.checkListCommercialPower.Transformer_Rating = $('#txt_rating_cp').val();
+        PM_Data.checkListCommercialPower.Meter_Reading = $('#txt_meter_reading_cp').val();
+        PM_Data.checkListCommercialPower.Meter_Status = $('#dd_meter_status_cp').val();
+        PM_Data.checkListCommercialPower.Voltage_Red_To_Neutral = $('#txt_red_to_neutral').val();
+        PM_Data.checkListCommercialPower.Voltage_Yellow_To_Neutral = $('#txt_yellow_to_neutral').val();
+        PM_Data.checkListCommercialPower.Voltage_Blue_To_Neutral = $('#txt_blue_to_neutral').val();
+        PM_Data.checkListCommercialPower.All_Phases = $('#dd_all_phases_cp').val();
+        PM_Data.checkListCommercialPower.Grounding_Status = $('#dd_grounding_status_cp').val();
+        PM_Data.checkListCommercialPower.Power_Theft = $('#dd_power_theft_cp').val();
+        PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Type = $('#dd_meter_to_breaker_type').val();
+        PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Length = $('#txt_meter_to_breaker_length').val();
+        PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Type = $('#dd_tf_to_meter_type').val();
+        PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Length = $('#txt_tf_to_meter_length').val();
+        PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Joints = $('#txt_meter_to_breaker_joints').val();
+        PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Joints = $('#txt_tf_to_meter_joints').val();
+        PM_Data.checkListCommercialPower.Cable_Transformer_To_Core_Types = $('#dd_tf_to_meter_core').val();
+        PM_Data.checkListCommercialPower.Peak_Reading = $('#txt_Peak_Reading_cp').val();
+        PM_Data.checkListCommercialPower.Off_Peak_Reading = $('#txt_Off_Peak_Reading_cp').val();
+        PM_Data.checkListCommercialPower.Yellow_Phase_Load = $('#txt_Yellow_Phase_Load_cp').val();
+        PM_Data.checkListCommercialPower.Red_Phase_Load = $('#txt_Red_Phase_Load_cp').val();
+        PM_Data.checkListCommercialPower.Blue_Phase_Load = $('#txt_Blue_Phase_Load_cp').val();
+        PM_Data.checkListCommercialPower.Neutral_Load = $('#txt_Neutral_Load_cp').val();
+        PM_Data.checkListCommercialPower.Total_MDI = $('#txt_Total_MDI_cp').val();
+
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/PreventiveMaintenance/SaveCPChecklistData", PM_Data, OnSuccessSaveCP, "POST", false)
+    }
+
+    function OnSuccessSaveCP(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+            //GetPMData();
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+    //$('input:checkbox').on('click', function (e) {
+    //    var $box = $(this);
+    //    if ($box.is(":checked")) {
+    //        var group = "input:checkbox[name='" + $box.attr("name") + "']";
+    //        $(group).prop("checked", false);
+    //        $box.prop("checked", true);
+    //        $(group).removeClass("requiredinput");
+    //    }
+    //    else {
+    //        e.preventDefault();
+    //    }
+    //    var value = $box.val();
+
+    //    if (value == "Dont Exist") {
+    //        $("#category_row").show();
+    //        $("#reason_row").hide();
+    //    }
+    //    else {
+    //        $("#reason_row").show();
+    //        $("#category_row").hide();
+    //    }
+
+    //})
+
+    $('input:checkbox').on('click', function (e) {
+        var $box = $(this);
+        if ($box.is(":checked")) {
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            $(group).prop("checked", false);
+            $box.prop("checked", true);
+            $(group).removeClass("requiredinput");
+        }
+        else {
+            e.preventDefault();
+        }
+        var value = $box.val();
+
+        if (value == "Wapda Faults") {
+            $("#category_row").show();
+            $("#reason_row").hide();
+            $("#dd_category").addClass("requiredinput");
+            $("#text_reason").removeClass("requiredinput");
+            $("#text_reason").removeClass("invalid");
+            debugger;
+            var catValue = $("#dd_category").val();
+            console.log(catValue);
+            if (catValue == "Major") {
+                $("#major_issue_row").show();
+                $("#minor_issue_row").hide();
+                $("#dd_category_major").addClass("requiredinput");
+                $("#dd_category_minor").removeClass("requiredinput");
+                $("#dd_category_minor").removeClass("invalid");
+            }
+            else if (catValue == "Minor") {
+                $("#minor_issue_row").show();
+                $("#major_issue_row").hide();
+                $("#dd_category_major").removeClass("requiredinput");
+                $("#dd_category_major").removeClass("invalid");
+                $("#dd_category_minor").addClass("requiredinput");
+            }
+            else {
+                $("#dd_category_major").addClass("requiredinput");
+                $("#dd_category_minor").addClass("requiredinput");
+            }
+            //$("#major_issue_row").hide();
+            //$("#minor_issue_row").hide();
+            debugger;
+            var dropDown = document.getElementById("category_row");
+            dropDown.selectedIndex = 0;
+            //$("#category_row").selectedIndex = 0;
+        }
+        else {
+            $("#reason_row").show();
+            $("#category_row").hide();
+            $("#major_issue_row").hide();
+            $("#minor_issue_row").hide();
+            var dropDown = document.getElementById("category_row");
+            dropDown.selectedIndex = 0;
+            $("#text_reason").addClass("requiredinput");
+            $("#dd_category").removeClass("requiredinput");
+            $("#dd_category").removeClass("invalid");
+            $("#dd_category_major").removeClass("requiredinput");
+            $("#dd_category_minor").removeClass("requiredinput");
+            $("#dd_category_major").removeClass("invalid");
+            $("#dd_category_minor").removeClass("invalid");
+
+        }
+
+    })
+
+
+    
+
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel8" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco" id="checklist_cp">
+
+
+        <!-- #region Transformer and Rating(KVA) -->
+        @*------------Transformer Type---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Select Transformer Type<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_transformer_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>COMMUNITY</option>
+                        <option>OWN</option>
+                        <option>N/A</option>
+                    </select>
+                </div>
+            </div>
+
+            @*------------Rating(KVA)---------------*@
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Rating(KVA)<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input type="number" step="any" id="txt_rating_cp" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Meter -->
+        @*------------Meter---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Total Meter Reading (KWh):<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_meter_reading_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Meter Status:<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_meter_status_cp">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>Screen Washed Out</option>
+                        <option>Screen Blackish</option>
+                        <option>Terminal Burnt</option>
+                        <option>Reading Held</option>
+                        <option>Phase Dead</option>
+                        <option>Meter Damaged</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        @*code added by sameer*@
+
+
+
+        <!--#region code by sam (KWh) -->
+        @*------------Peak Reading (KWh)---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Peak Reading (KWh):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Peak_Reading_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Off Peak Reading  (KWh):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Off_Peak_Reading_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Yellow Phase Load (Amp):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Yellow_Phase_Load_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Red Phase Load (Amp):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Red_Phase_Load_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Blue Phase Load (Amp):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Blue_Phase_Load_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Neutral Load (Amp):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Neutral_Load_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Total MDI (KW):<span class="asterick"> *</span></label>
+                    <div>
+                        <p style="color:yellow;font-size:12px">if data dont exist then enter zero as value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_Total_MDI_cp" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+
+        <!--#endregion-->
+        <!--#region Voltage-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Voltage Red to Neutral: Value<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_red_to_neutral" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Yellow to Neutral: Value<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_yellow_to_neutral" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <!--#region Voltage and All Phases-->
+        <div class="row">
+
+
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Blue to Neutral: Value<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group myinput">
+                    <input id="txt_blue_to_neutral" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> All Phases<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_all_phases_cp">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region Grounding and Power Theft-->
+        @*------------Grounding Status---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Grounding Status<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_grounding_status_cp">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Power Theft<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_power_theft_cp">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Power Cable Meter Type -->
+        @*------------Power Cable ---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label> Power Cable Meter to Breaker(100A) Type:<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_meter_to_breaker_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>COPPER</option>
+                        <option>ALUMINIUM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label> Power Cable Transormer(TF) to Meter Type:</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_tf_to_meter_type">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>COPPER</option>
+                        <option>ALUMINIUM</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Power Cable Length-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label>Power Cable Meter to Breaker(100A) Length<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput">
+                    <input id="txt_meter_to_breaker_length" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label>Power Cable Transormer(TF) to Meter Length<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput">
+                    <input id="txt_tf_to_meter_length" type="number" step="any" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Power Cable Joints-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label>Power Cable Meter to Breaker(100A) Joints<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput">
+                    <input id="txt_meter_to_breaker_joints" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label>Power Cable Transormer(TF) to Meter Joints<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="myinput">
+                    <input id="txt_tf_to_meter_joints" type="text" class="form-control requiredinput">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region TF to meter Core Type-->
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-inline mylabelstyle">
+                    <label> Tansformer(TF) to meter Core Type<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_tf_to_meter_core">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>CORE 2</option>
+                        <option>CORE 4</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        <button id="save_cp" name="save_cp" onclick="SaveCPData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+<!--/.Panel 8-->
+<!-- #endregion -->

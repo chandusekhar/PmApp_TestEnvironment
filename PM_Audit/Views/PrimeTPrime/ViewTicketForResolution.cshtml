@@ -1,0 +1,395 @@
+﻿
+@{
+    ViewBag.Title = "View Ticket for Resolution";
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    @*<script type="text/javascript" src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js"></script>*@
+    @*<script type="text/javascript" src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.pt-BR.js">
+
+        </script>*@
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        var id = 0;
+        var data;
+        var ttCloseTime;
+        $(document).ready(function () {
+            id = @ViewBag.primeId;
+        //var value = $('input[name=optradio]:checked').val();
+            //console.log(value);
+            getTicketDetails(id);
+            //$(".selector").flatpickr({
+            //    enableTime: true,
+            //    dateFormat: "Y-m-d H:i",
+            //    onChange: function () {
+            //        console.log("Event triggered");
+            //        debugger;
+            //        var selectedDate = $("#datetimepicker1").val();
+            //        //var toUTC = new Date(selectedDate).toUTCString();
+            //        ttCloseTime = new Date(selectedDate).toISOString();
+            //    }
+            //}
+            //);
+
+    });
+        function validateRequiredInput(selector) {
+            var divObj = $(selector);
+            var validated = true;
+            divObj.find('.requiredinput').not(':disabled').each(function () {
+
+                var val = $(this).val();
+                if (val == '' || val == null) {
+
+                    $(this).addClass('invalid');
+                    validated = false;
+                }
+                else {
+                    $(this).removeClass('invalid');
+
+                }
+            });
+            if (!validated) {
+                //alert("Please Fill mandatory fields");
+                alertify.alert('Alert', 'Please Fill mandatory fields!')
+                //alertify.error('Please Fill mandatory fields!');
+            }
+            return validated;
+        }
+        function getTicketDetails(id) {
+            $.ajax({
+                url: "/PrimeTPrime/ViewTicketDetails",
+                method: "GET",
+                data: { id: id },
+                success: onSuccessPopulateFields
+            });
+        }
+        function onSuccessPopulateFields(result) {
+            if (result.success == true) {
+                data = result.data.Data;
+
+                debugger;
+                console.log(JSON.stringify(result.data));
+                var startdate
+                if (result.data.Data.issuestarttime == "" || result.data.Data.issuestarttime == null) {
+                    startdate = moment().format("YYYY-MM-DD HH:mm");
+                }
+                else {
+                    startdate = moment(result.data.Data.issuestarttime).format("YYYY-MM-DD HH:mm");
+                }
+
+                $(".selector").flatpickr({
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    maxDate: new Date(),
+                    minDate: startdate,
+                    onChange: function () {
+                        console.log("Event triggered");
+                        debugger;
+                        var selectedDate = $("#datetimepicker1").val();
+                        //var toUTC = new Date(selectedDate).toUTCString();
+                        ttCloseTime = new Date(selectedDate).toISOString();
+                    }
+                }
+                );
+
+                var closedate
+                if (result.data.Data.issueclosetime == "" || result.data.Data.issueclosetime == null) {
+                    closedate = moment().format("YYYY-MM-DD HH:mm");
+                    ttCloseTime = new Date(closedate).toISOString();
+                }
+                else {
+                    closedate = moment(result.data.Data.issueclosetime).format("YYYY-MM-DD HH:mm");
+                }
+
+                //$("#dd_tt_status").val(result.data.Data.ttstatus);
+                $("#text_action_taken").val(result.data.Data.actiontaken);
+                $("#datetimepicker1").val(closedate);
+                $("#tt_start_time").val(startdate);
+                $("#tt_site_code").val(result.data.Data.sitecode);
+                $("#dd_site_status").val(result.data.Data.sitestatus);
+                //$("#dd_site_status").val(result.data.Data.sitestatus);
+                if (result.data.Data.issue == "Wapda Faults") {
+                    $("#rd_wapda_faults").prop("checked", true);
+                    $("#rd_others").prop("checked", false);
+                    $("#category_row").show();
+                    $("#dd_category").val(result.data.Data.category);
+                    debugger;
+                    if ($("#dd_category").val() == "Major") {
+                        $("#major_issue_row").show();
+                        $("#dd_category_major").val(result.data.Data.wapdafaults);
+                    }
+                    else {
+                        $("#minor_issue_row").show();
+                        $("#dd_category_minor").val(result.data.Data.wapdafaults);
+                    }
+                }
+                else {
+                    $("#rd_wapda_faults").prop("checked", false);
+                    $("#rd_others").prop("checked", true);
+                    $("#reason_row").show();
+                    $("#text_reason").val(result.data.Data.reason);
+                }
+                if (result.data.Data.stage == "Reopen") {
+                    $("#rejection_comments_row").show();
+                    $("#text_rejection_comments").val(result.data.Data.rejectioncomments);
+                }
+            }
+            else {
+                var obj = { ExceptionMessage: 'Maximo Error', StackTrace: result.data }
+                console.log(obj);
+                //ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/SaveException", obj, OnSuccessSaveException, "POST", false)
+                alertify.alert("Alert", "Failed to fetch ticket details");
+            }
+        }
+        function UpdateTicket() {
+            debugger;
+            if (!validateRequiredInput('#tt_resolution_div')) {
+                return false;
+            }
+            data.issueclosetime = ttCloseTime;
+            data.actiontaken = $("#text_action_taken").val();
+            data.sitestatus = $("#dd_site_status").val();
+            data.ttstatus = $("#dd_tt_status").val();
+            //var obj = { ttstatus: tt_status, sitecode: sitecode, sitestatus: sitestatus, issue: issue, category: category, wapdafaults: subIssue, reason: reason, approvalstatus: approvalStatus, approvalstatus_description: approvalReason };
+            $.ajax({
+                url: "/PrimeTPrime/UpdateTicket",
+                method: "POST",
+                data: { id: id, model: data,viewName:"ViewTicketForResolution" },
+                success: OnSuccessUpdateTicket
+            });
+
+        }
+        function OnSuccessUpdateTicket(res) {
+            debugger;
+            if (res == "success") {
+                //alertify.alert("Success", "Pending PM has been Approved Successfully.");
+                alertify.alert('Success', 'Ticket has been updated Successfully', function () { alertify.success('Ok'); location.href = '@Url.Action("ViewTicket","PrimeTPrime")'; });
+
+            }
+            else {
+               var obj = { ExceptionMessage: 'Maximo Error', StackTrace: res }
+                console.log(obj);
+                //ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/SaveException", obj, OnSuccessSaveException, "POST", false)
+                alertify.alert("Alert", "Failed to update ticket");
+            }
+        }
+        function OnSuccessSaveException(result) {
+
+        }
+    </script>
+}
+@*<link rel="stylesheet" type="text/css" media="screen"
+    href="http://tarruda.github.com/bootstrap-datetimepicker/assets/css/bootstrap-datetimepicker.min.css">*@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<div class="container">
+    <div class="card" id="tt_resolution_div">
+        @*<div class="card-header box-header">
+                <h3 style="color:white">Prime T-Prime Ticket</h3>
+            </div>*@
+        <div class="card-body box-body">
+            <div class="row">
+                <div class="col-md-2 col-sm-6">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>TT Status</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        @*<input type="text" readonly="readonly" class="form-control requiredinput" id="txt_tt_status">*@
+                        <select id="dd_tt_status" class="form-control mydropdown" disabled="disabled">
+                            @*<option value="" disabled selected hidden>Select ..</option>*@
+                            @*<option>Open</option>
+                                <option>Close</option>*@
+                            <option selected>Mark for closure</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Site Code<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="text" id="tt_site_code" class="form-control" disabled="disabled" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Site Status<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_site_status" class="form-control mydropdown">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>Prime</option>
+                            <option>T-Prime</option>
+                            <option>Standby</option>
+                            <option>CP Only</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="radio-inline radio-inline-tt tt_checkbox_label"><input type="checkbox" name="optradio" value="Wapda Faults" id="rd_wapda_faults" disabled="disabled" style="display:inline" class="tt_checkbox">Wapda Faults</label>
+                        <label class="radio-inline radio-inline-tt tt_checkbox_label"><input type="checkbox" name="optradio" value="Others" id="rd_others" disabled="disabled" style="display:inline" class="tt_checkbox">Others</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="reason_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Reason<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <textarea rows="5" cols="55" id="text_reason" disabled="disabled"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="category_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Category<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category" class="form-control mydropdown" disabled>
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>Major</option>
+                            <option>Minor</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="major_issue_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Major Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category_major" class="form-control mydropdown" disabled>
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>HT Line (11 KVA) Fault</option>
+                            <option>HT Pole (11 KVA) Pole Tilted/Damaged/Relocation</option>
+                            <option>HT Jumper Faulty/Broken</option>
+                            <option>Transformer Fault</option>
+                            <option>Transformer Stolen</option>
+                            <option>Transformer Relocation/Shifting</option>
+                            <option>HT Bush Fault</option>
+                            <option>E-Meter Faulty</option>
+                            <option>E-Meter Burnt</option>
+                            <option>E-Meter Stolen</option>
+                            <option>MDI Box Open</option>
+                            <option>D-Fuse Broken/Short</option>
+                            <option>Power Cable Burnt/Damaged</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="minor_issue_row" hidden>
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>Minor Issue<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <select id="dd_category_minor" class="form-control mydropdown" disabled>
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>D-Fuse Burnt</option>
+                            <option>D-Link Burnt</option>
+                            <option>LT Bush Fault</option>
+                            <option>Neutral Missing from E-Meter</option>
+                            <option>Neutral Missing from Transformer</option>
+                            <option>Phase Missing from LT Cable/TF</option>
+                            <option>Phase Missing from E-Meter</option>
+                            <option>Transformer Earthing Issue</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tt_start_time_row">
+                <div class="col-md-2">
+                    <div class="form-inline form-group mylabelstyle">
+                        <label>TT Start Time<span class="asterick"> *</span></label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group myinput">
+                        <input type="text" id="tt_start_time" class="selector form-control" disabled="disabled" />
+                    </div>
+                </div>
+            </div>
+            <div id="approval_section">
+                <div class="row" id="tt_close_time_row">
+                    <div class="col-md-2">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>TT Close Time<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group myinput">
+                            <input data-format="MM/dd/yyyy HH:mm:ss PP" type="text" id="datetimepicker1" class="selector form-control" />
+                            @*<div id="datetimepicker1">
+                                </div>*@
+                            @*<div class="well">
+                                <div id="datetimepicker1" class="input-append">
+                                    <span class="add-on">
+                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                        </i>
+                                    </span>
+                                </div>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="approval_reason_row">
+                    <div class="col-md-2">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Action Taken<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group myinput">
+                            <textarea rows="5" cols="50" id="text_action_taken" class="requiredinput"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="rejection_comments_row" hidden>
+                    <div class="col-md-2">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Rejection Comments by MBU<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group myinput">
+                            <textarea rows="5" cols="50" id="text_rejection_comments" disabled="disabled"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mybutton btmbuttom" onclick="UpdateTicket()" style="float:right">Save</button>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewBag.Title = "View Schedule";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    <table id="TableExcelData" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>Site Code</th>
+                <th>Site Type</th>
+                <th>Region</th>
+                <th>MBU</th>
+                <th>PM Type</th>
+                <th>PM Date</th>
+                <th>OSV</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var tbl_ExcelData;
+        $(document).ready(function () {
+            tbl_ExcelData = $('#TableExcelData').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 10,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+
+                columns: [
+                      { "data": "SiteCode" },
+                      { "data": "SiteType" },
+                      { "data": "Region" },
+                      { "data": "MBU" },
+                      { "data": "PMType" },
+                      { "data": "PMDate" },
+                      { "data": "OSV" }
+                ],
+            });
+            GetScheduleData();
+
+        });
+
+        function GetScheduleData() {
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/ScheduleManagement/GetScheduleData", "", OnSuccessGetScheduleData)
+
+
+        }
+        function OnSuccessGetScheduleData(results) {
+            tbl_ExcelData.clear().draw();
+            $.each(results, function (i, item) {
+                tbl_ExcelData.row.add(results[i]);
+            });
+            tbl_ExcelData.draw();
+        }
+    </script>
+}

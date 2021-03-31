@@ -1,0 +1,97 @@
+﻿<!-- #region AVR/LC TAB -->
+<!--Panel 29-->
+<script>
+    @*function SaveAVRData() {
+
+        Inventory_Data.AvrLc_Installed = $('#dd_avr_lc_installed_inventory').val();
+        Inventory_Data.AvrLc_Type = $('#txt_avr_lc_type_inventory').val();
+        Inventory_Data.AvrLc_Rating = $('#txt_avr_lc_rating_inventory').val();
+        Inventory_Data.AvrLc_Status = $('#dd_avr_lc_status_inventory').val();
+        Inventory_Data.UpdateSection = "AVRLC";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveAVRData, "POST", false)
+    }
+
+    function OnSuccessSaveAVRData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }*@
+
+</script>
+<div class="tab-pane fade in" id="panel29" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region AVR/LC Installed and AVR/LC Type -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> AVR/LC Installed</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_avr_lc_installed_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>YES</option>
+                        <option>NO</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> AVR/LC Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_avr_lc_type_inventory" type="text" class="form-control " disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region AVR/LC Rating and AVR/LC Status -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>AVR/LC Rating</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_avr_lc_rating_inventory" type="text" class="form-control " disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> AVR/LC Status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_avr_lc_status_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        @*<button id="save_avr_lc_inventory" name="save_avr_lc_inventory" onclick="SaveAVRData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 29-->
+<!-- #endregion -->

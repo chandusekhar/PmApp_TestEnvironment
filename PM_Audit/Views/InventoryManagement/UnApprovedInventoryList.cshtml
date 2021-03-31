@@ -1,0 +1,151 @@
+﻿
+@{
+    ViewBag.Title = "Unapproved Inventory List";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+<section class="container">
+    <div class="admin_box">
+        <div class="row">
+            <div class="col-md-1 col-sm-3 col-xs-6">
+                <div class="form-inline  mylabelstyle">
+                    <label> From </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6">
+                <div class="myinput">
+                    <input id="txt_from_date_approval" type="text" class="form-control date-pick">
+                </div>
+            </div>
+            <div class="col-md-1 col-sm-3 col-xs-6">
+                <div class="form-inline  mylabelstyle">
+                    <label> To </label>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6">
+                <div class="myinput">
+                    <input id="txt_to_date_approval" type="text" class="form-control date-pick">
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                <button id="get_details" onclick="GetPMData()" name="get_details" class="btn btn-primary">Get Details</button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>Site Code</th>
+                <th>Type</th>
+                <th>Created By</th>
+                <th>Created Date</th>
+                <th style="min-width: 100px;"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        var tbl_PMGrid;
+        $(document).ready(function () {
+
+            $("#txt_from_date_approval").val('');
+            $("#txt_to_date_approval").val('');
+            GetPMData();
+            $("#txt_from_date_approval").datepicker();
+            $("#txt_to_date_approval").datepicker();
+
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+                        { "data": "PM_Type", "orderable": true },
+                      { "data": "Created_By", "orderable": true },
+                      { "data": "Created_Date", "orderable": true },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            debugger;
+                            return '<button style="min-width:0px;" onclick="ViewInventoryDetails(\'' + row.SiteCode + '\',\'' + row.PM_Type + '\',\'' + row.ID + '\')" class="btn btn-primary mybutton viewPm">View Inventory Details</button>';
+                        }
+                    }
+
+
+                ],
+
+            });
+        });
+
+        function ViewInventoryDetails(sitecode, PM_Type, Inventory_ID) {
+            debugger;
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            if (PM_Type == "NON-Telco") {
+                form.setAttribute("action", '/InventoryManagement/ApproveInventory');
+            }
+            else {
+                form.setAttribute("action", '/InventoryManagement/ApproveTelcoInventory');
+            }
+
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", sitecode);
+            form.appendChild(hiddenFieldSiteCode);
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'Inventory_ID');
+            hiddenFieldPmID.setAttribute("value", Inventory_ID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.DateFrom = '';
+            obj.DateTO = '';
+            obj.DateFrom = $("#txt_from_date_approval").val();
+            obj.DateTO = $("#txt_to_date_approval").val();
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/InventoryManagement/getTelcoNonTelcoListInvnetoryForApproval", obj, OnSuccessGetPMData)
+
+
+        }
+        function OnSuccessGetPMData(results) {
+            debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_PMGrid.row.add(results[i]);
+            });
+            tbl_PMGrid.draw();
+        }
+    </script>
+}

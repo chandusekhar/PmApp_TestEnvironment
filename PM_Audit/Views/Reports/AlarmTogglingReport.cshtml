@@ -1,0 +1,294 @@
+﻿
+@{
+    ViewBag.Title = "AlarmTogglingReport";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+    var tbl_ReportsGrid;
+    $(document).ready(function () {
+        GetSiteFilters();
+
+        $("#txt_from_date").datepicker();
+        $("#txt_to_date").datepicker();
+
+        $(".date-pick").datepicker('setDate', new Date());
+
+
+        tbl_ReportsGrid = $('#reportsgridview').DataTable({
+            //responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": true,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                 { "data": "ID", "orderable": true },
+                  { "data": "SiteCode", "orderable": true },
+                  { "data": "RBU", "orderable": true },
+                  { "data": "MBU", "orderable": true },
+                  { "data": "OSV", "orderable": true },
+                  { "data": "CommercialRegion", "orderable": true },
+                  { "data": "PmType", "orderable": true },
+                  { "data": "Status", "orderable": true },
+                  { "data": "PmStartTime", "orderable": true },
+                  { "data": "AlarmsToggledAt", "orderable": true },
+                  { "data": "PmEndTime", "orderable": true },
+                  { "data": "PMApproved", "orderable": true },
+                  { "data": "AC_Mains_Failure", "orderable": true },
+                  { "data": "DG_On", "orderable": true },
+                  { "data": "High_Temperature", "orderable": true },
+                  { "data": "Intruder", "orderable": true },
+                  { "data": "Low_Voltage", "orderable": true },
+                  { "data": "System_On_Batteries", "orderable": true }
+
+            ],
+
+        });
+    });
+
+    function GetAlarmsData() {
+        debugger;
+        var obj = new Object();
+
+        obj.RBU = $("#dd_rbu").val()
+        obj.Start_Date = $("#txt_from_date").val()
+        obj.End_Date = $("#txt_to_date").val()
+        obj.SiteCode = $("#dd_site_code").val()
+        obj.Type = $("#dd_pm_type").val()
+        obj.MBU = $("#dd_mbu").val()
+        obj.Region = $("#dd_region").val()
+        obj.OSV = $("#dd_osv").val()
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetAlarmsReport", obj, OnSuccessGetAlarmsData)
+    }
+    function OnSuccessGetAlarmsData(results) {
+        debugger;
+        tbl_ReportsGrid.clear().draw();
+        $.each(results, function (i, item) {
+            debugger;
+            tbl_ReportsGrid.row.add(results[i]);
+        });
+        tbl_ReportsGrid.draw();
+    }
+    function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRBU) {
+                $('#dd_rbu').select2({
+                    data: data.ListRBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListMBU) {
+                $('#dd_mbu').select2({
+                    data: data.ListMBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRegion) {
+                $('#dd_region').select2({
+                    data: data.ListRegion,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListOSV) {
+                $('#dd_osv').select2({
+                    data: data.ListOSV,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            $('#dd_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+            $('#dd_closed_status').select2({
+
+                placeholder: "ALL",
+                allowClear: true
+            });
+        }
+    }
+</script>
+
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> PM Type</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_pm_type" style="color:#999999">
+                                <option value="" disabled selected hidden>ALL</option>
+                                <option value="NON-Telco">NON-Telco</option>
+                                <option value="Telco">Telco</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> OSV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_osv">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                        <button id="get_details" onclick="GetAlarmsData()" name="get_details" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview" class="display">
+                        <thead>
+                            <tr>
+                                <th>PM ID</th>
+                                <th>Site Code</th>
+                                <th>RBU</th>
+                                <th>MBU</th>
+                                <th>OSV</th>
+                                <th>Commercial Region</th>
+                                <th>PM Type</th>
+                                <th>Status</th>
+                                <th>PM Start Time</th>
+                                <th>Alarms Toggled At</th>
+                                <th>PM End Time</th>
+                                <th>Approved Status</th>
+                                <th>AC Mains Failure</th>
+                                <th>DG On</th>
+                                <th>High Temperature</th>
+                                <th>Intruder</th>
+                                <th>Low Voltage</th>
+                                <th>System on Batteries</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- /#page-content-wrapper -->
+    </div>
+</div>
+<!-- /#wrapper -->

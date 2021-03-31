@@ -1,0 +1,297 @@
+﻿<!-- #region Air Conditioners TAB -->
+<!--Panel 11-->
+<script type="text/javascript">
+
+    /* Air conditioners*/
+    $(document).ready(function () {
+        var $modal_ac = $('#editor_modal_ac'),
+     $editor_ac = $('#editor_ac'),
+     $editorTitle_ac = $('#editor_title_ac'),
+     ft_ac = FooTable.init('#ac', {
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add More AC',
+             addRow: function () {
+                 $modal_ac.removeData('row');
+                 $editor_ac[0].reset();
+                 $editorTitle_ac.text('Add a new AC');
+                 $modal_ac.modal('show');
+             },
+             editRow: function (row) {
+                 var values = row.val();
+                 $editor_ac.find('#ac_type_ac').val(values.ac_type_ac);
+                 $editor_ac.find('#txt_sr_no_idu_ac').val(values.sr_no_idu_ac);
+                 $editor_ac.find('#idu_ac').val(values.idu_ac);
+                 $editor_ac.find('#txt_sr_no_odu_ac').val(values.sr_no_odu_ac);
+                 $editor_ac.find('#odu_ac').val(values.odu_ac);
+
+                 $modal_ac.data('row', row);
+                 $editorTitle_ac.text('Edit AC');
+                 $modal_ac.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         'rows': AC_List
+     }),
+     uid = 10;
+
+        $editor_ac.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            if (!validateRequiredInput('#editor_modal_ac')) {
+                return false;
+            }
+            var row = $modal_ac.data('row'),
+                values = {
+                    ac_type_ac: $editor_ac.find('#ac_type_ac').val(),
+                    sr_no_idu_ac: $editor_ac.find('#txt_sr_no_idu_ac').val(),
+                    idu_ac: $editor_ac.find('#idu_ac').val(),
+                    sr_no_odu_ac: $editor_ac.find('#txt_sr_no_odu_ac').val(),
+                    odu_ac: $editor_ac.find('#odu_ac').val()
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_ac.rows.add(values);
+            }
+            $modal_ac.modal('hide');
+        });
+        $('.footable-editing').hide();
+        $("#ac_denial").on("change", function () {
+            var data = $("#ac_denial option:selected").text();
+            if (data == "YES") {
+                $("#ac").find("button").hide();
+            }
+            else {
+                $("#ac").find("button").show();
+                $(".footable-show").hide();
+                $(".footable-hide").hide();
+            }
+        });
+
+        $("#ac_panel").on("click", function () {
+            debugger;
+            var data = $("#ac_denial option:selected").text();
+            if (data == "YES") {
+                $("#ac").find("button").hide();
+            }
+            else {
+                $("#ac").find("button").show();
+                $(".footable-show").hide();
+                $(".footable-hide").hide();
+            }
+        });
+
+    });
+
+
+
+    function SaveACData() {
+        var tempListAC = [];
+        var ACObj = FooTable.get("#ac");
+        $.each(ACObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.AC_Type = values.ac_type_ac;
+            obj.IDU_SerialNo = values.sr_no_idu_ac;
+            obj.ODU_SerialNo = values.sr_no_odu_ac;
+            obj.IDU_Status = values.idu_ac;
+            obj.ODU_Status = values.odu_ac;
+            tempListAC.push(obj);
+            
+        });
+        if (PM_Data.checkListACs == null) {
+            PM_Data.checkListACs = [];
+        }
+
+        var ac_denial = $('#ac_denial').val();
+        if (ac_denial != 'YES') {
+            if (tempListAC.length == 0) {
+                alertify.alert("Alert","Please add ACs.");
+                return;
+            }
+            else {
+                PM_Data.checkListACs = tempListAC;
+            }
+        }
+        else {
+            PM_Data.checkListDGs = [];
+        }
+        PM_Data.checkListACs = tempListAC;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/PreventiveMaintenance/SaveACsChecklistData", PM_Data, OnSuccessSaveAC, "POST", false)
+    }
+
+    function OnSuccessSaveAC(res) {
+        debugger;
+        if (res == "success") {
+            alertify.alert("Success", "Data has been updated successfully.");
+            //GetPMData();
+        }
+        else {
+            alertify.alert("Alert","Failed.");
+        }
+    }
+
+
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel11" role="tabpanel">
+    <div class="container tab_body tab-margin tab_non_telco">
+        @*<div class="col-md-2 col-sm-4 col-xs-4">
+            <div class="form-inline form-group mylabelstyle">
+                <label> Air Conditioners</label>
+            </div>
+        </div>*@
+        @*<div class="col-sm-6 nopadding">*@
+            <div class="form-group">
+                <div class="example">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 ">
+                            <div class="form-inline form-group mylabelstyle">
+                                <label> AC Denial<span class="asterick"> *</span></label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 ">
+                            <div class="form-group">
+                                <select class="form-control mydropdown requiredinput" id="ac_denial">
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="ac" class="table">
+                        <thead>
+                            <tr>
+                                <th data-name="ac_type_ac">AC Type</th>
+                                <th data-name="sr_no_idu_ac">Sr. No. IDU</th>
+                                <th data-name="idu_ac">IDU</th>
+                                <th data-name="sr_no_odu_ac">Sr. No. ODU</th>
+                                <th data-name="odu_ac">ODU</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="editor_modal_ac" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <form class="modal-content form-horizontal" id="editor_ac">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="editor_title_ac">Add More AC</h4>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-inline  mylabelstyle_modal">
+                                                <label> AC Type<span class="asterick"> *</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            @*<div class="myinput_modal">
+                                                <input id="ac_type_ac" type="text" class="form-control requiredinput">
+                                            </div>*@
+                                            <select class="myinput_modal form-control mydropdown requiredinput" id="ac_type_ac">
+                                                <option value="" disabled selected hidden>Select ..</option>
+                                                <option>LG</option>
+                                                <option>HUAWEI</option>
+                                                <option>SABRO</option>
+                                                <option>ACSON</option>
+                                                <option>MITSUBISHI</option>
+                                                <option>MILLER</option>
+                                                <option>OTHER</option>
+                                                <option>HAIER</option>
+                                                <option>PEL</option>
+                                                <option>DAIKAN</option>
+                                                <option>KENWOOD</option>
+                                                <option>GREE</option>
+                                                <option>HUARAIR(PURCEL)</option>
+                                                <option>ENVIRCOOL(PURCEL)</option>
+                                                <option>AIRSYS(PURCEL)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-inline  mylabelstyle_modal">
+                                                <label>SR. No. IDU<span class="asterick"> *</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="myinput_modal">
+                                                <input id="txt_sr_no_idu_ac" type="text" class="form-control requiredinput">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--#endregion-->
+                                    <!--#region Capacity and SMR Capacity-->
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-inline  mylabelstyle_modal">
+                                                <label> IDU<span class="asterick"> *</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <select class="form-control mydropdown_modal requiredinput" id="idu_ac">
+                                                <option value="" disabled selected hidden>Select ..</option>
+                                                <option>OK</option>
+                                                <option>NOT OK</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-inline  mylabelstyle_modal">
+                                                <label> Sr. No. ODU<span class="asterick"> *</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="myinput_modal">
+                                                <input id="txt_sr_no_odu_ac" type="text" class="form-control requiredinput">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <div class="form-inline  mylabelstyle_modal">
+                                                <label> ODU<span class="asterick"> *</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <select class="form-control mydropdown requiredinput" id="odu_ac">
+                                                <option value="" disabled selected hidden>Select ..</option>
+                                                <option>OK</option>
+                                                <option>NOT OK</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @*</div>*@
+
+            <!--#endregion-->
+            <button id="save_air_conditioners" name="save_air_conditioners" onclick="SaveACData()" class="btn btn-primary mybutton">Save</button>
+        </div>
+    </div>
+</div>
+
+<!--/.Panel 11-->
+<!-- #endregion -->

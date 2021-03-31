@@ -1,0 +1,5 @@
+﻿@media screen and (max-width: 480px) {
+    .ui-datepicker {
+        left: 0 !important;
+    }
+}

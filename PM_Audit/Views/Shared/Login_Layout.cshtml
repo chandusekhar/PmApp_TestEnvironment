@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNet.Identity
+@using System.Linq
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Preventive Maintenance</title>
+    @Styles.Render("~/bundles/Theme")
+</head>
+<body>
+    <div class="bbg">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("Scripts", false)
+</body>
+</html>

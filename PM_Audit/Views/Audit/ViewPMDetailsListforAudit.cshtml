@@ -1,0 +1,213 @@
+﻿
+@{
+    ViewBag.Title = "ViewPMDetailsListforAudit";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+<section class="container">
+    <div class="hidden" id="formDiv"></div>
+    <table id="pmgridview" class="display" width="100%">
+        <thead>
+            <tr>
+                <th>SiteName</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Type</th>
+                <th>CloseStatus</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+        var siteCode = '';
+        var pmType = '';
+        var pmID = '';
+        siteCode = '@ViewBag.Site_Code';
+        pmType = '@ViewBag.PM_Type';
+        $(document).ready(function() {
+            GetPMData();
+            tbl_PMGrid = $('#pmgridview').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function(settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                    { "data": "SiteCode", "orderable": true },
+                    { "data": "Created_Date", "orderable": true },
+                    { "data": "Closed_Date", "orderable": true },
+                    //{ "data": "Status", "orderable": true },
+                    { "data": "Type", "orderable": true },
+                    { "data": "Closed_Status", "orderable": true },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function(data, type, row) {
+                            debugger;
+                            if (row.PM_Status != "Closed") {
+                                return '<button onclick="VerifyLocationAndOpenSitePMDetails(\'' +
+                                    row.SiteCode +
+                                    '\',\'' +
+                                    row.Type +
+                                    '\',\'' +
+                                    row.ID +
+                                    '\')" class="btn btn-primary mybutton">Proceed</button>';
+                            } else {
+                                return '';
+                            }
+                        }
+                    }
+                ],
+
+            });
+        });
+
+        function proceedToAudit() {
+            debugger;
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            if (pmType == 'Telco') {
+                form.setAttribute("action", '/Audit/ViewTelcoPMDetailsforAudit');
+            } else {
+                form.setAttribute("action", '/Audit/ViewNoNTelcoPMDetailsforAudit');
+            }
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", siteCode.toUpperCase());
+            form.appendChild(hiddenFieldSiteCode);
+
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'PM_ID');
+            hiddenFieldPmID.setAttribute("value", pmID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = siteCode;
+            obj.PM_Type = pmType;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',
+                "api/Audit/GetPmListForAudit",
+                obj,
+                OnSuccessGetPMData);
+        }
+
+        function OnSuccessGetPMData(results) {
+            debugger;
+            tbl_PMGrid.clear().draw();
+            $.each(results,
+                function(i, item) {
+                    debugger;
+                    tbl_PMGrid.row.add(results[i]);
+                });
+            tbl_PMGrid.draw();
+        }
+
+        /*Location Checks**/
+          //// LAtt Long Check
+
+        var Latt = 0;
+        var Long = 0;
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+        function VerifyLocationAndOpenSitePMDetails(_SiteCode, _Type, _ID) {
+            siteCode = '';
+            pmType = '';
+            pmID = '';
+            siteCode = _SiteCode;
+            pmType = _Type;
+            pmID = _ID;
+
+            Latt = 0;
+            Long = 0;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                alertify.alert('Failed', "Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            var siteID = siteCode;
+            debugger;
+            Latt = position.coords.latitude;
+            Long = position.coords.longitude;
+            if (Latt == 0 || Long == 0) {
+                alertify.alert('Failed', 'Location information not found.');
+                return;
+            }
+            if (siteID) {
+                var data = new Object();
+                data.SiteCode = siteID;
+                data.Latt = Latt;
+                data.Long = Long;
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/UtilityController/IsSiteLocationValid", data, OnSuccessGetCoordinates)
+            }
+        }
+        function showError(err) {
+            var error = "";
+            if (err.code == 1) {
+                if (err.message.indexOf("Only secure origins are allowed") != -1) {
+                    var position = new Object();
+                    position.coords = new Object();
+                    position.coords.latitude = 31.4558;
+                    position.coords.longitude = 74.3260;
+                    showPosition(position);
+                    return;
+                }
+                else {
+                    error = "User denied the request for Geolocation."
+                }
+            }
+            else if (err.code == 2) {
+                error = "Location information is unavailable."
+            }
+            else if (err.code == 3) {
+                error = "The request to get user location timed out."
+            }
+            else {
+                error = "An unknown error occurred."
+            }
+            alertify.alert('Failed', error);
+        }
+
+        function OnSuccessGetCoordinates(res) {
+            if (res == "valid") {
+                proceedToAudit();
+            }
+            else {
+                alertify.alert('Failed', 'Invalid location.');
+            }
+
+        }
+
+        /*Location Checks - End Here**/
+
+    </script>
+}

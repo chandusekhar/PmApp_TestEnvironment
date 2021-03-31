@@ -1,0 +1,278 @@
+﻿<!-- #region Others TAB -->
+<!--Panel 30-->
+<script>
+    function SaveOthersData() {
+        debugger;
+        Inventory_Data.FiberNode = $('#txt_fiber_node_inventory').val();
+        Inventory_Data.SiteLocation = $('#txt_site_location_inventory option:selected').val();
+        Inventory_Data.EnergizationStatus = $('#dd_energization_status_inventory option:selected').val();
+        Inventory_Data.FLMVendor = $('#txt_flm_vendor_inventory').val();
+        Inventory_Data.SecurityVendor = $('#txt_security_vendor_inventory').val();
+        Inventory_Data.FuelingVendor = $('#txt_fueling_vendor_inventory').val();
+        Inventory_Data.ProblematicSite = $('#txt_problematic_site_inventory').val();
+        Inventory_Data.TheftIssue = $('#txt_theft_issue_inventory').val();
+        Inventory_Data.SiteAccessIssue = $('#txt_site_access_issue_inventory').val();
+        Inventory_Data.AccessIssueType = $('#txt_access_issue_type_inventory').val();
+        Inventory_Data.FuelTheft = $('#txt_fuel_theft_inventory option:selected').val();
+        Inventory_Data.PowerTheft = $('#txt_power_theft_inventory option:selected').val();
+        Inventory_Data.FireExtinguisherAvailable = $('#dd_fire_extinguisher_available_inventory').val();
+        Inventory_Data.FireExtinguisherType = $('#dd_fire_extinguisher_type_inventory option:selected').val();
+        Inventory_Data.UpdateSection = "OTHERS";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveOthersData, "POST", false)
+    }
+
+    function OnSuccessSaveOthersData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+           // GetInventoryData();
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+</script>
+<div class="tab-pane fade in" id="panel30" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region Fiber Node -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fiber Node</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    @*<input id="txt_fiber_node_inventory" type="text" class="form-control ">*@
+                    <select class="form-control mydropdown_modal" id="txt_fiber_node_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+            @*</div>*@
+            <!--#endregion-->
+            <!-- #region Site Location -->
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Site Location</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    @*<input id="txt_site_location_inventory" type="text" class="form-control ">*@
+                    <select class="form-control mydropdown_modal" id="txt_site_location_inventory">
+                        <option value="NA" id="select_option_site_location_inventory" disabled selected hidden>Select ..</option>
+                        <option>GREEN FIELD</option>
+                        <option>ROOF TOP</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Energization Status -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Energization Status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_energization_status_inventory">
+                        <option value="NA" id="select_option_energization_status_inventory" disabled selected hidden>Select ..</option>
+                        <option>STANDBY</option>
+                        <option>PRIME</option>
+                        <option>CP ONLY</option>
+                        <option>T-PRIME</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+
+            @*<div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="dd_energization_status_inventory" type="text" class="form-control ">
+                </div>
+            </div>*@
+            @*</div>*@
+            <!--#endregion-->
+            <!--#region FLM Vendor -->
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>FLM Vendor</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_flm_vendor_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Security Vendor -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Security Vendor</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_security_vendor_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fueling Vendor</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_fueling_vendor_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Problematic Site and Theft Issue -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Problematic Site</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_problematic_site_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Theft Issue</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_theft_issue_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        <!--#region SiteAccessIssue and AccessIssueType -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Access Issue</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_access_issue_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Access Issue Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_access_issue_type_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <!--#region FuelTheft and PowerTheft -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fuel Theft</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                @*<div class="myinput form-group">
+                    <input id="txt_fuel_theft_inventory" type="text" class="form-control ">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="txt_fuel_theft_inventory">
+                        <option value="NA" id="select_option_fuel_theft_inventory" disabled selected hidden>Select ..</option>
+                        <option>FUEL</option>
+                        <option>FUEL+ELECTRICITY</option>
+                        <option>EQUIPMENT</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Power Theft</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                @*<div class="myinput form-group">
+                    <input id="txt_power_theft_inventory" type="text" class="form-control ">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="txt_power_theft_inventory">
+                        <option value="NA" id="select_option_power_theft_inventory" disabled selected hidden>Select ..</option>
+                        <option>ELECTRICITY</option>
+                        <option>FUEL+ELECTRICITY</option>
+                        <option>EQUIPMENT</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fire Extinguisher Available</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_fire_extinguisher_available_inventory">
+                        <option>YES</option>
+                        <option selected>NO</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label>Fire Extinguisher Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_fire_extinguisher_type_inventory">
+                        <option value="NA" id="select_option_fire_extinguisher_type_inventory" disabled selected hidden>Select ..</option>
+                        <option>CO2 CYLINDER</option>
+                        <option>FM200 SYSTEM</option>
+                        <option>OTHER</option>
+                        <option>NA</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        
+        <button id="save_others_inventory" name="save_others_inventory" onclick="SaveOthersData()" class="btn btn-primary mybutton">Save</button>
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 30-->
+<!-- #endregion -->

@@ -1,0 +1,267 @@
+﻿<!-- #region General TAB -->
+<!--Panel 20-->
+
+<script>
+    function SaveGeneralData() {
+
+        Inventory_Data.SiteCode = $('#txt_site_code_inventory').val();
+        Inventory_Data.SiteName = $('#txt_site_name_inventory').val();
+        Inventory_Data.SiteRegion = $('#dd_site_region_inventory').val();
+        Inventory_Data.SiteStatus = $('#txt_site_status_inventory').val();
+        Inventory_Data.Latitude = $('#txt_lat_inventory').val();
+        Inventory_Data.Longitude = $('#txt_long_inventory').val();
+        Inventory_Data.MBUNo = $('#txt_mbu_no_inventory').val();
+        Inventory_Data.MBUName = $('#txt_mbu_name_inventory').val();
+        Inventory_Data.MBULead = $('#txt_mbu_lead_inventory').val();
+        Inventory_Data.ZonalManager = $('#txt_zonal_manager_inventory').val();
+        Inventory_Data.SiteType = $('#txt_site_type_inventory').val();
+        Inventory_Data.SiteCategory = $('#txt_site_category_inventory').val();
+        Inventory_Data.Priority = $('#txt_priority_inventory').val();
+        Inventory_Data.UpdateSection = "GENERAL";
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveGeneral, "POST", false)
+    }
+
+    function OnSuccessSaveGeneral(res) {
+       
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+            //GetInventoryData();
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }
+
+</script>
+
+
+<div class="tab-pane fade in show active" id="panel20" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region Site Code -->
+        @*------------Site Code---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Code</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_code_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            @*</div>*@
+            <!--#endregion-->
+            <!-- #region Site Name -->
+            @*------------Site Name---------------*@
+            @*<div class="row">*@
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Name</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_name_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Site Region -->
+        @*------------SiteRegion---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Region</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="dd_site_region_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            @*<div class="col-md-3 col-sm-3">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_site_region_inventory">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>CENTRAL-A</option>
+                        <option>CENTRAL-B</option>
+                        <option>NORTH</option>
+                        <option>SOUTH</option>
+                    </select>
+                </div>
+            </div>*@
+            @*</div>*@
+            <!--#endregion-->
+            <!--#region Prime/TPrime -->
+            @*------------Prime/TPrime---------------*@
+            @*<div class="row">*@
+            @*<div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Prime/TPrime</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_prime_tprime_inventory" type="text" class="form-control ">
+                </div>
+            </div>*@
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Power Profile Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_power_profile_type_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Lat Long -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Latitude</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_lat_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Longitude</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_long_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region MBU No and MBU Name -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> MBU No.</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_mbu_no_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> MBU Name</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_mbu_name_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+
+        <!--#endregion-->
+        <!--#region MBU Lead and Zonal Manager -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> MBU Lead</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_mbu_lead_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Zonal Manager</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_zonal_manager_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <!--#region Site Type and Site Category -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_type_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Category</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_category_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+
+        </div>
+        <!--#endregion-->
+        <!--#region Priority -->
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Priority</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_priority_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Lock/UnLock</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_lock_unlock_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Site Power Profile Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <div class="myinput form-group">
+                    <input id="txt_site_power_profile_type_inventory" type="text" class="form-control ">
+                </div>
+            </div>
+        </div>*@
+        <!--#endregion-->
+        @*<button id="save_general_inventory" name="save_general_inventory" onclick="SaveGeneralData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+
+
+
+<!--/.Panel 20-->
+<!-- #endregion -->

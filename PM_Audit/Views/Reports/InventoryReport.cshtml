@@ -1,0 +1,367 @@
+﻿
+@{
+    ViewBag.Title = "InventoryReport";
+    Layout = "~/Views/Shared/SideBar_Layout.cshtml";
+}
+@Scripts.Render("~/bundles/GlobalScripts")
+<script>
+    var tbl_ReportsGrid_inventory;
+    $(document).ready(function () {
+
+        GetSiteFilters();
+        $("#txt_from_date").datepicker();
+        $("#txt_to_date").datepicker();
+
+        $(".date-pick").datepicker('setDate', new Date());
+
+        tbl_ReportsGrid_inventory = $('#reportsgridview_inventory').DataTable({
+            responsive: true,
+            "sScrollX": "100%",
+            "sScrollXInner": "100%",
+            "bScrollCollapse": true,
+            dom: 'Bfrtip',
+            'autoWidth': true,
+            'lengthChange': false,
+            buttons: [
+                'copy', 'csv', 'excel'
+            ],
+            "pageLength": 50,
+            "initComplete": function (settings, json) {
+                $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+            },
+            columns: [
+                  { "data": "SiteCode", "orderable": true },
+                   { "data": "PM_Type", "orderable": true },
+                  { "data": "RBU", "orderable": true },
+                  { "data": "CommercialRegion", "orderable": true },
+                  { "data": "MBU", "orderable": true },
+                  { "data": "OSV", "orderable": true },
+                  { "data": "LastUpdated", "orderable": true },
+
+                  {
+                      "targets": -1,
+                      "data": null,
+                      render: function (data, type, row) {
+                          return '<button onclick="getInventoryDetails(\'' + row.SiteCode + '\',\'' + row.PM_Type + '\')" class="btn btn-primary">View</button>';
+                      }
+
+
+                  },
+                    {
+                        "targets": -1,
+                        "data": null,
+                        render: function (data, type, row) {
+                            return '<button onclick="ExportSingleSiteInventoryData(\'' + row.SiteCode + '\',\'' + row.PM_Type + '\')" class="btn btn-primary">Export</button>';
+                        }
+
+
+                    }
+
+
+            ],
+
+        });
+
+
+
+    });
+
+    function getInventoryDetails(sitecode,Inventory_Type) {
+        debugger;
+        $('#formDiv').html('');
+        var form = document.createElement("form");
+        form.setAttribute("method", 'POST');
+        if (Inventory_Type == 'NON-Telco')
+            form.setAttribute("action", '/Reports/InventoryDetails');
+        else
+            form.setAttribute("action", '/Reports/TelcoInventoryDetails');
+        form.setAttribute("target", '_blank');
+
+        var hiddenFieldSiteCode = document.createElement("input");
+        hiddenFieldSiteCode.setAttribute("type", "hidden");
+        hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+        hiddenFieldSiteCode.setAttribute("value", sitecode);
+        form.appendChild(hiddenFieldSiteCode);
+
+        document.getElementById('formDiv').appendChild(form);
+        form.submit();
+    }
+
+    function GetPMData() {
+        debugger;
+        var obj = new Object();
+
+        obj.RBU = $("#dd_rbu_inventory").val()
+        obj.Start_Date = $("#txt_from_date").val()
+        obj.End_Date = $("#txt_to_date").val()
+        obj.SiteCode = $("#dd_site_code_inventory").val()
+        obj.Status = $("#dd_status_inventory").val()
+        obj.MBU = $("#dd_mbu_inventory").val()
+        obj.Region = $("#dd_region_inventory").val()
+        obj.OSV = $("#dd_osv_inventory").val()
+        obj.Type = $("#dd_inventory_type").val();
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteInventoryReport", obj, OnSuccessGetPMData)
+    }
+    function OnSuccessGetPMData(results) {
+        debugger;
+        tbl_ReportsGrid_inventory.clear().draw();
+        $.each(results, function (i, item) {
+            debugger;
+            tbl_ReportsGrid_inventory.row.add(results[i]);
+        });
+        tbl_ReportsGrid_inventory.draw();
+    }
+
+    function ExportData() {
+        debugger;
+        var obj = new Object();
+
+        obj.RBU = $("#dd_rbu_inventory").val()
+        //obj.Start_Date = $("#txt_from_date_inventory").val()
+        //obj.End_Date = $("#txt_to_date_inventory").val()
+        obj.Start_Date = $("#txt_from_date").val()
+        obj.End_Date = $("#txt_to_date").val()
+        obj.SiteCode = $("#dd_site_code_inventory").val()
+        obj.Status = $("#dd_status_inventory").val()
+        obj.MBU = $("#dd_mbu_inventory").val()
+        obj.Region = $("#dd_region_inventory").val()
+        obj.OSV = $("#dd_osv_inventory").val();
+        obj.Type = $("#dd_inventory_type").val();
+        debugger;
+        ApiCallService.AjaxNative('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/ExportSiteInventoryDetails", obj, handleFileData, 'POST', true, null, null, 'native', 'blob');
+    }
+
+    function ExportSingleSiteInventoryData(SiteCode, Inventory_Type) {
+        debugger;
+        var obj = new Object();
+        obj.SiteCode = SiteCode;
+        obj.Type = Inventory_Type;
+        debugger;
+        ApiCallService.AjaxNative('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/ExportSingleSiteInventoryDetails", obj, handleFileData, 'POST', true, null, null, 'native', 'blob');
+    }
+    function handleFileData(blob) {
+        debugger;
+        if (blob != null) {
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "InventoryReport" + new Date() + ".xlsx";
+            link.click();
+            return;
+        }
+        // Use the file data
+    }
+
+
+
+
+
+
+
+
+    function GetSiteFilters() {
+        debugger;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+    }
+    var data;
+    function OnSuccessGetSiteFilters(results) {
+        debugger;
+        data = results;
+        if (data != null) {
+            if (data.ListSiteCode) {
+                $('#dd_site_code_inventory').select2({
+                    data: data.ListSiteCode,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRBU) {
+                $('#dd_rbu_inventory').select2({
+                    data: data.ListRBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListMBU) {
+                $('#dd_mbu_inventory').select2({
+                    data: data.ListMBU,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListRegion) {
+                $('#dd_region_inventory').select2({
+                    data: data.ListRegion,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+            if (data.ListOSV) {
+                $('#dd_osv_inventory').select2({
+                    data: data.ListOSV,
+                    placeholder: "ALL",
+                    allowClear: true
+                });
+            }
+
+        }
+    }
+
+
+</script>
+
+
+
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code_inventory">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @*</div>
+                        <div class="row">*@
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu_inventory">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu_inventory">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region_inventory">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> OSV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_osv_inventory">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Type</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_inventory_type" style="color:#999999">
+                                <option value="NON-Telco">NON-Telco</option>
+                                <option value="Telco">Telco</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-6 pull-right">
+                        <button id="get_details_inventory" onclick="GetPMData()" name="get_details_inventory" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                    <div class="col-md-2 col-sm-4 col-xs-6 pull-right">
+                        <button id="btn_export_inventory " onclick="ExportData()" name="btn_export_inventory " class="btn btn-primary mybutton">Export</button>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview_inventory" class="display">
+                        <thead>
+                            <tr>
+                                <th>Site Code</th>
+                                <th>Inventory Type</th>
+                                <th>RBU</th>
+                                <th>Commercial Region</th>
+                                <th>MBU</th>
+                                <th>OSV</th>
+                                <th>Date</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /#page-content-wrapper -->
+</div>
+<div id="formDiv"></div>
+
+
+

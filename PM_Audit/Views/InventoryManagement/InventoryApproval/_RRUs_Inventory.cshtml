@@ -1,0 +1,333 @@
+﻿<!-- #region RRUs TAB -->
+<!--Panel 2-->
+<script type="text/javascript">
+
+
+    @*------------RRU VSWR Values---------------*@
+
+    $(document).ready(function () {
+        var addButton_rru = $('.add_button_rru'); //Add button selector
+
+        //Once add button is clicked
+       // $(addButton_rru).click(function (e) {
+
+        //Once remove button is clicked
+        $('.container').on('click', '.remove_button_rru', function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var tempArr = $(this).attr('id').split('_');
+            var subindex = tempArr[tempArr.length - 1]
+            var mainindex = tempArr[tempArr.length - 2]
+            RRUsCountArray[mainindex] = RRUsCountArray[mainindex] - 1;
+            $(this).closest('div.row').remove(); //Remove field html
+            ;
+        });
+    });
+
+
+
+    @*------------RRUs Add More---------------*@
+    $(document).ready(function () {
+        //var add_more_rru = $('#add_more_rru'); //Add button selector
+
+        ////Once add button is clicked
+        //$(add_more_rru).click(function (e) {
+        //    debugger;
+        //    e.preventDefault();
+        //    e.stopImmediatePropagation();
+        //    var mainAddMoreIndex = RRUsCountArray.length;
+        //    var wrapper_rru_addMore = $('#field_more_rru_' + (mainAddMoreIndex - 1)); //Input field wrapper
+        //    var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group myinput"><input id="txt_type_rru_' + mainAddMoreIndex + '" type="text" class="requiredinput form-control requiredinput"></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Grounding Status<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Weather Proofing Status<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Backup Taken<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Installation Height(meters)<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="number" step="any" class="form-control requiredinput"></div></div></div><button id="remove_more_rru_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_rru" >Remove</button></div>';
+        //    RRUsCountArray.push(0);
+        //    $(wrapper_rru_addMore).after(fieldHTMLAddMoreRRU); //Add field html
+        //    $('.remove_more_rru').hide();
+        //    $('.remove_more_rru:last').show();
+
+        //});
+        $('.container').on('click', '.add_button_rru', function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var mainindex = $(this).attr('id').split('_').pop();
+            var subIndex = RRUsCountArray[mainindex];
+            var wrapper_rru = $('#field_wrapper_rru_' + mainindex + '_' + subIndex).closest(".row"); //Input field wrapper
+            subIndex = RRUsCountArray[mainindex] = RRUsCountArray[mainindex] + 1
+            var fieldHTML = '<div class="groupclass"> <div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"><label></label></div></div><div class="field_wrapper_rru" id = "field_wrapper_rru_' + mainindex + '_' + subIndex + '"><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_cell_id_' + mainindex + '_' + subIndex + '" placeholder="Cell ID" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_cell_name_' + mainindex + '_' + subIndex + '" placeholder="Cell Name" /></div></div><div class="col-sm-2 nopadding"><div class="form-group"><input type="text" class="form-control requiredinput" name="RRU_value_' + mainindex + '_' + subIndex + '" placeholder="Value" /></div></div></div><div class="col-sm-2"><a href="javascript:void(0);" id="remove_button_rru_' + mainindex + '_' + subIndex + '" class="remove_button_rru"><i class="fa fa-minus"></i></a></div></div></div></div>'; //New input field html
+            $(wrapper_rru).after(fieldHTML); //Add field html
+
+        });
+        $('#add_more_rru').click(function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            var mainAddMoreIndex = RRUsCountArray.length;
+            var wrapper_rru_addMore = $('#field_more_rru_' + (mainAddMoreIndex - 1)); //Input field wrapper
+            //var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group myinput"><input id="txt_type_rru_' + mainAddMoreIndex + '" type="text" class="requiredinput form-control requiredinput" disabled="disabled"></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Installation Height(meters)<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="text" class="form-control requiredinput" disabled="disabled"></div></div></div><button id="remove_more_rru_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_rru" >Remove</button></div>';
+            //var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top:1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_type_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>3936</option><option>3936</option><option>3959</option><option>3959</option><option>3953</option><option>3826</option><option>R8881 (S9000)</option><option>R8881 (S1800)</option><option>R8863 (S9000)</option><option>R8863 (S1800)</option><option>R8872 (S1800)</option><option>R8881 (S2100)</option><option>R8863 (S2100)</option><option>FXJB</option><option>AREA</option> </select></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> RRU Model<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_model_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4 "><div class="form-inline form-group mylabelstyle"> <label> Vendor<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_vendor_rru_' + mainAddMoreIndex + '" disabled="disabled"><option value="" disabled selected hidden>Select ..</option><option>HUAWEI</option><option>ZTE</option><option>NOKIA</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Installation Height(meters)<span class="asterick"> *</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"> <input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="number" step="any" class="form-control requiredinput" disabled="disabled"></div></div></div> <button id="remove_more_rru_' + (mainAddMoreIndex) + '" class="btn btn-danger remove-me remove_more_rru">Remove</button></div>';
+            var fieldHTMLAddMoreRRU = '<div class="field_more_rru" id="field_more_rru_' + mainAddMoreIndex + '"><div class="row" style="border-top: 1px solid white;"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> RRU Type<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_type_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>3936</option><option>3936</option><option>3959</option><option>3959</option><option>3953</option><option>3826</option><option>R8881 (S9000)</option><option>R8881 (S1800)</option><option>R8863 (S9000)</option><option>R8863 (S1800)</option><option>R8872 (S1800)</option><option>R8881 (S2100)</option><option>R8863 (S2100)</option><option>FXJB</option><option>AREA</option><option>R8862 (S1800)</option><option>R8854 (S1800)</option><option>R8852 (S1800)</option><option>R8894 (M1821)</option> </select></div></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> RRU Model<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_model_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option><option>RRU (1800MHz)</option><option>RRU (2100MHz)</option><option>RRU (2100MHz)</option><option>RRU (900MHz)</option><option>RRU (1800MHz)</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label> Vendor<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="txt_vendor_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>HUAWEI</option><option>ZTE</option><option>NOKIA</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Grounding Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Weather Proofing Status<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>OK</option><option>NOT OK</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Backup Taken<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="form-group"> <select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_' + mainAddMoreIndex + '"><option value="" disabled selected hidden>Select ..</option><option>YES</option><option>NO</option> </select></div></div></div><div class="row"><div class="col-md-2 col-sm-4 col-xs-4"><div class="form-inline form-group mylabelstyle"> <label>Installation Height(meters)<span class="asterick">*</span></label></div></div><div class="col-md-6 col-sm-6 col-xs-6"><div class="myinput"><input id="txt_installation_height_rru_' + mainAddMoreIndex + '" type="number" step="any" class="form-control requiredinput" /></div></div></div> <button id="remove_more_rru_' + (mainAddMoreIndex) + '" style="display: none;" class="btn btn-danger remove-me remove_more_rru">Remove</button></div>';
+            RRUsCountArray.push(0);
+            $(wrapper_rru_addMore).after(fieldHTMLAddMoreRRU); //Add field html
+            $('.remove_more_rru').hide();
+          //  $('.remove_more_rru:last').show();
+
+        });
+
+        //Once remove button is clicked
+        $('.container').on('click', '.remove_more_rru', function (e) {
+            debugger;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            var mainIndex = $(this).attr('id').split('_').pop();
+            RRUsCountArray.splice(mainIndex, 1);
+            $(this).closest('div.field_more_rru').remove(); //Remove field html
+            $('.remove_more_rru').hide();
+            //  $('.remove_more_rru:last').show();
+        });
+        if (Inventory_Data.inventoryListRRUs) {
+            debugger;
+            for (var i = 0; i < Inventory_Data.inventoryListRRUs.length; i++) {
+                if (i > 0) {
+                    $('#add_more_rru').trigger("click");//.click();
+                }
+                var RruType = '#txt_type_rru_' + i;
+                var RruModel = '#txt_model_rru_' + i;
+                var RruVendor = '#txt_vendor_rru_' + i;
+                var installationHeight = '#txt_installation_height_rru_' + i;
+                var AddButtonRRu = 'add_button_rru_' + i;
+
+                $(RruType).val(Inventory_Data.inventoryListRRUs[i].RRUType);
+                $(RruModel).val(Inventory_Data.inventoryListRRUs[i].RRUModel);
+                $(RruVendor).val(Inventory_Data.inventoryListRRUs[i].RRUVendor);
+
+                $(installationHeight).val(Inventory_Data.inventoryListRRUs[i].InstallationHeight);
+
+
+            }
+
+        }
+
+    });
+
+
+</script>
+
+
+<div class="tab-pane fade" id="panel34" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_rru">
+        <h2 class="myheading">Quantity of RRUs</h2>
+        <div id="field_rru">
+            <div class="field_more_rru" id="field_more_rru_0">
+                <!-- #region RRUType -->
+                @*------------RRU Type---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4 ">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RRU Type<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        @*<div class="form-group myinput">
+                    <input id="txt_type_rru_0" type="text" class="form-control requiredinput">
+                </div>*@
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="txt_type_rru_0" disabled="disabled">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>3936</option>
+                                <option>3936</option>
+                                <option>3959</option>
+                                <option>3959</option>
+                                <option>3953</option>
+                                <option>3826</option>
+                                <option>R8881 (S9000)</option>
+                                <option>R8881 (S1800)</option>
+                                <option>R8863 (S9000)</option>
+                                <option>R8863 (S1800)</option>
+                                <option>R8872 (S1800)</option>
+                                <option>R8881 (S2100)</option>
+                                <option>R8863 (S2100)</option>
+                                <option>FXJB</option>
+                                <option>AREA</option>
+                                <option>R8862 (S1800)</option>
+                                <option>R8854 (S1800)</option>
+                                <option>R8852 (S1800)</option>
+                                <option>R8894 (M1821)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4 ">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RRU Model<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        @*<div class="form-group myinput">
+                    <input id="txt_type_rru_0" type="text" class="form-control ">
+                </div>*@
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="txt_model_rru_0" disabled="disabled">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>RRU (900MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (900MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (2100MHz)</option>
+                                <option>RRU (900MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (900MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                                <option>RRU (2100MHz)</option>
+                                <option>RRU (2100MHz)</option>
+                                <option>RRU (900MHz)</option>
+                                <option>RRU (1800MHz)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4 ">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Vendor<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        @*<div class="form-group myinput">
+                    <input id="txt_type_rru_0" type="text" class="form-control ">
+                </div>*@
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="txt_vendor_rru_0" disabled="disabled">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>HUAWEI</option>
+                                <option>ZTE</option>
+                                <option>NOKIA</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- #region Grounding-->
+                @*------------Grounding Status---------------*@
+                @*<div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Grounding Status<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="dd_grounding_status_rru_0">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>OK</option>
+                                <option>NOT OK</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>*@
+                <!--#endregion-->
+                <!-- #region WeatherProofing-->
+                @*------------Weather Proofing Status---------------*@
+                @*<div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Weather Proofing Status<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="dd_weather_proofing_rru_0">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>OK</option>
+                                <option>NOT OK</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>*@
+                <!--#endregion-->
+                <!--#region Backup-->
+                @*------------Backup Taken---------------*@
+                @*<div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Backup Taken<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown requiredinput" id="dd_backup_taken_rru_0">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>YES</option>
+                                <option>NO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>*@
+                <!--#endregion-->
+                <!--#region Installation Height-->
+                @*------------Installation Height---------------*@
+                <div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Installation Height(meters)<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                       <div class="form-group myinput">
+                            <input id="txt_installation_height_rru_0" type="number" step="any" min="0" class="form-control requiredinput" disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <!--#endregion-->
+                <!--#region VSWR-->
+                @*------------VSWR Values---------------*@
+                @*<div class="row">
+                    <div class="col-md-2 col-sm-4 col-xs-4">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> VSWR Values<span class="asterick"> *</span></label>
+                        </div>
+                    </div>
+                    <div class="field_wrapper_rru" id="field_wrapper_rru_0_0">
+                        <div class="col-sm-2 nopadding">
+                            <div class="form-group">
+                                <input type="text" class="form-control requiredinput" name="RRU_cell_id_0_0" placeholder="Cell ID" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2 nopadding">
+                            <div class="form-group">
+                                <input type="text" class="form-control requiredinput" name="RRU_cell_name_0_0" placeholder="Cell Name" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2 nopadding">
+                            <div class="form-group">
+                                <input type="text" class="form-control requiredinput" name="RRU_value_0_0" placeholder="Value" />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <a href="javascript:void(0);" class="add_button_rru" title="Add field" id="add_button_rru_0"><i class="fa fa-plus"></i></a>
+                    </div>
+                </div>*@
+
+                <!--#endregion-->
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <button id="add_more_rru" name="add_more_rru" class="btn btn-primary mybutton" style="display:none">Add More</button>
+            </div>
+            @*<div class="row">
+                <button id="save_rru" onclick="SaveRRUS()" name="save_rru" class="btn btn-primary mybutton">Save</button>
+            </div>*@
+        </div>
+
+    </div>
+</div>
+
+<!--/.Panel 2-->
+<!--#endregion-->

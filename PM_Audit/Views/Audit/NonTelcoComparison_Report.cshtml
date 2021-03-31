@@ -1,0 +1,461 @@
+﻿
+@{
+    ViewBag.Title = "Audit_Reports";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <link href="~/Content/Css/TableStyle.css" rel="stylesheet" />
+    <script type="text/javascript">
+
+        var PM_Data;
+
+        $(document).ready(function () {
+            debugger;
+            GetPMData();
+
+
+        });
+
+        function GetPMData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = '@ViewBag.Site_Code';
+            obj.PM_Type = '@ViewBag.PM_Type';
+            obj.PM_ID = '@ViewBag.PM_ID';
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/PreventiveMaintenance/getApprovedNonTelcoPMDataForAudit", obj, OnSuccessPMData, "POST")
+           
+        }
+        var results_pm;
+
+        function GetAuditData() {
+            debugger;
+            var obj = new Object();
+            obj.Site_Code = '@ViewBag.Site_Code';
+            obj.PM_Type = '@ViewBag.PM_Type';
+            obj.PM_ID = '@ViewBag.PM_ID';
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Audit/getNonTelcoAuditDataforComparison", obj, OnSuccessAuditData, "POST")
+               
+        }
+
+        function OnSuccessPMData(obj) {
+            debugger;
+            results_pm = obj;
+            GetAuditData();
+
+        }
+
+        function OnSuccessAuditData(obj) {
+            debugger;
+            var results_audit = obj;
+            Comparison(results_pm, results_audit);
+
+        }
+
+
+
+
+
+        function Comparison(results_pm, results_audit) {
+            debugger;
+
+            var Type = '@ViewBag.PM_Type';
+
+            PM_Data = results_pm;
+            Audit_Data = results_audit;
+
+            //Security
+                var security_markup = "<tr><td>Guard Name</td><td>"
+                  + PM_Data.checkListSecurity.Guard_Name+ "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_Name+ "</td></tr><tr><td>Guard Type</td><td>"
+                  + PM_Data.checkListSecurity.Guard_Type+ "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_Type+ "</td></tr><tr><td>Guard CNIC</td><td>"
+                  + PM_Data.checkListSecurity.Guard_CNIC+ "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_CNIC+ "</td></tr><tr><td>Guard Phone</td><td>"
+                  + PM_Data.checkListSecurity.Guard_Phone + "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_Phone+ "</td></tr><td>Guard Supervisor Name</td><td>"
+                  + PM_Data.checkListSecurity.Guard_Supervisor_Name+ "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_Supervisor_Name+ "</td></tr><td>Guard Supervisor Phone</td><td>"
+                  + PM_Data.checkListSecurity.Guard_Supervisor_Phone+ "</td><td>"
+                  + Audit_Data.checkListSecurity.Guard_Supervisor_Phone + "</td></tr><td>Company</td><td>"
+                  + PM_Data.checkListSecurity.Company + "</td><td>"
+                  + Audit_Data.checkListSecurity.Company + "</td></tr><td>Working Fire Extinguishers</td><td>"
+                  + PM_Data.checkListSecurity.Working_FireExtinguishers_Count + "</td><td>"
+                  + Audit_Data.checkListSecurity.Working_FireExtinguishers_Count + "</td></tr><td>Not Working Fire Extinguishers</td><td>"
+                  + PM_Data.checkListSecurity.NotWorking_FireExtinguishers_Count + "</td><td>"
+                  + Audit_Data.checkListSecurity.NotWorking_FireExtinguishers_Count + "</td></tr>";
+
+                $("#tbl_security tbody").append(security_markup);
+
+            //Commercial Power
+                var cp_markup = "<tr><td>Transformer Type</td><td>"
+                     + PM_Data.checkListCommercialPower.Transformer_Type + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Transformer_Type + "</td></tr><tr><td>Transformer Rating</td><td>"
+                     + PM_Data.checkListCommercialPower.Transformer_Rating + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Transformer_Rating + "</td></tr><tr><td>Meter Reading</td><td>"
+                     + PM_Data.checkListCommercialPower.Meter_Reading + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Meter_Reading + "</td></tr><tr><td>Meter Status</td><td>"
+                     + PM_Data.checkListCommercialPower.Meter_Status + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Meter_Status + "</td></tr><td>Voltage Red To Neutral</td><td>"
+                     + PM_Data.checkListCommercialPower.Voltage_Red_To_Neutral + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Voltage_Red_To_Neutral + "</td></tr><td>Voltage Yellow To Neutral</td><td>"
+                     + PM_Data.checkListCommercialPower.Voltage_Yellow_To_Neutral + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Voltage_Yellow_To_Neutral + "</td></tr><td>Voltage Blue To Neutral</td><td>"
+                     + PM_Data.checkListCommercialPower.Voltage_Blue_To_Neutral + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Voltage_Blue_To_Neutral + "</td></tr><td>All Phases</td><td>"
+                     + PM_Data.checkListCommercialPower.All_Phases + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.All_Phases + "</td></tr><td>Grounding Status</td><td>"
+                     + PM_Data.checkListCommercialPower.Grounding_Status + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Grounding_Status + "</td></tr><td>Power Theft</td><td>"
+                     + PM_Data.checkListCommercialPower.Power_Theft + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Power_Theft + "</td></tr><td>Cable Meter To Breaker Type</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Type + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Type + "</td></tr><td>Cable Meter To Breaker Length</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Length + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Length + "</td></tr><td>Cable Transformer To Meter Type</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Type + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Type + "</td></tr><td>Cable Transformer To Meter Length</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Length + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Length + "</td></tr><td>Cable Meter To Breaker Joints</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Joints + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Meter_To_Breaker_Joints + "</td></tr><td>Cable Transformer To Meter Joints</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Joints + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Transformer_To_Meter_Joints + "</td></tr><td>Cable Transformer To Core Types</td><td>"
+                     + PM_Data.checkListCommercialPower.Cable_Transformer_To_Core_Types + "</td><td>"
+                     + Audit_Data.checkListCommercialPower.Cable_Transformer_To_Core_Types + "</td></tr>";
+
+                $("#tbl_cp tbody").append(cp_markup);
+
+            //Diesel Genset Values
+
+                    for (var counter = 0; counter < PM_Data.checkListDGs.length; counter++) {
+                        $("#tbl_dg tbody").append("<tr><td>DG Type" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Type + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Type + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Rating" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Rating + "</td><td>" + Audit_Data.checkListDGs[counter].Rating + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Grounding Status" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Grounding_Status + "</td><td>" + Audit_Data.checkListDGs[counter].Grounding_Status + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Major Overhauling Required" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Major_Overhauling_Required + "</td><td>" + Audit_Data.checkListDGs[counter].Major_Overhauling_Required + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Hour Meter Reading" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Hour_Meter_Reading + "</td><td>" + Audit_Data.checkListDGs[counter].Hour_Meter_Reading + "</td></tr>");
+                        //$("#tbl_dg tbody").append("<tr><td>Last PM Date" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Last_PM_Date + "</td><td>" + Audit_Data.checkListDGs[counter].Last_PM_Date + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Pad Cleaning" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Pad_Cleaning + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Pad_Cleaning + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Radiator" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Radiator + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Radiator + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Oil" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Oil + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Oil + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Oil Filter Changed" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Oil_Filter_Changed + "</td><td>" + Audit_Data.checkListDGs[counter].Oil_Filter_Changed + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Fuel Filter Changed" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Fuel_Filter_Changed + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Fuel_Filter_Changed + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Air Filter Changed" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Air_Filter_Changed + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Air_Filter_Changed + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Coolant Used" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Coolant_Used + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Coolant_Used + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Battery Status" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Battery_Status + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Battery_Status + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>DG Static Charger" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].DG_Static_Charger + "</td><td>" + Audit_Data.checkListDGs[counter].DG_Static_Charger + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>ATSPanel DG Auto Mode" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].ATSPanel_DG_Auto_Mode + "</td><td>" + Audit_Data.checkListDGs[counter].ATSPanel_DG_Auto_Mode + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>ATSPanel Surge Protection Device" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].ATSPanel_Surge_Protection_Device + "</td><td>" + Audit_Data.checkListDGs[counter].ATSPanel_Surge_Protection_Device + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>ATSPanel DG Auto ModeUVT" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].ATSPanel_DG_Auto_ModeUVT + "</td><td>" + Audit_Data.checkListDGs[counter].ATSPanel_DG_Auto_ModeUVT + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>ATSPanel AC Distribution Board" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].ATSPanel_AC_Distribution_Board + "</td><td>" + Audit_Data.checkListDGs[counter].ATSPanel_AC_Distribution_Board + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Load AMP Red Value" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Load_AMP_Red_Value + "</td><td>" + Audit_Data.checkListDGs[counter].Load_AMP_Red_Value + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Load AMP Yellow Value" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Load_AMP_Yellow_Value + "</td><td>" + Audit_Data.checkListDGs[counter].Load_AMP_Yellow_Value + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Load AMP Blue Value" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Load_AMP_Blue_Value + "</td><td>" + Audit_Data.checkListDGs[counter].Load_AMP_Blue_Value + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Safeties High Temperature" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Safeties_High_Temperature + "</td><td>" + Audit_Data.checkListDGs[counter].Safeties_High_Temperature + "</td></tr>");
+                        $("#tbl_dg tbody").append("<tr><td>Safeties Oil Pressure" + (counter + 1) + "</td><td>" + PM_Data.checkListDGs[counter].Safeties_Oil_Pressure + "</td><td>" + Audit_Data.checkListDGs[counter].Safeties_Oil_Pressure + "</td></tr>");
+
+                    }
+                
+
+            //Grounding
+                var grounding_markup = "<tr><td>Earthing value</td><td>"
+                    + PM_Data.checkListGrounding.Earthing_value + "</td><td>"
+                    + Audit_Data.checkListGrounding.Earthing_value + "</td></tr><tr><td>Earth Pit Plates Count</td><td>"
+                    + PM_Data.checkListGrounding.Earth_Pit_Plates_Count + "</td><td>"
+                    + Audit_Data.checkListGrounding.Earth_Pit_Plates_Count + "</td></tr><tr><td>Main Grounding Cable Available</td><td>"
+                    + PM_Data.checkListGrounding.Main_Grounding_Cable_Available + "</td><td>"
+                    + Audit_Data.checkListGrounding.Main_Grounding_Cable_Available + "</td></tr><tr><td>DG Canopy Ground</td><td>"
+                    + PM_Data.checkListGrounding.DG_Canopy_Ground + "</td><td>"
+                    + Audit_Data.checkListGrounding.DG_Canopy_Ground + "</td></tr><td>AC Distribution Board</td><td>"
+                    + PM_Data.checkListGrounding.AC_Distribution_Board + "</td><td>"
+                    + Audit_Data.checkListGrounding.AC_Distribution_Board + "</td></tr><td>ATS Grounded</td><td>"
+                    + PM_Data.checkListGrounding.ATS_Grounded + "</td><td>"
+                    + Audit_Data.checkListGrounding.ATS_Grounded + "</td></tr><td>Main Circuit Breaker</td><td>"
+                    + PM_Data.checkListGrounding.Main_Circuit_Breaker + "</td><td>"
+                    + Audit_Data.checkListGrounding.Main_Circuit_Breaker + "</td></tr><td>Tower</td><td>"
+                    + PM_Data.checkListGrounding.Tower + "</td><td>"
+                    + Audit_Data.checkListGrounding.Tower + "</td></tr><td>Rectifier</td><td>"
+                    + PM_Data.checkListGrounding.Rectifier + "</td><td>"
+                    + Audit_Data.checkListGrounding.Rectifier + "</td></tr><td>BTS Cabinet</td><td>"
+                    + PM_Data.checkListGrounding.BTS_Cabinet + "</td><td>"
+                    + Audit_Data.checkListGrounding.BTS_Cabinet + "</td></tr>";
+
+                $("#tbl_grounding tbody").append(grounding_markup);
+               
+              
+            //AC
+                for (var counter = 0; counter < PM_Data.checkListACs.length; counter++) {
+                    $("#tbl_ac tbody").append("<tr><td>AC Type" + (counter + 1) + "</td><td>" + PM_Data.checkListACs[counter].AC_Type + "</td><td>" + Audit_Data.checkListACs[counter].AC_Type + "</td></tr>");
+                    $("#tbl_ac tbody").append("<tr><td>IDU SerialNo" + (counter + 1) + "</td><td>" + PM_Data.checkListACs[counter].IDU_SerialNo + "</td><td>" + Audit_Data.checkListACs[counter].IDU_SerialNo + "</td></tr>");
+                    $("#tbl_ac tbody").append("<tr><td>ODU SerialNo" + (counter + 1) + "</td><td>" + PM_Data.checkListACs[counter].ODU_SerialNo + "</td><td>" + Audit_Data.checkListACs[counter].ODU_SerialNo + "</td></tr>");
+                    $("#tbl_ac tbody").append("<tr><td>IDU Status" + (counter + 1) + "</td><td>" + PM_Data.checkListACs[counter].IDU_Status + "</td><td>" + Audit_Data.checkListACs[counter].IDU_Status + "</td></tr>");
+                    $("#tbl_ac tbody").append("<tr><td>ODU Status" + (counter + 1) + "</td><td>" + PM_Data.checkListACs[counter].ODU_Status + "</td><td>" + Audit_Data.checkListACs[counter].ODU_Status + "</td></tr>");
+              
+                }
+
+
+            //Rectifiers Values
+
+                for (var counter = 0; counter < PM_Data.checkListRectifiers.length; counter++) {
+                    $("#tbl_rectifier tbody").append("<tr><td>Brand Of Rectifier" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Brand_Of_Rectifier + "</td><td>" + Audit_Data.checkListRectifiers[counter].Brand_Of_Rectifier + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Capacity" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Capacity + "</td><td>" + Audit_Data.checkListRectifiers[counter].Capacity + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>SMR Modules Capicity" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].SMR_Modules_Capicity + "</td><td>" + Audit_Data.checkListRectifiers[counter].SMR_Modules_Capicity + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>SMR Working Modules Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].SMR_WorkingModules_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].SMR_WorkingModules_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>SMR Faulty Modules Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].SMR_FaultyModules_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].SMR_FaultyModules_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Rectifier Batteries Brand" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Rectifier_Batteries_Brand + "</td><td>" + Audit_Data.checkListRectifiers[counter].Rectifier_Batteries_Brand + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Installed Banks" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Installed_Banks + "</td><td>" + Audit_Data.checkListRectifiers[counter].Installed_Banks + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Backup Time" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Backup_Time + "</td><td>" + Audit_Data.checkListRectifiers[counter].Backup_Time + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>DC Air Condition" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].DC_Air_Condition + "</td><td>" + Audit_Data.checkListRectifiers[counter].DC_Air_Condition + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Display Card Status" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Display_Card_Status + "</td><td>" + Audit_Data.checkListRectifiers[counter].Display_Card_Status + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Control Card Status" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Control_Card_Status + "</td><td>" + Audit_Data.checkListRectifiers[counter].Control_Card_Status + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Power Card Status" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Power_Card_Status + "</td><td>" + Audit_Data.checkListRectifiers[counter].Power_Card_Status + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Compressor" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Compressor + "</td><td>" + Audit_Data.checkListRectifiers[counter].Compressor + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Main Controller Unit" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Main_Controller_Unit + "</td><td>" + Audit_Data.checkListRectifiers[counter].Main_Controller_Unit + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Working Compressor Fan_Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Working_Compressor_Fan_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].Working_Compressor_Fan_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Not Working Compressor Fan_Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].NotWorking_Compressor_Fan_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].NotWorking_Compressor_Fan_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Working MCU Fan Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Working_MCU_Fan_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].Working_MCU_Fan_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Not Working MCU Fan Count" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].NotWorking_MCU_Fan_Count + "</td><td>" + Audit_Data.checkListRectifiers[counter].NotWorking_MCU_Fan_Count + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Hybrid Functionality Supported" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Hybrid_Functionality + "</td><td>" + Audit_Data.checkListRectifiers[counter].Hybrid_Functionality + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Hybrid Functionality Status" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Hybrid_Functionality_Status + "</td><td>" + Audit_Data.checkListRectifiers[counter].Hybrid_Functionality_Status + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Reason for not Hybrid" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Not_Hybrid_Reason + "</td><td>" + Audit_Data.checkListRectifiers[counter].Not_Hybrid_Reason + "</td></tr>");
+                    $("#tbl_rectifier tbody").append("<tr><td>Other reason for not Hybrid" + (counter + 1) + "</td><td>" + PM_Data.checkListRectifiers[counter].Not_Hybrid_Reason_Other + "</td><td>" + Audit_Data.checkListRectifiers[counter].Not_Hybrid_Reason_Other + "</td></tr>");
+
+                   
+
+                }
+
+            //Other Infor
+                var otherinfo_markup = "<tr><td>Tower Height</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Tower_Height + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Tower_Height + "</td></tr><tr><td>Site Cleaning</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Site_Cleaning + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Site_Cleaning + "</td></tr><tr><td>Extra Material</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Extra_Material + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Extra_Material + "</td></tr><tr><td>Floor</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Floor + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Floor + "</td></tr><td>Main Gate</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Main_Gate + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Main_Gate + "</td></tr><td>Boundary Wall</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Boundary_Wall + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Boundary_Wall + "</td></tr><td>Fence</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Fence + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Fence + "</td></tr><td>Paint</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Paint + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Paint + "</td></tr><td>Rusty</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Rusty + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Rusty + "</td></tr><td>Overloaded</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Overloaded + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Overloaded + "</td></tr><td>Tightening Required</td><td>"
+                  + PM_Data.checkListSiteOtherInfo.Tightening_Required + "</td><td>"
+                  + Audit_Data.checkListSiteOtherInfo.Tightening_Required + "</td></tr>";
+
+                $("#tbl_other_info tbody").append(otherinfo_markup);
+
+            //Alarms Values
+                var alarms_markup = "<tr><td>Intruder</td><td>"
+                   + PM_Data.checkListAlarms.Intruder + "</td><td>"
+                   + Audit_Data.checkListAlarms.Intruder + "</td></tr><tr><td>AC Mains Failure</td><td>"
+                   + PM_Data.checkListAlarms.AC_Mains_Failure + "</td><td>"
+                   + Audit_Data.checkListAlarms.AC_Mains_Failure + "</td></tr><tr><td>DG On</td><td>"
+                   + PM_Data.checkListAlarms.DG_On + "</td><td>"
+                   + Audit_Data.checkListAlarms.DG_On + "</td></tr><tr><td>Low Voltage</td><td>"
+                   + PM_Data.checkListAlarms.Low_Voltage + "</td><td>"
+                   + Audit_Data.checkListAlarms.Low_Voltage + "</td></tr><tr><td>System On Batteries</td><td>"
+                   + PM_Data.checkListAlarms.System_On_Batteries + "</td><td>"
+                   + Audit_Data.checkListAlarms.System_On_Batteries + "</td></tr><td>High Temperature</td><td>"
+                   + PM_Data.checkListAlarms.High_Temperature + "</td><td>"
+                   + Audit_Data.checkListAlarms.High_Temperature + "</td></tr>";
+
+                $("#tbl_alarms tbody").append(alarms_markup);
+
+
+            
+            //Comparison Color
+            $('table tr').each(function () {
+                if ($(this).find('td:eq(1)').text() != $(this).find('td:eq(2)').text()) {
+                    $(this).css("background-color", '#ff934c');
+                }
+            });
+        }
+
+    </script>
+
+}
+
+
+<div class="container">
+    <section class="content">
+     
+
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Security</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_security">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Commercial Power</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_cp">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Alarms</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_alarms">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Diesel Genset</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_dg">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Grounding</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_grounding">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Air Conditioners</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_ac">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Rectifiers</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_rectifier">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box collapsed-box box-default" data-widget="box-widget">
+                <div class="box-header">
+                    <h3 class="box-title">Other Info</h3>
+                    <div class="box-tools">
+                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table-responsive minimalistBlack site-info-table" id="tbl_other_info">
+                        <tbody>
+                            <tr>
+                                <th style="width:200px">Field Names</th>
+                                <th style="width:200px">PM Value</th>
+                                <th style="width:200px">Audit Value</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

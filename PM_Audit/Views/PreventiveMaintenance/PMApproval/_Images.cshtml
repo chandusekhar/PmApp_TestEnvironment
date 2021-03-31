@@ -1,0 +1,264 @@
+﻿<!-- #region Images TAB -->
+<!--Panel 7-->
+@model IList<PM_Audit.Models.ImagePathModel>
+@{
+// Layout = null;
+}
+
+<script>
+
+
+    @*$(function () {
+        debugger;
+        $('#previewDocumentDialog').dialog({
+            autoOpen: false,
+            resizable: false,
+            title: 'Preview',
+            modal: true,
+            width: 400,
+            height: 500,
+            open: function (event, ui) {
+                //Load the PreviewWordDocument action which will return a partial view called _PreviewWordDocument
+                $(this).load("@Url.Action("PreviewWordDocument")"); //add parameters if necessary
+
+            },
+            success: function (response) {
+                        $('#image')
+                             .attr('src', response);
+                    },
+            buttons: {
+                "Close": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        // an event click for you preview link to open the dialog
+        $('#previewLink').click(function () {
+            $('#previewDocumentDialog').dialog('open');
+        });
+    });*@
+    //function OpenImage() {
+    //    debugger;
+    //    var path = ("~/Uploads/" + PM_ID + "_" + Site_Code + "/");
+
+    //}
+
+    function OpenImage(src) {
+        //alert(src);
+        debugger;
+        $('#imagepreview').attr('src', src); // here asign the image to the modal when the user click the enlarge link
+        if ($('#imagepreview')[0].src.includes("BTS"))
+            $('#myModalLabel').text("BTS Image");
+        else if ($('#imagepreview')[0].src.includes("Alarms"))
+            $('#myModalLabel').text("Alarms Image");
+        else if ($('#imagepreview')[0].src.includes("Antenna_Image_1"))
+            $('#myModalLabel').text("Antenna Image 1");
+        else if ($('#imagepreview')[0].src.includes("Antenna_Image_2"))
+            $('#myModalLabel').text("Antenna Image 2");
+        else if ($('#imagepreview')[0].src.includes("Antenna_Image_3"))
+            $('#myModalLabel').text("Antenna Image 3");
+        $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+    }
+
+
+    $(function () {
+
+        var formData = new FormData();
+        // formData.append("fileToUpload", blobFile);
+        formData.append('PM_ID', PM_ID);
+        formData.append('Site_Code', Site_Code);
+        formData.append('Type', PM_Data.Type);
+        //    //$('#previewLink').click(function () {
+        //    //    $("#dialog").dialog();
+        $.ajax({
+
+            url: "/PreventiveMaintenance/PreviewWordDocument",
+            type: "POST",
+            responsive: true,
+            // data: formData,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                debugger;
+                if (response != "Images are not present for this PM" && response != undefined) {
+                    for (var i = 0; i < response.length ; i++) {
+                        if (response[i].Name.includes("BTS_Image")) {
+                            if (response[i].Path != null || response[i].Path != "") {
+                                $('#BTS_image').attr("src", response[i].Path);
+                            }
+                            else {
+                                $('#BTS_image').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                            }
+                        }
+                        if (response[i].Name.includes("Alarms_Image")) {
+                            if (response[i].Path != null && response[i].Path != "") {
+                                $('#Alarms_Image').attr("src", response[i].Path);
+                            }
+                            else {
+                                $('#Alarms_Image').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                            }
+                        }
+                        if (response[i].Name.includes("Antenna_Image_1")) {
+                            if (response[i].Path != null && response[i].Path != "") {
+                                $('#Antenna_Image_1').attr("src", response[i].Path);
+                            }
+                            else {
+                                $('#Antenna_Image_1').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                            }
+                        }
+                        if (response[i].Name.includes("Antenna_Image_2")) {
+                            if (response[i].Path != null && response[i].Path != "") {
+                                $('#Antenna_Image_2').attr("src", response[i].Path);
+                            }
+                            else {
+                                $('#Antenna_Image_2').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                            }
+                        }
+                        if (response[i].Name.includes("Antenna_Image_3")) {
+                            if (response[i].Path != null && response[i].Path != "") {
+                                $('#Antenna_Image_3').attr("src", response[i].Path);
+                            }
+                            else {
+                                $('#Antenna_Image_3').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                   // alert(response);
+                    $('#BTS_image').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                    $('#Alarms_Image').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                    $('#Antenna_Image_1').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                    $('#Antenna_Image_2').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                    $('#Antenna_Image_3').attr("src", "@Url.Content("~/Content/Image/no-image.png")");
+                }
+
+                //for (i in list) {
+                //    options += "<option value = " + list[i].empID + ">" + list[i].givenName + "</option>";
+                //}
+                //$('#employee-list select').append(options);
+
+            },
+            error: function (err) {
+                alert(err.statusText);
+            }
+        });
+        //    });
+
+    });
+</script>
+
+
+<div class="tab-pane fade" id="panel7" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_images">
+
+        <!-- #region ODUType -->
+        @*------------ODU Type---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle" style="margin-top:40px !important">
+                    <label>BTS<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <form id="fileUploadForm1"
+                  action="/"
+                  enctype="multipart/form-data">
+                <div class="col-md-6">
+                    <div class="row image">
+                        <img id="BTS_image" src="" class="img-fluid img-thumbnail" alt="..." onclick="OpenImage(this.src);" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle" style="margin-top:40px !important">
+                    <label> TXN Alarms<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <form id="fileUploadForm2"
+                  action="/"
+                  enctype="multipart/form-data">
+                <div class="col-md-6">
+                    <div class="row image">
+                        <img id="Alarms_Image" src="" class="img-fluid img-thumbnail" alt="..." onclick="OpenImage(this.src);" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-12 ">
+                <div class="form-inline form-group mylabelstyle" style="margin-top:40px !important">
+                    <label>Top Antenna/Dishes (Pics from 3 different angles)<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <form id="fileUploadForm3"
+                  action="/"
+                  enctype="multipart/form-data">
+                <div class="col-md-6">
+                    <div class="row image">
+                        <img id="Antenna_Image_1" src="" class="img-fluid img-thumbnail" alt="..." onclick="OpenImage(this.src);" />
+                        <img id="Antenna_Image_2" src="" class="img-fluid img-thumbnail" alt="..." onclick="OpenImage(this.src);" />
+                        <img id="Antenna_Image_3" src="" class="img-fluid img-thumbnail" alt="..." onclick="OpenImage(this.src);" />
+
+                    </div>
+                </div>
+            </form>
+        </div>
+            <!-- Creates the bootstrap modal where the image will appear -->
+            <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+                        </div>
+                        <div class="modal-body">
+                            <img class="img-responsive" src="" id="imagepreview"">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--#endregion-->
+            @*<button id="save_odu" name="save_odu" onclick="SaveODUData()" class="btn btn-primary mybutton">Save</button>*@
+       
+    </div>
+</div>
+<!--/.Panel 6-->
+<!--#endregion-->
+<style>
+    /*.image {
+    margin: 80px 0px 80px 0px;
+    }*/
+
+    img {
+        margin: 10px 10px 10px 10px;
+        -webkit-transform: scale(1, 1);
+        -ms-transform: scale(1, 1);
+        transform: scale(1, 1);
+        transition-duration: 0.3s;
+        -webkit-transition-duration: 0.3s; /* Safari */
+    }
+
+        img:hover {
+            cursor: pointer;
+            -webkit-transform: scale(2, 2);
+            -ms-transform: scale(2, 2);
+            transform: scale(2, 2);
+            transition-duration: 0.3s;
+            -webkit-transition-duration: 0.3s; /* Safari */
+            box-shadow: 10px 10px 5px #888888;
+            z-index: 1;
+        }
+
+    .img-thumbnail {
+        width: 100px;
+        height: 100px;
+    }
+</style>

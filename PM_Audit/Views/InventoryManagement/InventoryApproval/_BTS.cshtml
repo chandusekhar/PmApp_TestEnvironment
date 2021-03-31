@@ -1,0 +1,197 @@
+﻿<!-- #region BTS TAB -->
+<!--Panel 21-->
+<script>
+    //var tanks = 1;
+    ////var btsfueltankList = [];
+    //function fuel_tanks() {
+
+    //    tanks++;
+    //    var objTo = document.getElementById('fuel_tanks')
+    //    var divtest = document.createElement("div");
+    //    divtest.setAttribute("class", "form-group removeclass" + tanks);
+    //    var rdiv = 'removeclass' + tanks;
+    //    divtest.innerHTML = '<div class="col-sm-3 col-md-offset-3 col-sm-offset-6 nopadding"><div class="form-group"><input type="text" class="form-control" id="tank_capacity" name="tank_capacity[]" value="" placeholder="Tank Capacity"></div></div><div class="input-group-btn"> <button class="btn btn-danger-bts" type="button" onclick="remove_fuel_tanks(' + tanks + ');"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button></div><div class="clear"></div>';
+
+    //    objTo.after(divtest)
+    //}
+    //function remove_fuel_tanks(rid) {
+    //    $('.removeclass' + rid).remove();
+    //}
+
+
+    @*function SaveBTSData() {
+
+
+        Inventory_Data.BTS_Vendor = $('#txt_bts_vendor_inventory').val();
+        Inventory_Data.DependentSites = $('#txt_no_of_dependent_sites_inventory').val();
+        Inventory_Data.Service_Type = $('#dd_service_type_inventory').val();
+        Inventory_Data.Grounding_Status = $('#dd_grounding_status_inventory').val();
+        Inventory_Data.UpdateSection = "BTS";
+        var tankList = [];
+        $('input[id^="tank_capacity_"]').each(function myfunction() {
+            debugger;
+          
+            var tank_ID = $(this).data("data_tank_id");
+            if (tank_ID) {
+                var tempObj = new Object();
+                tempObj.ID = tank_ID;
+                tempObj.FuelCapacity = $(this).val();
+                tankList.push(tempObj);
+            }
+            else {
+                var tempObj = new Object();
+                tempObj.ID = 0;
+                tempObj.FuelCapacity = $(this).val();
+                tankList.push(tempObj);
+              
+            }
+          
+        });
+
+        debugger;
+        Inventory_Data.ListFuelTanks = tankList;
+
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/InventoryManagement/SaveInventoryDetails", Inventory_Data, OnSuccessSaveBTSData, "POST", false)
+    }
+
+    function OnSuccessSaveBTSData(res) {
+
+        if (res == "success") {
+            alertify.alert('Success', 'Data has been updated successfully.')
+        }
+        else {
+            alertify.alert('Alert', 'Failed.')
+        }
+    }*@
+
+
+</script>
+
+<div class="tab-pane fade in" id="panel21" role="tabpanel">
+    <div class="container tab_body tab-margin tab_inventory">
+        <!--#region BTS Vendor and No. of dependent sites -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> BTS Vendor</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_bts_vendor_inventory" type="text" class="form-control" disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> No. of Dependent Sites</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+               <div class="form-group myinput">
+                    <input id="txt_no_of_dependent_sites_inventory" type="number" class="form-control " disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#region Prime/TPrime -->
+        @*------------Prime/TPrime---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-3">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Prime/TPrime</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_prime_tprime_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>Prime</option>
+                        <option>T-Prime</option>
+                        <option>Standby</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#endregion-->
+        <!--#region Service Type and Grounding status -->
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Service Type</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_service_type_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>2G Only</option>
+                        <option>3G Only</option>
+                        <option>4G Only</option>
+                        <option>2G + 3G</option>
+                        <option>2G + 4G</option>
+                        <option>2G + 3G + 4G</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Grounding status</label>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <select class="form-control mydropdown" id="dd_grounding_status_inventory" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Fuel Tanks-->
+        @*------------Fuel Tanks---------------*@
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Fuel Tank Capacity in Liters</label>
+                </div>
+            </div>
+            <div id="fuel_tanks">
+
+
+                <div class="col-sm-3 nopadding">
+                    <div class="form-group">
+                        <select class="form-control mydropdown" id="tank_capacity_0" disabled="disabled">
+                            <option value="" disabled selected hidden>Select ..</option>
+                            <option>300</option>
+                            <option>500</option>
+                            <option>600</option>
+                            <option>1000</option>
+                            <option>2000</option>
+                            <option>4000</option>
+                        </select>
+                        @*<input type="number" class="form-control" id="tank_capacity_0" name="tank_capacity[]" value="" placeholder="Tank Capacity">*@
+                    </div>
+                </div>
+
+                <div class="input-group-btn">
+                    @*<button class="btn my_success_btn" type="button" onclick="fuel_tanks();"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>*@
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!--#endregion-->
+
+
+        @*<button id="save_bts_inventory" name="save_bts_inventory" onclick="SaveBTSData()" class="btn btn-primary mybutton">Save</button>*@
+    </div>
+</div>
+
+
+<!--/.Panel 21-->
+<!-- #endregion -->

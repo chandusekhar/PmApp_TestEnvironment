@@ -1,0 +1,304 @@
+﻿<!-- #region IDU TAB -->
+<!--Panel 5-->
+<script type="text/javascript">
+
+    /* MMU Cards*/
+    $(document).ready(function () {
+        var $modal_mmu_cards = $('#editor_modal_mmu_cards'),
+     $editor_mmu_cards = $('#editor_mmu_cards'),
+     $editorTitle_mmu_cards = $('#editor_title_mmu_cards'),
+     ft_mmu_cards = FooTable.init('#mmu_cards', {
+         'on': {
+             'postinit.ft.table': function (e, ft) {
+                 $('.footable-add').hide();
+             }
+         },
+         editing: {
+             enabled: true,
+             alwaysShow: true,
+             addText: 'Add MMU Cards',
+             "allowDelete": false,
+             addRow: function () {
+                 return false;
+                 //$modal_mmu_cards.removeData('row');
+                 //$editor_mmu_cards[0].reset();
+                 //$editorTitle_mmu_cards.text('Add a new row');
+                 //$modal_mmu_cards.modal('show');
+             },
+             editRow: function (row) {
+                 var values = row.val();
+                 $editor_mmu_cards.find('#card_type_mmu_cards').val(values.card_type_mmu_cards);
+                 $editor_mmu_cards.find('#card_status_mmu_cards').val(values.card_status_mmu_cards);
+                 $editor_mmu_cards.find('#lb_verification_mmu_cards').val(values.lb_verification_mmu_cards);
+
+                 $modal_mmu_cards.data('row', row);
+                 $editorTitle_mmu_cards.text('Edit IDU');
+                 $modal_mmu_cards.modal('show');
+             },
+             deleteRow: function (row) {
+                 if (confirm('Are you sure you want to delete the row?')) {
+                     row.delete();
+                 }
+             }
+         },
+         "rows": IDU_MMUCardsList
+     }),
+     uid = 10;
+
+        $editor_mmu_cards.on('submit', function (e) {
+            if (this.checkValidity && !this.checkValidity()) return;
+            e.preventDefault();
+            if (!validateRequiredInput('#editor_modal_mmu_cards')) {
+                return false;
+            }
+            var row = $modal_mmu_cards.data('row'),
+                values = {
+                    card_type_mmu_cards: $editor_mmu_cards.find('#card_type_mmu_cards').val(),
+                    card_status_mmu_cards: $editor_mmu_cards.find('#card_status_mmu_cards').val(),
+                    lb_verification_mmu_cards: $editor_mmu_cards.find('#lb_verification_mmu_cards').val()
+                };
+
+            if (row instanceof FooTable.Row) {
+                row.val(values);
+            } else {
+                values.id = uid++;
+                ft_mmu_cards.rows.add(values);
+            }
+            $modal_mmu_cards.modal('hide');
+        });
+        $('.footable-editing').hide();
+
+
+    });
+
+
+    @*function SaveIDUData() {
+        PM_Data.checkListIDU.Grounding = $('#dd_grounding_status_idu').val();
+        PM_Data.checkListIDU.FacultySlots = $('#txt_faulty_slots_idu').val();
+        PM_Data.checkListIDU.Count = $('#txt_count_idu').val();
+        PM_Data.checkListIDU.IDUType = $('#dd_idu_type').val();
+
+        var tempListMMUCards = [];
+        var MMUCardsObj = FooTable.get("#mmu_cards");
+        $.each(MMUCardsObj.rows.all, function (i, row) {
+            var values = row.val();
+            var obj = new Object();
+            obj.Type = values.card_type_mmu_cards;
+            obj.Status = values.card_status_mmu_cards;
+            obj.LbVerification = values.lb_verification_mmu_cards;
+            tempListMMUCards.push(obj);
+        });
+        if (!validateRequiredInput('#checklist_idu')) {
+            return false;
+        }
+        if (tempListMMUCards.length==0) {
+            alert("Please enter MMU card values");
+            return;
+        }
+        PM_Data.checkListIDU.ListMmuCards = tempListMMUCards;
+        ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]',"api/PreventiveMaintenance/SaveIDUChecklistData", PM_Data, OnSuccessSaveIDU, "POST", false)
+    }
+
+    function OnSuccessSaveIDU(res) {
+        debugger;
+        if (res == "success") {
+            alert("Data has been updated successfully.");
+        }
+        else {
+            alert("Failed.");
+        }
+    }*@
+
+
+
+</script>
+
+
+
+
+
+<div class="tab-pane fade in" id="panel5" role="tabpanel">
+    <div class="container tab_body tab-margin tab_telco" id="checklist_idu">
+
+        <!-- #region IDUType -->
+        @*------------IDU Type---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4 ">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Select IDU Type<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                @*<div class="form-group myinput">
+                    <input type="text" class="form-control requiredinput" id="dd_idu_type" disabled="disabled">
+                </div>*@
+                <div class="form-group">
+                    <select class="form-control mydropdown requiredinput" id="dd_idu_type" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>AMM 2P</option>
+                        <option>AMM 6P</option>
+                        <option>AMM 20P</option>
+                        <option>OptiX RTN 980</option>
+                        <option>OptiX RTN 950A</option>
+                        <option>OptiX RTN 905</option>
+                        <option>OptiX RTN 380</option>
+                        <option>OptiX RTN 320</option>
+                        <option>ML 6651 Compact Node</option>
+                        <option>ML 6692</option>
+                        <option>ML 6693</option>
+                        <option>ML 6694</option>
+                        <option>ML 6654</option>
+                        <option>ML 6691</option>
+                        <option>ftts</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Vendor<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control requiredinput mydropdown" id="dd_vendor_idu" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>ERICSSON</option>
+                        <option>HUAWEI</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- #region Grounding-->
+        @*------------Grounding Status---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Grounding Status<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group">
+                    <select class="form-control requiredinput mydropdown" id="dd_grounding_status_idu" disabled="disabled">
+                        <option value="" disabled selected hidden>Select ..</option>
+                        <option>OK</option>
+                        <option>NOT OK</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Count-->
+        @*------------Count---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Count<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group myinput">
+                    <input type="number" step="any" min="0" class="form-control requiredinput " id="txt_count_idu" disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!--#region Faulty Slots-->
+        @*------------Faulty Slots---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> Faulty Slots<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="form-group myinput">
+                    <input type="number" step="any" min="0" class="form-control requiredinput " id="txt_faulty_slots_idu" disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <!--#endregion-->
+        <!-- #region MMU Cards -->
+        @*------------MMU Cards---------------*@
+        <div class="row">
+            <div class="col-md-2 col-sm-4 col-xs-4">
+                <div class="form-inline form-group mylabelstyle">
+                    <label> MMU Cards<span class="asterick"> *</span></label>
+                </div>
+            </div>
+            <div class="col-sm-6 nopadding margin_left">
+                <div class="form-group">
+                    <div class="example">
+                        <table id="mmu_cards" class="table">
+                            <thead>
+                                <tr>
+                                    <th data-name="card_type_mmu_cards">Card Type</th>
+                                    <th data-name="card_status_mmu_cards">Card Status</th>
+                                    <th data-name="lb_verification_mmu_cards">LB Verification</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        @*<button id="save_idu" name="save_idu" onclick="SaveIDUData()" class="btn btn-primary mybutton">Save</button>*@
+
+        <!--#endregion-->
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="editor_modal_mmu_cards" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form class="modal-content form-horizontal" id="editor_mmu_cards">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="editor_title_mmu_cards">Add Row</h4>
+                </div>
+                <div class="modal-body">
+                    @*<input type="number" id="cell_id" name="cell_id" class="hidden" />*@
+                    <div class="form-group">
+                        <label for="Card_type" class="col-sm-3 control-label">Card Type<span class="asterick"> *</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control requiredinput myinput" id="card_type_mmu_cards" name="card_type_mmu_cards" placeholder="Card Type" disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Card_status" class="col-sm-3 control-label">Card Status<span class="asterick"> *</span></label>
+                        <div class="col-sm-9">
+                            <select class="form-control requiredinput mydropdown" id="card_status_mmu_cards" disabled="disabled">
+                                <option value="" disabled selected hidden>Select ..</option>
+                                <option>OK</option>
+                                <option>NOT OK</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="LB_Verification" class="col-sm-3 control-label">LB Verification<span class="asterick"> *</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control requiredinput myinput" id="lb_verification_mmu_cards" name="lb_verification_mmu_cards" placeholder="LB Verification" disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @*<button type="submit" class="btn btn-primary">Save changes</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!--/.Panel 5-->
+<!-- #endregion -->

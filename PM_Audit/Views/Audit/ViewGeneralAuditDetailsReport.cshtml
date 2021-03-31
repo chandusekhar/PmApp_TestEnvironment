@@ -1,0 +1,362 @@
+﻿@{
+    ViewBag.Title = "ViewAuditDetailsReport";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script type="text/javascript">
+
+        var tbl_ReportsGrid_checklist;
+
+        $(document).ready(function () {
+
+            GetSiteFilters();
+
+            $("#txt_from_date_audit").datepicker();
+            $("#txt_to_date_audit").datepicker();
+
+            $(".date-pick").datepicker('setDate', new Date());
+
+
+            tbl_ReportsGrid_audit = $('#reportsgridview_audit').DataTable({
+                responsive: true,
+                "sScrollX": "100%",
+                "sScrollXInner": "100%",
+                "bScrollCollapse": true,
+                dom: 'Bfrtip',
+                'autoWidth': true,
+                'lengthChange': false,
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ],
+                "pageLength": 50,
+                "initComplete": function (settings, json) {
+                    $('.dataTables_scrollBody thead tr').css({ 'visibility': 'hidden' });
+                },
+                columns: [
+                      { "data": "SiteCode", "orderable": true },
+                       { "data": "StartDate", "orderable": true },
+                      { "data": "Created_By", "orderable": true },
+                      { "data": "RBU", "orderable": true },
+                      { "data": "CommercialRegion", "orderable": true },
+                      { "data": "MBU", "orderable": true },
+                      { "data": "OSV", "orderable": true },
+                      { "data": "Type", "orderable": true },
+                       {
+                           "targets": -1,
+                           "data": null,
+                           render: function (data, type, row) {
+                               return '<button onclick="getAudit(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary">View</button>';
+                           }
+
+                       },
+                        {
+                            "targets": -1,
+                            "data": null,
+                            render: function (data, type, row) {
+                                return '<button onclick="ExportAudit(\'' + row.SiteCode + '\',\'' + row.Type + '\',\'' + row.ID + '\')" class="btn btn-primary">Export</button>';
+                            }
+
+                        }
+
+
+                ],
+
+            });
+
+
+
+
+
+        });
+
+
+        function getAudit(sitecode, type, PM_ID) {
+            debugger;
+            $('#formDiv').html('');
+            var form = document.createElement("form");
+            form.setAttribute("method", 'POST');
+            form.setAttribute("action", '/Audit/ViewGeneralAuditDetails');
+
+            var hiddenFieldSiteCode = document.createElement("input");
+            hiddenFieldSiteCode.setAttribute("type", "hidden");
+            hiddenFieldSiteCode.setAttribute("name", 'Site_Code');
+            hiddenFieldSiteCode.setAttribute("value", sitecode);
+            form.appendChild(hiddenFieldSiteCode);
+
+            var hiddenFieldPmType = document.createElement("input");
+            hiddenFieldPmType.setAttribute("type", "hidden");
+            hiddenFieldPmType.setAttribute("name", 'PM_Type');
+            hiddenFieldPmType.setAttribute("value", type);
+            form.appendChild(hiddenFieldPmType);
+            var hiddenFieldPmID = document.createElement("input");
+            hiddenFieldPmID.setAttribute("type", "hidden");
+            hiddenFieldPmID.setAttribute("name", 'PM_ID');
+            hiddenFieldPmID.setAttribute("value", PM_ID);
+            form.appendChild(hiddenFieldPmID);
+
+
+            document.getElementById('formDiv').appendChild(form);
+            form.submit();
+        }
+        function ExportAudit(sitecode, type, PM_ID) {
+            debugger;
+            var obj = new Object();
+            obj.SiteCode = sitecode;
+            obj.Type = type;
+            obj.PM_ID = PM_ID;
+            debugger;
+            ApiCallService.AjaxNative('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/ExportSingleAuditCheckListDetails", obj, handleFileData, 'POST', true, null, null, 'native', 'blob');
+        }
+        function handleFileData(blob) {
+            debugger;
+            if (blob != null) {
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "AuditReport" + new Date() + ".xlsx";
+                link.click();
+                return;
+            }
+            // Use the file data
+        }
+
+
+
+
+        function GetAuditData() {
+            debugger;
+            var obj = new Object();
+
+            obj.RBU = $("#dd_rbu_audit").val()
+            obj.Start_Date = $("#txt_from_date_audit").val()
+            obj.End_Date = $("#txt_to_date_audit").val()
+            obj.SiteCode = $("#dd_site_code_audit").val()
+            obj.Type = $("#dd_PMType_audit").val()
+            obj.MBU = $("#dd_mbu_audit").val()
+            obj.Region = $("#dd_region_audit").val()
+            obj.OSV = $("#dd_osv_audit").val()
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetGeneralAuditReport", obj, OnSuccessGetGeneralAuditData)
+        }
+        function OnSuccessGetGeneralAuditData(results) {
+            debugger;
+            tbl_ReportsGrid_audit.clear().draw();
+            $.each(results, function (i, item) {
+                debugger;
+                tbl_ReportsGrid_audit.row.add(results[i]);
+            });
+            tbl_ReportsGrid_audit.draw();
+        }
+
+
+
+
+        function GetSiteFilters() {
+            debugger;
+            ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/Reports/GetSiteFilters", "", OnSuccessGetSiteFilters, 'GET')
+        }
+        var data;
+        function OnSuccessGetSiteFilters(results) {
+            debugger;
+            data = results;
+            if (data != null) {
+                if (data.ListSiteCode) {
+                    $('#dd_site_code_audit').select2({
+                        data: data.ListSiteCode,
+                        placeholder: "ALL",
+                        allowClear: true
+                    });
+                }
+                if (data.ListRBU) {
+                    $('#dd_rbu_audit').select2({
+                        data: data.ListRBU,
+                        placeholder: "ALL",
+                        allowClear: true
+                    });
+                }
+                if (data.ListMBU) {
+                    $('#dd_mbu_audit').select2({
+                        data: data.ListMBU,
+                        placeholder: "ALL",
+                        allowClear: true
+                    });
+                }
+                if (data.ListRegion) {
+                    $('#dd_region_audit').select2({
+                        data: data.ListRegion,
+                        placeholder: "ALL",
+                        allowClear: true
+                    });
+                }
+                if (data.ListOSV) {
+                    $('#dd_osv_audit').select2({
+                        data: data.ListOSV,
+                        placeholder: "ALL",
+                        allowClear: true
+                    });
+                }
+                //$('#dd_PMtype_audit').select2({
+
+                //    placeholder: "ALL",
+                //    allowClear: true
+                //});
+            }
+        }
+
+
+    </script>
+
+}
+
+<div class="main">
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="admin_box">
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> Site Code</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_site_code_audit">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> PM Type</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_PMType_audit">
+                                <option></option>
+                                <option>Telco</option>
+                                <option>NON-Telco</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> From </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_from_date_audit" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> To </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group myinput">
+                            <input id="txt_to_date_audit" type="text" class="form-control date-pick">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> RBU</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_rbu_audit">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> MBU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_mbu_audit">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label>Commercial Region</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_region_audit">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-3 col-xs-6">
+                        <div class="form-inline form-group mylabelstyle">
+                            <label> OSV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-3 col-xs-6">
+                        <div class="form-group">
+                            <select class="form-control mydropdown" id="dd_osv_audit">
+                                <option value="" disabled selected hidden>Select ..</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                        <button id="get_audit_details" onclick="GetAuditData()" name="get_audit_details" class="btn btn-primary mybutton">Get Details</button>
+
+                    </div>
+                    @*<div class="col-md-2 col-sm-3 col-xs-6 pull-right">
+                            <button id="btn_export_checklist " onclick="ExportData()" name="btn_export_checklist " class="btn btn-primary mybutton">Export</button>
+
+                        </div>*@
+                </div>
+            </div>
+
+
+            <div class="admin_box">
+                <div class="row">
+                    <table id="reportsgridview_audit" class="display">
+                        <thead>
+                            <tr>
+                                <th>Site Code</th>
+                                <th>Audit Time</th>
+                                <th>Auditor</th>
+                                <th>RBU</th>
+                                <th>Comm Region</th>
+                                <th>MBU</th>
+                                <th>OSV</th>
+                                <th>PM Type</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /#page-content-wrapper -->
+</div>
+<div id="formDiv"></div>
+

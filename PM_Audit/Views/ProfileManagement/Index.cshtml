@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Application_Layout.cshtml";
+}
+@section Scripts
+    {
+    @Scripts.Render("~/bundles/GlobalScripts")
+    <script>
+        function UpdatePassword() {
+            if (validatePassword) {
+                var data = new Object();
+                data.Password = $('#password').val();
+                data.CurrentPassword = $('#CurrentPassword').val();
+                ApiCallService.Ajax('@System.Configuration.ConfigurationManager.AppSettings["ApiPath"]', "api/ProfileManagement/ChangeVendorUserPassword", data, OnGetPasswordChanged)
+            }
+        }
+        function OnGetPasswordChanged(results) {
+            alert(results);
+            $('#password').val('');
+            $('#confirmpassword').val('');
+            return false;
+        }
+
+        function checkPasswordStrength() {
+            var number = /([0-9])/;
+            var alphabets = /([a-zA-Z])/;
+            var special_characters = /([~,!,@@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
+            if ($('#password').val().length < 6) {
+                $('#password-strength-status').removeClass();
+                $('#password-strength-status').addClass('weak-password');
+                $('#password-strength-status').html("Weak (should be atleast 6 characters.)");
+            }
+            else {
+                if ($('#password').val().match(number) && $('#password').val().match(alphabets) && $('#password').val().match(special_characters)) {
+                    $('#password-strength-status').removeClass();
+                    $('#password-strength-status').addClass('strong-password');
+                    $('#password-strength-status').html("Strong");
+                }
+                else {
+                    $('#password-strength-status').removeClass();
+                    $('#password-strength-status').addClass('medium-password');
+                    $('#password-strength-status').html("Medium (should include alphabets, numbers and special characters.)");
+                }
+            }
+        }
+        function validatePassword() {
+            event.preventDefault();
+            data = $('#password').val();
+            var len = data.length;
+
+            if (len < 1) {
+                alertify.alert("Alert", "Password cannot be blank.");
+                return false;
+            }
+            if (len < 6) {
+                alertify.alert("Alert", "Password should be atleast 6 character long.");
+                return false;
+            }
+            if ($('#password').val() != $('#confirmpassword').val()) {
+                alertify.alert("Alert", "Password and Confirm Password don't match");
+                return false;
+            }
+            return true;
+        }
+
+
+    </script>
+}
+<div class="container">
+    <div class="row">
+        <div class="login-box">
+
+            <div class="login-box-body col-md-offset-0 col-md-12 col-sm-offset-3 col-sm-6 col-xs-12">
+
+                <label class="text-JazzYellow label_change_pass">Current Password</label>
+                <div class="form-group ">
+                    <input type="password" id="CurrentPassword" class="form-control demoInputBox" placeholder="Current Password">
+                </div>
+
+                <label class="text-JazzYellow label_change_pass">New Password</label>
+                <div class="form-group ">
+                    @*<input type="password" class="form-control" placeholder="New Password">*@
+                    <input type="password" name="password" id="password" class="form-control demoInputBox" onKeyUp="checkPasswordStrength();" placeholder="New Password" />
+                    <div class="col-sm-4" id="password-strength-status"></div>
+                </div>
+
+                <label class="text-JazzYellow label_change_pass">Confirm Password</label>
+                <div class="form-group ">
+                    <input type="password" name="confirmpassword" id="confirmpassword" class="form-control demoInputBox" placeholder="Confirm Password">
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat login_btn" onClick="UpdatePassword();">Submit</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
